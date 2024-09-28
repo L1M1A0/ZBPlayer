@@ -34,6 +34,7 @@
 		05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */; };
 		05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 05E5077D22964EFE008794F3 /* 开发备忘.rtf */; };
 		28C9590A9B6B1A53A635930E /* Pods_ZBPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */; };
+		2CCA9A842CA863A400262FB1 /* ZBPlayer_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -116,6 +117,8 @@
 		05E5077B22964180008794F3 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		05E5077D22964EFE008794F3 /* 开发备忘.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "开发备忘.rtf"; sourceTree = "<group>"; };
 		12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.release.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		2CCA9A822CA863A400262FB1 /* ZBPlayer_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer_2.h; sourceTree = "<group>"; };
+		2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer_2.m; sourceTree = "<group>"; };
 		54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZBPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF912D09C7A30A32918DE74 /* Pods-ZBPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.debug.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -224,6 +227,8 @@
 			children = (
 				05226357228F105D00928050 /* ZBPlayer.h */,
 				05226356228F105D00928050 /* ZBPlayer.m */,
+				2CCA9A822CA863A400262FB1 /* ZBPlayer_2.h */,
+				2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */,
 				05914D83228F8ECD005FCDAF /* ZBPlayerWC.h */,
 				05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */,
 				05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */,
@@ -439,6 +444,7 @@
 				05284DD52299AC8A0002DF99 /* ZBAudioOutlineView.m in Sources */,
 				05C7165D228EDE760054DF0F /* FHFileManager.m in Sources */,
 				05C716C4228EE0EC0054DF0F /* ZBAudioModel.m in Sources */,
+				2CCA9A842CA863A400262FB1 /* ZBPlayer_2.m in Sources */,
 				0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */,
 				05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */,
 				05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */,

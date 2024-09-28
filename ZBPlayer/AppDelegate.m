@@ -7,11 +7,16 @@
 //
 
 #import "AppDelegate.h"
+//版本1：xib 会出现两个窗口（问题未解决）
 #import "ZBPlayerWC.h"
+//版本2 代码 稳定使用的版本1
 #import "ZBPlayer.h"
+//版本3 代码 版本2的基础上修改
+#import "ZBPlayer_2.h"
 
 @interface AppDelegate ()
-//此处类型改变，同时还要修改MainMenu.xib中window的Class为自定义的window类型
+//**********注意：（重要）
+//更换主要window的类性的的时候，都要将MainMenu.xib中window的Class为新自定义的window类型，否则页面不展示
 @property (weak) IBOutlet NSWindow *window;
 
 
@@ -25,19 +30,20 @@
     // Insert code here to initialize your application
     
     
+    //**********注意：（重要）
+    //更换主要window的类型的时候，都要将MainMenu.xib中window的Class为新自定义的window类型，否则页面不展
+    BOOL isCode = YES;
     int type = 0;
-    if(type == 0){
-        //方法1 ：使用xib创建界面
-        [self windowInCode];
-    }else if (type == 1){
-        //方法3 2
-        [self windowControllerInXIB:1];
-    }else if (type == 2){
-        //方法3 2
-        [self windowControllerInXIB:2];
+    
+    if(isCode == YES){
+        //方法1 ：使用代码创建界面（可以正常使用）
+        [self windowInCodePlayerVersion:type];
+      
+    }else{
+        //方法3 使用xib创建界面
+        [self windowControllerInXIB:type];
+      
     }
-    
-    
     
 
 }
@@ -48,12 +54,22 @@
  -(instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)backingStoreType defer:(BOOL)flag
  
  */
--(void)windowInCode{
-    if([self.window isKindOfClass:[ZBPlayer class]]){
-        ZBPlayer *tempWindow = (ZBPlayer *)self.window;
-        [tempWindow initWindow];
-        self.window = tempWindow;
+-(void)windowInCodePlayerVersion:(NSInteger)type{
+    if(type == 0 ){
+        if([self.window isKindOfClass:[ZBPlayer class]]){
+            ZBPlayer *tempWindow = (ZBPlayer *)self.window;
+            [tempWindow initWindow];
+            self.window = tempWindow;
+        }
+    }else if(type == 1){
+        
+        if([self.window isKindOfClass:[ZBPlayer_2 class]]){
+            ZBPlayer_2 *tempWindow = (ZBPlayer_2 *)self.window;
+            [tempWindow initWindow];
+            self.window = tempWindow;
+        }
     }
+
 }
 
 
@@ -66,14 +82,15 @@
     //ZBPlayerWC *playerWC
     self.playerWC = [[ZBPlayerWC alloc]initWithWindowNibName:@"ZBPlayerWC"];
     
-    if (type == 1) {
+    if (type == 0) {
         //方法1. 设置nib才会执行windowDidLoad方法创建
         [self setWindow:self.playerWC.window];
     }else{
         //方法2 不走windowDidLoad方法创建
-        ZBPlayer *tempWindow = [self player];
-        self.playerWC.window = tempWindow;
-        self.window = self.playerWC.window;
+//        ZBPlayer *tempWindow = [self player];
+//        self.playerWC.window = tempWindow;
+//        self.window = self.playerWC.window;
+//        self.playerWC
  
         
     }

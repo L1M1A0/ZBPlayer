@@ -1,12 +1,12 @@
 //
-//  ZBPlayer.m
+//  ZBPlayer_2.m
 //  OSX
 //
 //  Created by Li28 on 2019/4/7.
 //  Copyright © 2019 李振彪. All rights reserved.
 //
 
-#import "ZBPlayer.h"
+#import "ZBPlayer_2.h"
 #import <AVFoundation/AVFoundation.h>
 #import <VLCKit/VLCKit.h>
 #import "AFNetworking.h"
@@ -29,7 +29,7 @@
 #define kListNamesKey @"kListNamesKey"//存数组转字符串，播放列表路径
 
 
-@interface ZBPlayer ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
+@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
 {
     
 }
@@ -120,7 +120,7 @@
 
 @end
 
-@implementation ZBPlayer
+@implementation ZBPlayer_2
 
 //-(instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)backingStoreType defer:(BOOL)flag{
 //    self = [super initWithContentRect:contentRect styleMask:style backing:backingStoreType defer:flag];
@@ -144,7 +144,7 @@
     //self.titleVisibility = NSWindowTitleHidden;
     
     //3、设置窗口标题
-    self.title = @"ZBPlayer";
+    self.title = @"ZBPlayer_2";
     
     //如果设置minSize后拉动窗口有明显的大小变化，需要在MainWCtrl.xib中勾选Mininum content size
     self.minSize = NSMakeSize(900, 556);//标准尺寸
@@ -960,7 +960,7 @@
     openDlg.allowsMultipleSelection = YES;//--“是否允许多选”
     openDlg.allowedFileTypes = @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac"];//---“允许的文件名后缀”
     openDlg.treatsFilePackagesAsDirectories = YES;
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [openDlg beginWithCompletionHandler: ^(NSInteger result){
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
@@ -1390,7 +1390,7 @@
     NSString *url = [NSString stringWithFormat:@"http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword=%@&page=1&pagesize=20&showtype=1",keyword];
 
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1413,7 +1413,7 @@
 //    http://www.kugou.com/yy/index.php?r=play/getdata&hash=67f4b520ee80d68959f4bf8a213f6774
     NSString *url = [NSString stringWithFormat:@"http://www.kugou.com/yy/index.php?r=play/getdata&hash=%@",hash];
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1447,7 +1447,7 @@
     NSString *url = [NSString stringWithFormat:@"https://api.bzqll.com/music/tencent/search?key=579621905&s=%@&limit=100&offset=0&type=lrc",keyword];
     
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
