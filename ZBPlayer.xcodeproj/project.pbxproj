@@ -1,0 +1,659 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0521C2DF22D87F5900C7201E /* KRCOperate.m */; };
+		0521C2E422D87F5900C7201E /* jay.krc in Resources */ = {isa = PBXBuildFile; fileRef = 0521C2E022D87F5900C7201E /* jay.krc */; };
+		0521C2E522D87F5900C7201E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0521C2E122D87F5900C7201E /* README.md */; };
+		05226358228F105D00928050 /* ZBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 05226356228F105D00928050 /* ZBPlayer.m */; };
+		05284DD52299AC8A0002DF99 /* ZBAudioOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05284DD42299AC8A0002DF99 /* ZBAudioOutlineView.m */; };
+		05914D86228F8ECD005FCDAF /* ZBPlayerWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */; };
+		05914D87228F8ECD005FCDAF /* ZBPlayerWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */; };
+		05C7164A228EDE180054DF0F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C71649228EDE180054DF0F /* AppDelegate.m */; };
+		05C7164C228EDE1F0054DF0F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C7164B228EDE1F0054DF0F /* Assets.xcassets */; };
+		05C7164F228EDE1F0054DF0F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 05C7164D228EDE1F0054DF0F /* MainMenu.xib */; };
+		05C71652228EDE1F0054DF0F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C71651228EDE1F0054DF0F /* main.m */; };
+		05C7165D228EDE760054DF0F /* FHFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C7165C228EDE760054DF0F /* FHFileManager.m */; };
+		05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716BA228EDEC90054DF0F /* ISSoundAdditions.m */; };
+		05C716C4228EE0EC0054DF0F /* ZBAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C3228EE0EB0054DF0F /* ZBAudioModel.m */; };
+		05C716C9228EE0F50054DF0F /* ZBAudioObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C6228EE0F50054DF0F /* ZBAudioObject.m */; };
+		05C716CA228EE0F50054DF0F /* ZBDataObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C8228EE0F50054DF0F /* ZBDataObject.m */; };
+		05C716D7228EE11C0054DF0F /* ZBPlayerSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */; };
+		05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */; };
+		05C716D9228EE11C0054DF0F /* ZBPlayerSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */; };
+		05C716DB228EE11C0054DF0F /* ZBSliderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D2228EE11C0054DF0F /* ZBSliderViewController.m */; };
+		05C716DC228EE11C0054DF0F /* ZBPlayerRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */; };
+		05C716DF228EE13C0054DF0F /* ZBMacOSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */; };
+		05C716E2228EE14E0054DF0F /* TreeNodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716E0228EE14E0054DF0F /* TreeNodeModel.m */; };
+		05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716E5228EE2B20054DF0F /* ZBTextFieldCell.m */; };
+		05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */; };
+		05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 05E5077D22964EFE008794F3 /* 开发备忘.rtf */; };
+		28C9590A9B6B1A53A635930E /* Pods_ZBPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0522634D228EE7B500928050 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0521C2DF22D87F5900C7201E /* KRCOperate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KRCOperate.m; sourceTree = "<group>"; };
+		0521C2E022D87F5900C7201E /* jay.krc */ = {isa = PBXFileReference; lastKnownFileType = file; path = jay.krc; sourceTree = "<group>"; };
+		0521C2E122D87F5900C7201E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0521C2E222D87F5900C7201E /* KRCOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KRCOperate.h; sourceTree = "<group>"; };
+		05226356228F105D00928050 /* ZBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer.m; sourceTree = "<group>"; };
+		05226357228F105D00928050 /* ZBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer.h; sourceTree = "<group>"; };
+		05284DD32299AC8A0002DF99 /* ZBAudioOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBAudioOutlineView.h; sourceTree = "<group>"; };
+		05284DD42299AC8A0002DF99 /* ZBAudioOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBAudioOutlineView.m; sourceTree = "<group>"; };
+		05914D83228F8ECD005FCDAF /* ZBPlayerWC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBPlayerWC.h; sourceTree = "<group>"; };
+		05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerWC.m; sourceTree = "<group>"; };
+		05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ZBPlayerWC.xib; sourceTree = "<group>"; };
+		05914D88228FA7D4005FCDAF /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		05C71645228EDE180054DF0F /* ZBPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZBPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C71648228EDE180054DF0F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		05C71649228EDE180054DF0F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		05C7164B228EDE1F0054DF0F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05C7164E228EDE1F0054DF0F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		05C71650228EDE1F0054DF0F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05C71651228EDE1F0054DF0F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		05C71653228EDE1F0054DF0F /* ZBPlayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ZBPlayer.entitlements; sourceTree = "<group>"; };
+		05C7165B228EDE760054DF0F /* FHFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHFileManager.h; sourceTree = "<group>"; };
+		05C7165C228EDE760054DF0F /* FHFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHFileManager.m; sourceTree = "<group>"; };
+		05C716B9228EDEC90054DF0F /* ISSoundAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISSoundAdditions.h; sourceTree = "<group>"; };
+		05C716BA228EDEC90054DF0F /* ISSoundAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISSoundAdditions.m; sourceTree = "<group>"; };
+		05C716C2228EE0EB0054DF0F /* ZBAudioModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBAudioModel.h; sourceTree = "<group>"; };
+		05C716C3228EE0EB0054DF0F /* ZBAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBAudioModel.m; sourceTree = "<group>"; };
+		05C716C5228EE0F40054DF0F /* ZBAudioObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBAudioObject.h; sourceTree = "<group>"; };
+		05C716C6228EE0F50054DF0F /* ZBAudioObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBAudioObject.m; sourceTree = "<group>"; };
+		05C716C7228EE0F50054DF0F /* ZBDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBDataObject.h; sourceTree = "<group>"; };
+		05C716C8228EE0F50054DF0F /* ZBDataObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBDataObject.m; sourceTree = "<group>"; };
+		05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerSection.m; sourceTree = "<group>"; };
+		05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlaybackModelViewController.m; sourceTree = "<group>"; };
+		05C716CD228EE11C0054DF0F /* ZBPlayerSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerSplitView.h; sourceTree = "<group>"; };
+		05C716CE228EE11C0054DF0F /* ZBPlayerRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerRow.h; sourceTree = "<group>"; };
+		05C716CF228EE11C0054DF0F /* ZBPlayerSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerSection.h; sourceTree = "<group>"; };
+		05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerSplitView.m; sourceTree = "<group>"; };
+		05C716D2228EE11C0054DF0F /* ZBSliderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBSliderViewController.m; sourceTree = "<group>"; };
+		05C716D3228EE11C0054DF0F /* ZBPlaybackModelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlaybackModelViewController.h; sourceTree = "<group>"; };
+		05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerRow.m; sourceTree = "<group>"; };
+		05C716D6228EE11C0054DF0F /* ZBSliderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBSliderViewController.h; sourceTree = "<group>"; };
+		05C716DD228EE13C0054DF0F /* ZBMacOSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBMacOSObject.h; sourceTree = "<group>"; };
+		05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBMacOSObject.m; sourceTree = "<group>"; };
+		05C716E0228EE14E0054DF0F /* TreeNodeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TreeNodeModel.m; sourceTree = "<group>"; };
+		05C716E1228EE14E0054DF0F /* TreeNodeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeNodeModel.h; sourceTree = "<group>"; };
+		05C716E4228EE2B20054DF0F /* ZBTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBTextFieldCell.h; sourceTree = "<group>"; };
+		05C716E5228EE2B20054DF0F /* ZBTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBTextFieldCell.m; sourceTree = "<group>"; };
+		05D4D54B2298DB8800BAB177 /* ZBLyricObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBLyricObject.h; sourceTree = "<group>"; };
+		05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBLyricObject.m; sourceTree = "<group>"; };
+		05D4D54E2298DDCA00BAB177 /* ZBMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBMacro.h; sourceTree = "<group>"; };
+		05E5075F22963EFA008794F3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		05E5076122963F02008794F3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		05E5076322963F17008794F3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		05E5076522963F20008794F3 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		05E5076722963F2C008794F3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		05E5076922963FF7008794F3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		05E5076B229640F9008794F3 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		05E5076D22964103008794F3 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		05E5076F2296410D008794F3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		05E5077122964119008794F3 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		05E5077322964124008794F3 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		05E5077522964161008794F3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		05E507772296416D008794F3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		05E5077922964176008794F3 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		05E5077B22964180008794F3 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		05E5077D22964EFE008794F3 /* 开发备忘.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "开发备忘.rtf"; sourceTree = "<group>"; };
+		12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.release.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZBPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BDF912D09C7A30A32918DE74 /* Pods-ZBPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.debug.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05C71642228EDE180054DF0F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28C9590A9B6B1A53A635930E /* Pods_ZBPlayer.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0521C2DE22D87F5900C7201E /* KRCOperation */ = {
+			isa = PBXGroup;
+			children = (
+				0521C2DF22D87F5900C7201E /* KRCOperate.m */,
+				0521C2E022D87F5900C7201E /* jay.krc */,
+				0521C2E122D87F5900C7201E /* README.md */,
+				0521C2E222D87F5900C7201E /* KRCOperate.h */,
+			);
+			path = KRCOperation;
+			sourceTree = "<group>";
+		};
+		05226348228EE77D00928050 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		05C7163C228EDE170054DF0F = {
+			isa = PBXGroup;
+			children = (
+				05C71647228EDE180054DF0F /* ZBPlayer */,
+				05C71646228EDE180054DF0F /* Products */,
+				05226348228EE77D00928050 /* Recovered References */,
+				0D87EA7E6A16B305B561F1A4 /* Pods */,
+				E986AA6FCFF5DC0CFC079B13 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		05C71646228EDE180054DF0F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05C71645228EDE180054DF0F /* ZBPlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05C71647228EDE180054DF0F /* ZBPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				05C71659228EDE4C0054DF0F /* libs */,
+				05C716C1228EE0BE0054DF0F /* model */,
+				05C716C0228EE0B30054DF0F /* object */,
+				05C716E3228EE2430054DF0F /* view */,
+				05C716BE228EE0160054DF0F /* windows */,
+				05C71648228EDE180054DF0F /* AppDelegate.h */,
+				05C71649228EDE180054DF0F /* AppDelegate.m */,
+				05914D88228FA7D4005FCDAF /* PrefixHeader.pch */,
+				05D4D54E2298DDCA00BAB177 /* ZBMacro.h */,
+				05E5077D22964EFE008794F3 /* 开发备忘.rtf */,
+				05C7164B228EDE1F0054DF0F /* Assets.xcassets */,
+				05C7164D228EDE1F0054DF0F /* MainMenu.xib */,
+				05C71650228EDE1F0054DF0F /* Info.plist */,
+				05C71651228EDE1F0054DF0F /* main.m */,
+				05C71653228EDE1F0054DF0F /* ZBPlayer.entitlements */,
+			);
+			path = ZBPlayer;
+			sourceTree = "<group>";
+		};
+		05C71659228EDE4C0054DF0F /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				0521C2DE22D87F5900C7201E /* KRCOperation */,
+				05C716B8228EDEC90054DF0F /* ISSoundAdditions */,
+				05C7165A228EDE760054DF0F /* FHFileManager */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		05C7165A228EDE760054DF0F /* FHFileManager */ = {
+			isa = PBXGroup;
+			children = (
+				05C7165B228EDE760054DF0F /* FHFileManager.h */,
+				05C7165C228EDE760054DF0F /* FHFileManager.m */,
+			);
+			path = FHFileManager;
+			sourceTree = "<group>";
+		};
+		05C716B8228EDEC90054DF0F /* ISSoundAdditions */ = {
+			isa = PBXGroup;
+			children = (
+				05C716B9228EDEC90054DF0F /* ISSoundAdditions.h */,
+				05C716BA228EDEC90054DF0F /* ISSoundAdditions.m */,
+			);
+			path = ISSoundAdditions;
+			sourceTree = "<group>";
+		};
+		05C716BE228EE0160054DF0F /* windows */ = {
+			isa = PBXGroup;
+			children = (
+				05226357228F105D00928050 /* ZBPlayer.h */,
+				05226356228F105D00928050 /* ZBPlayer.m */,
+				05914D83228F8ECD005FCDAF /* ZBPlayerWC.h */,
+				05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */,
+				05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */,
+				05C716D3228EE11C0054DF0F /* ZBPlaybackModelViewController.h */,
+				05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */,
+				05C716D6228EE11C0054DF0F /* ZBSliderViewController.h */,
+				05C716D2228EE11C0054DF0F /* ZBSliderViewController.m */,
+			);
+			path = windows;
+			sourceTree = "<group>";
+		};
+		05C716C0228EE0B30054DF0F /* object */ = {
+			isa = PBXGroup;
+			children = (
+				05C716DD228EE13C0054DF0F /* ZBMacOSObject.h */,
+				05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */,
+				05C716C5228EE0F40054DF0F /* ZBAudioObject.h */,
+				05C716C6228EE0F50054DF0F /* ZBAudioObject.m */,
+				05C716C7228EE0F50054DF0F /* ZBDataObject.h */,
+				05C716C8228EE0F50054DF0F /* ZBDataObject.m */,
+				05D4D54B2298DB8800BAB177 /* ZBLyricObject.h */,
+				05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */,
+			);
+			path = object;
+			sourceTree = "<group>";
+		};
+		05C716C1228EE0BE0054DF0F /* model */ = {
+			isa = PBXGroup;
+			children = (
+				05C716E1228EE14E0054DF0F /* TreeNodeModel.h */,
+				05C716E0228EE14E0054DF0F /* TreeNodeModel.m */,
+				05C716C2228EE0EB0054DF0F /* ZBAudioModel.h */,
+				05C716C3228EE0EB0054DF0F /* ZBAudioModel.m */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		05C716E3228EE2430054DF0F /* view */ = {
+			isa = PBXGroup;
+			children = (
+				05C716E4228EE2B20054DF0F /* ZBTextFieldCell.h */,
+				05C716E5228EE2B20054DF0F /* ZBTextFieldCell.m */,
+				05C716CE228EE11C0054DF0F /* ZBPlayerRow.h */,
+				05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */,
+				05C716CF228EE11C0054DF0F /* ZBPlayerSection.h */,
+				05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */,
+				05C716CD228EE11C0054DF0F /* ZBPlayerSplitView.h */,
+				05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */,
+				05284DD32299AC8A0002DF99 /* ZBAudioOutlineView.h */,
+				05284DD42299AC8A0002DF99 /* ZBAudioOutlineView.m */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
+		0D87EA7E6A16B305B561F1A4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BDF912D09C7A30A32918DE74 /* Pods-ZBPlayer.debug.xcconfig */,
+				12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		E986AA6FCFF5DC0CFC079B13 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				05E5077B22964180008794F3 /* VideoToolbox.framework */,
+				05E5077922964176008794F3 /* Security.framework */,
+				05E507772296416D008794F3 /* QuartzCore.framework */,
+				05E5077522964161008794F3 /* OpenGL.framework */,
+				05E5077322964124008794F3 /* libiconv.tbd */,
+				05E5077122964119008794F3 /* libbz2.tbd */,
+				05E5076F2296410D008794F3 /* Foundation.framework */,
+				05E5076D22964103008794F3 /* CoreVideo.framework */,
+				05E5076B229640F9008794F3 /* CoreText.framework */,
+				05E5076922963FF7008794F3 /* CoreMedia.framework */,
+				05E5076722963F2C008794F3 /* CoreGraphics.framework */,
+				05E5076522963F20008794F3 /* CoreFoundation.framework */,
+				05E5076322963F17008794F3 /* CFNetwork.framework */,
+				05E5076122963F02008794F3 /* AVFoundation.framework */,
+				05E5075F22963EFA008794F3 /* AudioToolbox.framework */,
+				54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		05C71644228EDE180054DF0F /* ZBPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05C71656228EDE1F0054DF0F /* Build configuration list for PBXNativeTarget "ZBPlayer" */;
+			buildPhases = (
+				B7FC7E70FE293000C70E22F7 /* [CP] Check Pods Manifest.lock */,
+				05C71641228EDE180054DF0F /* Sources */,
+				05C71642228EDE180054DF0F /* Frameworks */,
+				05C71643228EDE180054DF0F /* Resources */,
+				0522634D228EE7B500928050 /* Embed Frameworks */,
+				52263A86BC66FA568986B392 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZBPlayer;
+			productName = ZBPlayer;
+			productReference = 05C71645228EDE180054DF0F /* ZBPlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		05C7163D228EDE170054DF0F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = LiZB;
+				TargetAttributes = {
+					05C71644228EDE180054DF0F = {
+						CreatedOnToolsVersion = 10.2.1;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 05C71640228EDE170054DF0F /* Build configuration list for PBXProject "ZBPlayer" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 05C7163C228EDE170054DF0F;
+			productRefGroup = 05C71646228EDE180054DF0F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				05C71644228EDE180054DF0F /* ZBPlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05C71643228EDE180054DF0F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C7164C228EDE1F0054DF0F /* Assets.xcassets in Resources */,
+				05C7164F228EDE1F0054DF0F /* MainMenu.xib in Resources */,
+				05914D87228F8ECD005FCDAF /* ZBPlayerWC.xib in Resources */,
+				0521C2E522D87F5900C7201E /* README.md in Resources */,
+				0521C2E422D87F5900C7201E /* jay.krc in Resources */,
+				05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		52263A86BC66FA568986B392 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B7FC7E70FE293000C70E22F7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ZBPlayer-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05C71641228EDE180054DF0F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C716DF228EE13C0054DF0F /* ZBMacOSObject.m in Sources */,
+				05C716D9228EE11C0054DF0F /* ZBPlayerSplitView.m in Sources */,
+				05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */,
+				05284DD52299AC8A0002DF99 /* ZBAudioOutlineView.m in Sources */,
+				05C7165D228EDE760054DF0F /* FHFileManager.m in Sources */,
+				05C716C4228EE0EC0054DF0F /* ZBAudioModel.m in Sources */,
+				0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */,
+				05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */,
+				05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */,
+				05226358228F105D00928050 /* ZBPlayer.m in Sources */,
+				05C71652228EDE1F0054DF0F /* main.m in Sources */,
+				05C716E2228EE14E0054DF0F /* TreeNodeModel.m in Sources */,
+				05C716CA228EE0F50054DF0F /* ZBDataObject.m in Sources */,
+				05C716DB228EE11C0054DF0F /* ZBSliderViewController.m in Sources */,
+				05914D86228F8ECD005FCDAF /* ZBPlayerWC.m in Sources */,
+				05C716D7228EE11C0054DF0F /* ZBPlayerSection.m in Sources */,
+				05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */,
+				05C716DC228EE11C0054DF0F /* ZBPlayerRow.m in Sources */,
+				05C7164A228EDE180054DF0F /* AppDelegate.m in Sources */,
+				05C716C9228EE0F50054DF0F /* ZBAudioObject.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		05C7164D228EDE1F0054DF0F /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C7164E228EDE1F0054DF0F /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		05C71654228EDE1F0054DF0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ZBPlayer/PrefixHeader.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		05C71655228EDE1F0054DF0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ZBPlayer/PrefixHeader.pch;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		05C71657228EDE1F0054DF0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BDF912D09C7A30A32918DE74 /* Pods-ZBPlayer.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ZBPlayer/ZBPlayer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ZBPlayer/libs",
+					"$(PROJECT_DIR)/ZBPlayer",
+				);
+				INFOPLIST_FILE = ZBPlayer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.biao.ZBPlayer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		05C71658228EDE1F0054DF0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ZBPlayer/ZBPlayer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ZBPlayer/libs",
+					"$(PROJECT_DIR)/ZBPlayer",
+				);
+				INFOPLIST_FILE = ZBPlayer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.biao.ZBPlayer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05C71640228EDE170054DF0F /* Build configuration list for PBXProject "ZBPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C71654228EDE1F0054DF0F /* Debug */,
+				05C71655228EDE1F0054DF0F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05C71656228EDE1F0054DF0F /* Build configuration list for PBXNativeTarget "ZBPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C71657228EDE1F0054DF0F /* Debug */,
+				05C71658228EDE1F0054DF0F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 05C7163D228EDE170054DF0F /* Project object */;
+}
