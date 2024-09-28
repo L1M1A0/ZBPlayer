@@ -1,6 +1,0 @@
-${PODS_ROOT}/Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer-frameworks.sh
-${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework
-${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework
-${PODS_ROOT}/VLCKit/VLCKit.framework
-${BUILT_PRODUCTS_DIR}/WCDB.objc/WCDBObjc.framework
-${BUILT_PRODUCTS_DIR}/WCDBOptimizedSQLCipher/sqlcipher.framework
