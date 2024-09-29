@@ -3,8 +3,15 @@
 //  OSX
 //
 //  Created by Li28 on 2019/5/8.
-//  Copyright © 2019 李振彪. All rights reserved.
+//  Copyright © 2019 Li28. All rights reserved.
 //
+
+/**
+ * 音频数据管理模型
+ * 1. 从本地读取音频数据列表，生成数据源
+ * 2. 根据需求，生成适合播放器需求的数据结构
+ */
+
 
 #import <Foundation/Foundation.h>
 
@@ -78,6 +85,19 @@ NS_ASSUME_NONNULL_BEGIN
  保存播放列表到本地
  */
 + (void)saveMusicList:(NSMutableArray *)list;
+
+
+#pragma mark - 歌曲信息处理
+/**
+ 传入歌曲的文件名字，分析歌名中包含的歌手（可能是多个）
+ @param audioName 歌名
+ @return 歌手数组
+ */
++ (NSArray *)singersFromFileName:(NSString *)audioName;
+/** 传入文件名，歌名处理，去除多于信息，保留干净的歌曲信息，格式：歌手 - 歌名 */
++(NSString *)musicNameFromFilename:(NSString *)filename;
+/** 根据关键词，拆分字符串 */
++(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0;
 @end
 
 NS_ASSUME_NONNULL_END

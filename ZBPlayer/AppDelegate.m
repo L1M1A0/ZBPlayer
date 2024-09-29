@@ -31,9 +31,9 @@
     
     
     //**********注意：（重要）
-    //更换主要window的类型的时候，都要将MainMenu.xib中window的Class为新自定义的window类型，否则页面不展
+    //更换主要window的类型的时候，都要将MainMenu.xib中window的Class为新自定义的window类型，否则页面不显示、不加载数据
     BOOL isCode = YES;
-    int type = 0;
+    int type = 1;
     
     if(isCode == YES){
         //方法1 ：使用代码创建界面（可以正常使用）
@@ -56,13 +56,14 @@
  */
 -(void)windowInCodePlayerVersion:(NSInteger)type{
     if(type == 0 ){
+        //版本1
         if([self.window isKindOfClass:[ZBPlayer class]]){
             ZBPlayer *tempWindow = (ZBPlayer *)self.window;
             [tempWindow initWindow];
             self.window = tempWindow;
         }
     }else if(type == 1){
-        
+        //版本2
         if([self.window isKindOfClass:[ZBPlayer_2 class]]){
             ZBPlayer_2 *tempWindow = (ZBPlayer_2 *)self.window;
             [tempWindow initWindow];

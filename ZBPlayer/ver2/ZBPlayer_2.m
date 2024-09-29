@@ -1,12 +1,12 @@
 //
-//  ZBPlayer.m
+//  ZBPlayer_2.m
 //  OSX
 //
 //  Created by Li28 on 2019/4/7.
-//  Copyright © 2019 李振彪. All rights reserved.
+//  Copyright © 2019 Li28. All rights reserved.
 //
 
-#import "ZBPlayer.h"
+#import "ZBPlayer_2.h"
 #import <AVFoundation/AVFoundation.h>
 #import <VLCKit/VLCKit.h>
 #import "AFNetworking.h"
@@ -15,6 +15,7 @@
 
 #import "ZBDataObject.h"
 #import "ZBMacOSObject.h"
+#import "ZBMusicStatusControllerObject.h"
 #import "ZBPlayerSection.h"
 #import "ZBPlayerRow.h"
 #import "ZBAudioModel.h"
@@ -29,12 +30,13 @@
 #define kListNamesKey @"kListNamesKey"//存数组转字符串，播放列表路径
 
 
-@interface ZBPlayer ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
+@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
 {
     
 }
 @property (nonatomic, strong) ZBMacOSObject *object;
 @property (nonatomic, strong) ZBDataObject *dataObject;
+
 
 #pragma mark - 常用功能
 /** 上一曲 */
@@ -93,23 +95,24 @@
 /** 播发器 */
 @property (nonatomic, strong) VLCMediaPlayer *vlcPlayer;
 /** 播发器 */
-@property (nonatomic, strong) AVAudioPlayer *player;
-/** 当前播放的歌曲在总列表中的index*/
-@property (nonatomic, assign) NSInteger currentSection;
-/** 当前播放的歌曲在所在列表中的index*/
-@property (nonatomic, assign) NSInteger currentRow;
-/** 上一次播放的歌曲在总列表中的index*/
-@property (nonatomic, assign) NSInteger lastSection;
-/** 上一次播放的歌曲在所在列表中的index*/
-@property (nonatomic, assign) NSInteger lastRow;
-/** 是否正在播放  */
+@property (nonatomic, strong) AVAudioPlayer *avPlayer;
+@property (nonatomic, strong) ZBMusicStatusControllerObject *musicStatusCtrl;
+///** 当前播放的歌曲在总列表中的index*/
+//@property (nonatomic, assign) NSInteger currentSection;
+///** 当前播放的歌曲在所在列表中的index*/
+//@property (nonatomic, assign) NSInteger currentRow;
+///** 上一次播放的歌曲在总列表中的index*/
+//@property (nonatomic, assign) NSInteger lastSection;
+///** 上一次播放的歌曲在所在列表中的index*/
+//@property (nonatomic, assign) NSInteger lastRow;
+///** 是否正在播放  */
 @property (nonatomic, assign) BOOL isPlaying;
-/** 播放模式 是否是随机播放 优先级 */
-@property (nonatomic, assign) BOOL isPlaybackModelRandom;
-/** 播放模式 是否允许自动切换列表 优先级 */
-@property (nonatomic, assign) BOOL isPlaybackModelSwitchList;
-/** 播放模式 是否单曲循环 优先级最高 */
-@property (nonatomic, assign) BOOL isPlaybackModelSingleRepeat;
+///** 播放模式 是否是随机播放 优先级 */
+//@property (nonatomic, assign) BOOL isPlayModelRandom;
+///** 播放模式 是否允许自动切换列表 优先级 */
+//@property (nonatomic, assign) BOOL isPlayModelSwitchList;
+///** 播放模式 是否单曲循环 优先级最高 */
+//@property (nonatomic, assign) BOOL isPlayModelSingleRepeat;
 
 /** 主色调 */
 @property (nonatomic, strong) NSColor *mainColor;
@@ -117,10 +120,11 @@
 @property (nonatomic, assign) CFRunLoopTimerRef timerForRemainTime;
 /** VLC 播放模式下，当前歌曲的播放进度 */
 @property (nonatomic, assign) int vlcCurrentTime;
+@property (nonatomic, strong) NSNotification *mainNoti;
 
 @end
 
-@implementation ZBPlayer
+@implementation ZBPlayer_2
 
 //-(instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)backingStoreType defer:(BOOL)flag{
 //    self = [super initWithContentRect:contentRect styleMask:style backing:backingStoreType defer:flag];
@@ -144,7 +148,7 @@
     //self.titleVisibility = NSWindowTitleHidden;
     
     //3、设置窗口标题
-    self.title = @"ZBPlayer";
+    self.title = @"ZBPlayer_2";
     
     //如果设置minSize后拉动窗口有明显的大小变化，需要在MainWCtrl.xib中勾选Mininum content size
     self.minSize = NSMakeSize(900, 556);//标准尺寸
@@ -184,6 +188,7 @@
     
     self.object = [[ZBMacOSObject alloc]init];
     self.dataObject = [[ZBDataObject alloc]init];
+    self.musicStatusCtrl = [[ZBMusicStatusControllerObject alloc]init];
     self.isVCLPlayMode = YES;
     [self initData];
 
@@ -411,7 +416,7 @@
         [self.volumePopover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSRectEdgeMaxY];
     }else if(sender.tag == 5){
         //播放模式
-//        self.isPlaybackModelRandom = YES;
+//        self.isPlayModelRandom = YES;
         [self.playbackModelPopover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSRectEdgeMaxY];
     }
 }
@@ -426,7 +431,7 @@
         [self.vlcPlayer setTime:tmpTime];
     }else{
         //AVAudionPlayer
-        self.player.currentTime = slider.integerValue;
+        self.avPlayer.currentTime = slider.integerValue;
     }
 }
 
@@ -469,8 +474,12 @@
         _volumePopover.animates = YES;
         _volumePopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
         //[_popover close];
+        
+        ////监听方法只添加一次就可以了，重复添加会造成发送多个监听命令响应
+        ///监听音量变化
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(volumeSliderIsChanging:) name:@"volumeSliderIsChanging" object:nil];
     }
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(volumeSliderIsChanging:) name:@"volumeSliderIsChanging" object:nil];
+    
     return _volumePopover;
 }
 
@@ -478,7 +487,7 @@
 -(void)volumeSliderIsChanging:(NSNotification *)noti{
 //    NSLog(@"volumeSliderIsChanging:%@",noti);
     self.volumeString      = noti.object[@"stringValue"];
-    self.player.volume     = [self.volumeString floatValue]/100;
+    self.avPlayer.volume     = [self.volumeString floatValue]/100;
     self.vlcPlayer.audio.volume = [self.volumeString intValue];
 }
 
@@ -491,73 +500,67 @@
         _playbackModelPopover.behavior = NSPopoverBehaviorTransient;
         _playbackModelPopover.animates = YES;
         _playbackModelPopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+        
+        //监听方法只添加一次就可以了，重复添加会造成发送多个监听命令响应
+        //监听播放模式改变：顺序、随机、循环等等
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelChanging:) name:@"playbackModelChanging" object:nil];
+        //监听是否允许切换播放列表
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelSwitchList:) name:@"playbackModelSwitchList" object:nil];
     }
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelChanging:) name:@"playbackModelChanging" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelSwitchList:) name:@"playbackModelSwitchList" object:nil];
+   
+
     return _playbackModelPopover;
 }
 
 -(void)playModelChanging:(NSNotification *)noti{
     NSNumber *tag = noti.object[@"playbackModel"];
     if ([tag isEqual:@(0)]) {
-        NSLog(@"isCrossList_noti_随机播放_%@",tag);
-        self.isPlaybackModelRandom = YES;
-        self.isPlaybackModelSingleRepeat = NO;
+        NSLog(@"playModelChanging_noti_随机播放_%@",tag);
+        self.musicStatusCtrl.isPlayModelRandom = YES;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = NO;
         [self.playbackModelBtn setTitle:@"随机"];
     }else if ([tag isEqual:@(1)]){
-        NSLog(@"isCrossList_noti_循序播放_%@",tag);
-        self.isPlaybackModelRandom = NO;
-        self.isPlaybackModelSingleRepeat = NO;
+        NSLog(@"playModelChanging_noti_循序播放_%@",tag);
+        self.musicStatusCtrl.isPlayModelRandom = NO;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = NO;
         [self.playbackModelBtn setTitle:@"顺序"];
     }else if ([tag isEqual:@(2)]){
-        NSLog(@"isCrossList_noti_单曲循环_%@",tag);
+        NSLog(@"playModelChanging_noti_单曲循环_%@",tag);
         [self.playbackModelBtn setTitle:@"单曲"];
-        self.isPlaybackModelSingleRepeat = YES;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = YES;
     }
 }
 -(void)playModelSwitchList:(NSNotification *)noti{
     NSNumber *tag = noti.object[@"isSwitchList"];
     if ([tag isEqual:@(0)]) {
-        NSLog(@"isSwitchList_noti_不允许跨列表_%@",tag);
-        self.isPlaybackModelSwitchList = NO;
+        NSLog(@"playModelSwitchListnoti_不允许跨列表_%@",tag);
+        self.musicStatusCtrl.isPlayModelSwitchList = NO;
     }else if ([tag isEqual:@(1)]){
-        NSLog(@"isSwitchList_noti_允许跨列表_%@",tag);
-        self.isPlaybackModelSwitchList = YES;
+        NSLog(@"playModelSwitchList_noti_允许跨列表_%@",tag);
+        self.musicStatusCtrl.isPlayModelSwitchList = YES;
     }
     
 }
 
-/** 随机播放 下一首音轨随机计算*/
--(void)randomNum{
-    //允许自动切换列表的时候才改变currentSection的值
-    if(self.isPlaybackModelSwitchList == YES){
-        u_int32_t sectionCount = (u_int32_t)self.treeModel.childNodes.count - 1;//减去播放历史的表
-        u_int32_t section = arc4random_uniform(sectionCount);
-        self.currentSection = section;
-    }
-    u_int32_t childsCount = (u_int32_t)[[self.treeModel.childNodes[self.currentSection] childNodes] count];
-    u_int32_t row = arc4random_uniform(childsCount);
-    self.currentRow = row;
-}
 
 /** 是否播放 */
 -(void)setIsPlaying:(BOOL)isPlaying{
     _isPlaying = isPlaying;
     if(isPlaying == YES){
         //播放
-        if (self.currentRow > [[self.treeModel.childNodes[self.currentSection] childNodes] count] || !self.currentRow) {
-            self.currentRow = 0;
+        if (self.musicStatusCtrl.currentRow > [[self.treeModel.childNodes[self.musicStatusCtrl.currentSection] childNodes] count] || !self.musicStatusCtrl.currentRow) {
+            self.musicStatusCtrl.currentRow = 0;
         }
         [self startPlaying];
     }else{
         //暂停
         if (self.isVCLPlayMode == YES) {
             [self.vlcPlayer pause];
-            if(self.player && self.player.isPlaying == true){
-                [self.player pause];
+            if(self.avPlayer && self.avPlayer.isPlaying == true){
+                [self.avPlayer pause];
             }
         }else{
-            [self.player pause];
+            [self.avPlayer pause];
             if(self.vlcPlayer && self.vlcPlayer.isPlaying == true){
                 [self.vlcPlayer pause];
             }
@@ -615,7 +618,7 @@
                 
             }else {
                 weakSelf.progressSlider.stringValue = [NSString stringWithFormat:@"%f",weakSelf.progressSlider.doubleValue + 1.0];
-                NSString *allTime = [weakSelf.dataObject durationToTime:weakSelf.player.duration];
+                NSString *allTime = [weakSelf.dataObject durationToTime:weakSelf.avPlayer.duration];
                 NSString *remaining = [weakSelf.dataObject durationToTime:weakSelf.progressSlider.doubleValue];
                 weakSelf.durationTF.stringValue = [NSString stringWithFormat:@"%@ / %@",remaining,allTime];
             }
@@ -836,17 +839,17 @@
         //列表第一层 播放
         if (
             //self.currentSection != self.lastSection ||
-            self.currentRow != childIndexForItem ||
+            self.musicStatusCtrl.currentRow != childIndexForItem ||
 //            (self.currentSection == self.lastSection && self.currentRow != childIndexForItem) ||
-            (self.currentRow == childIndexForItem && self.currentSection != self.lastSection)
+            (self.musicStatusCtrl.currentRow == childIndexForItem && self.musicStatusCtrl.currentSection != self.musicStatusCtrl.lastSection)
             ){
             //记录上一次播放的位置
-            self.lastSection = self.currentSection;
-            self.lastRow     = self.currentRow;
+            self.musicStatusCtrl.lastSection = self.musicStatusCtrl.currentSection;
+            self.musicStatusCtrl.lastRow     = self.musicStatusCtrl.currentRow;
             
             //更新播放位置
-            self.currentSection = model.sectionIndex;
-            self.currentRow = childIndexForItem;
+            self.musicStatusCtrl.currentSection = model.sectionIndex;
+            self.musicStatusCtrl.currentRow = childIndexForItem;
             self.isPlaying = YES;
             NSLog(@"点击row:%ld , section:%ld",childIndexForItem,model.sectionIndex);
         }else{
@@ -884,8 +887,8 @@
     NSInteger childIndexForItem = [self.audioListOutlineView childIndexForItem:model];
     if (model.nodeLevel == 1) {
         //列表第一层 播放
-        if(self.currentRow != childIndexForItem){
-            self.currentRow = childIndexForItem;
+        if(self.musicStatusCtrl.currentRow != childIndexForItem){
+            self.musicStatusCtrl.currentRow = childIndexForItem;
             self.isPlaying = YES;
         }else{
             NSLog(@"正在播放：%@",model.name);
@@ -960,7 +963,7 @@
     openDlg.allowsMultipleSelection = YES;//--“是否允许多选”
     openDlg.allowedFileTypes = @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac"];//---“允许的文件名后缀”
     openDlg.treatsFilePackagesAsDirectories = YES;
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [openDlg beginWithCompletionHandler: ^(NSInteger result){
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
@@ -973,7 +976,7 @@
 #pragma mark - 数据源
 -(void)initData{
 
-    self.currentRow = 0;
+    self.musicStatusCtrl.currentRow = 0;
     //获取缓存在本地的列表路径
     //1.重新查找
 //    NSMutableArray *arr =  [ZBAudioObject getPlayList];
@@ -1082,53 +1085,14 @@
 
 /** 切歌  isNext：是否是下一首歌*/
 - (void)changeAudio:(BOOL)isNext{
-    if (self.treeModel != nil && self.treeModel.childNodes.count > 0) {
-        //记录上一次播放的位置
-        self.lastSection = self.currentSection;
-        self.lastRow     = self.currentRow;
-        
-        if (self.isPlaybackModelSingleRepeat == YES) {
-            //单曲循环，不切换音频索引
-            [self startPlaying];
-        }else{
-            if (self.isPlaybackModelRandom == YES) {
-                //随机播放，并判断是否需要切换列表
-                [self randomNum];
-            }else{
-                //下一首歌
-                if(isNext == YES){
-                    if(self.isPlaybackModelSwitchList == YES){
-                        //循序播放，自动切换列表
-                        if (self.currentRow + 1 >= [[self.treeModel.childNodes[self.currentSection] childNodes] count]) {
-                            if (self.currentSection + 1 >= self.treeModel.childNodes.count) {
-                                self.currentSection = 0;
-                            }else{
-                                self.currentSection = self.currentSection + 1;
-                            }
-                            self.currentRow = 0;
-                        }else{
-                            self.currentRow = self.currentRow + 1;
-                        }
-                    }else{
-                        //循序播放，不切换列表
-                        if (self.currentRow + 1 >= [[self.treeModel.childNodes[self.currentSection] childNodes] count]) {
-                            self.currentRow = 0;
-                        }else{
-                            self.currentRow = self.currentRow + 1;
-                        }
-                    }
-                }else{
-                    //上一首(不支持切换列表，以后考虑支持记忆前面播放的一首歌)
-                    if (self.currentRow - 1 < 0) {
-                        self.currentRow = 0;
-                    }else{
-                        self.currentRow = self.currentRow - 1;
-                    }
-                }
-            }
-            [self startPlaying];
-        }
+    
+    BOOL isStart = [self.musicStatusCtrl changeAudio:isNext dataSource:self.treeModel];
+    if(isStart == YES){
+        [self startPlaying];
+    }else{
+        NSLog(@"没有歌曲，不播放");
     }
+    
 }
 
 #pragma mark 开始播放本地音乐
@@ -1151,12 +1115,12 @@
  */
 - (void)startPlaying{
     
-    if(_player){
-        _player = nil;
+    if(_avPlayer){
+        _avPlayer = nil;
     }
     if (self.treeModel != nil && self.treeModel.childNodes.count > 0) {
       
-        TreeNodeModel *model = (TreeNodeModel *)[self.treeModel.childNodes[self.currentSection] childNodes][self.currentRow];
+        TreeNodeModel *model = (TreeNodeModel *)[self.treeModel.childNodes[self.musicStatusCtrl.currentSection] childNodes][self.musicStatusCtrl.currentRow];
         ZBAudioModel *audio = [model audio];
         NSError *error =  nil;
         ZBAudioObject *abo = [[ZBAudioObject alloc]init];
@@ -1165,15 +1129,15 @@
             [self.vlcPlayer stop];
             
             //_player = [[AVAudioPlayer alloc] initWithData:self.audioData fileTypeHint:AVFileTypeMPEGLayer3 error:&error];
-            _player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:audio.path] error:&error];
-            _player.delegate = self;
-            [_player setVolume: [self.volumeString floatValue] / 100];
-            [_player prepareToPlay];
-            [_player play];
-            self.progressSlider.maxValue = _player.duration;
+            _avPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:audio.path] error:&error];
+            _avPlayer.delegate = self;
+            [_avPlayer setVolume: [self.volumeString floatValue] / 100];
+            [_avPlayer prepareToPlay];
+            [_avPlayer play];
+            self.progressSlider.maxValue = _avPlayer.duration;
         }else{
             self.isVCLPlayMode = true;
-            [self.player stop];
+            [self.avPlayer stop];
             
             if (!self.vlcPlayer) {
                 self.vlcPlayer = [[VLCMediaPlayer alloc]init];
@@ -1209,10 +1173,10 @@
 }
 -(void)reloadSectionStaus{
     //如果切换了列表，收起旧列表，展开当前歌曲所在列表
-    if(self.currentSection != self.lastSection){
+    if(self.musicStatusCtrl.currentSection != self.musicStatusCtrl.lastSection){
         for (int i = 0; i < self.treeModel.childNodes.count - 1; i++) {//减去随机
             TreeNodeModel *mo = self.treeModel.childNodes[i];
-            if (i == self.currentSection){
+            if (i == self.musicStatusCtrl.currentSection){
                 mo.isExpand = YES;
                 [self.audioListOutlineView expandItem:mo expandChildren:YES];
             } else{
@@ -1248,11 +1212,11 @@
 //            }
 //        }
 //    }
-    NSLog(@"currSec:%ld,lastSecc:%ld,currRowc:%ld,lastRowc:%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow);
+    NSLog(@"currSec:%ld,lastSecc:%ld,currRowc:%ld,lastRowc:%ld",self.musicStatusCtrl.currentSection,self.musicStatusCtrl.lastSection,self.musicStatusCtrl.currentRow,self.musicStatusCtrl.lastRow);
     //[self.audioListOutlineView reloadData];
     //页面滚动到当前row
-    [self.audioListOutlineView scrollRowToVisible:self.currentRow + self.currentSection + 5];
-    [self.audioListOutlineView deselectRow:self.currentRow + self.currentSection + 5];
+    [self.audioListOutlineView scrollRowToVisible:self.musicStatusCtrl.currentRow + self.musicStatusCtrl.currentSection + 5];
+    [self.audioListOutlineView deselectRow:self.musicStatusCtrl.currentRow + self.musicStatusCtrl.currentSection + 5];
 
 
 }
@@ -1277,112 +1241,17 @@
     //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didMiniaturize:) name:NSWindowDidMiniaturizeNotification object:nil];
     //    //窗口即将关闭
     //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(willClose:) name:NSWindowWillCloseNotification object:nil];
+    
+   
+    
 }
 
 #pragma mark - 歌词
 /**
- 分析歌名中的歌手
- @param audioName 歌名
- @return 歌手数组
- */
-- (NSArray *)singers:(NSString *)audioName{
-    
-    NSMutableArray *singles = [NSMutableArray array];
-    //前半段
-    NSArray *arr1 = [audioName componentsSeparatedByString:@" -"];
-    if(arr1.count == 1){
-        arr1 = [audioName componentsSeparatedByString:@"-"];
-    }
-    NSString *name = arr1.count > 1 ? arr1[0] : audioName;
-    [singles addObject:name];
-    
-    
-    //附加歌名
-    NSArray *arr2 = [audioName componentsSeparatedByString:@"- "];
-    NSString *title = arr2.count > 1 ? arr2[1] : audioName;
-    NSString *key = [title substringToIndex:title.length - 4];
-    key = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"." withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"：" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@":" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"、" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@")" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"）" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"]" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"】" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"(by" withString:@"&by"];
-
-
-    //冴えない彼女-2C112- DOUBLE RAINBOW DREAMS（by：澤村・スペンサー・英梨々&大西沙織&霞ヶ丘詩羽&茅野愛衣.mp3
-    NSInteger oldL = key.length;
-    key = [self keyword:key separatkey:@"&by" is0:NO];
-    key = [key localizedLowercaseString];
-    key = [key stringByReplacingOccurrencesOfString:@"cv" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"(" withString:@"&"];
-
-    if([key containsString:@"&"]){//多个歌手
-        NSArray *mults = [key componentsSeparatedByString:@"&"];
-        [singles addObjectsFromArray:mults];
-    }else if (oldL > key.length){
-        [singles addObject:key];
-    }
-    
-    //去除重复
-    NSArray *result = [singles valueForKeyPath:@"@distinctUnionOfObjects.self"];
-    NSMutableArray *lastArr = [NSMutableArray array];
-    for (int i = 0; i < result.count; i++) {
-        if(![result[i] isEqualToString:@""] || [result[i] length] > 0){
-            [lastArr addObject:result[i]];
-        }
-    }
-    return [lastArr mutableCopy];
-}
-/** 歌名处理 */
--(NSString *)keyword:(NSString *)keyword{
-    NSArray *arr1 = [keyword componentsSeparatedByString:@" -"];
-    if(arr1.count == 1){
-        arr1 = [keyword componentsSeparatedByString:@"-"];
-    }
-    NSArray *arr2 = [keyword componentsSeparatedByString:@"- "];
-    NSString *name = arr1.count > 1 ? arr1[0] : keyword;
-    NSString *title = arr2.count > 1 ? arr2[1] : keyword;
-    NSString *key = @"";
-    if (arr1.count < 2  || arr2.count < 2 ) {
-        key = keyword;
-    }else{
-        key = [NSString stringWithFormat:@"%@ - %@",name,title];
-    }
-    key = [key substringToIndex:key.length - 4];
-    NSString *point = [key substringFromIndex:key.length-1];
-    key = [point isEqualToString:@"."] ? [key substringToIndex:key.length - 1] : key;
-    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"("];
-    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"("];
-    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"("];
-    key = [self keyword:key separatkey:@"(by"  is0:YES];
-    return key;
-}
-
-/** 去除歌名后半段的 注释关键词，返回歌名 */
--(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0{
-    keyword = [keyword localizedLowercaseString];
-    if([keyword containsString:separatkey]){
-        if(is0 == YES){
-            return  [keyword componentsSeparatedByString:separatkey][0];
-        }else{
-            return  [keyword componentsSeparatedByString:separatkey][1];
-        }
-    }else{
-        return keyword;
-    }
-}
-/**
  查询歌曲，获取hash
  */
 - (void)kugouApiSearchMusic:(NSString *)keyword{
-    keyword = [self keyword:keyword];
+    keyword = [ZBAudioObject musicNameFromFilename:keyword];
     AFHTTPSessionManager *ma = [AFHTTPSessionManager manager];
     ma.requestSerializer = [AFJSONRequestSerializer serializer];
     ma.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -1390,7 +1259,7 @@
     NSString *url = [NSString stringWithFormat:@"http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword=%@&page=1&pagesize=20&showtype=1",keyword];
 
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1413,7 +1282,7 @@
 //    http://www.kugou.com/yy/index.php?r=play/getdata&hash=67f4b520ee80d68959f4bf8a213f6774
     NSString *url = [NSString stringWithFormat:@"http://www.kugou.com/yy/index.php?r=play/getdata&hash=%@",hash];
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1422,7 +1291,7 @@
             weakSelf.lrcTextView.string = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"lyrics"]];
         }else{
 
-            NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow];
+            NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.musicStatusCtrl.currentSection,self.musicStatusCtrl.lastSection,self.musicStatusCtrl.currentRow,self.musicStatusCtrl.lastRow];
             weakSelf.lrcTextView.string = [NSString stringWithFormat:@"歌词下载失败：err_code: %ld\n%@",[responseObject[@"err_code"] integerValue],d];
         }
         
@@ -1437,8 +1306,8 @@
  */
 - (void)QQApiSearchMusic:(NSString *)keyword{
     
-    NSArray *singers = [self singers:keyword];
-    keyword = [self keyword:keyword];
+    NSArray *singers = [ZBAudioObject singersFromFileName:keyword];
+    keyword = [ZBAudioObject musicNameFromFilename:keyword];
     
     AFHTTPSessionManager *ma = [AFHTTPSessionManager manager];
     ma.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -1447,7 +1316,7 @@
     NSString *url = [NSString stringWithFormat:@"https://api.bzqll.com/music/tencent/search?key=579621905&s=%@&limit=100&offset=0&type=lrc",keyword];
     
     url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
+    __weak ZBPlayer_2 * weakSelf = self;
     [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1505,7 +1374,7 @@
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
 //        NSLog(@"searchMusicFromKugouError：%@",error);
-        NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow];
+        NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.musicStatusCtrl.currentSection,self.musicStatusCtrl.lastSection,self.musicStatusCtrl.currentRow,self.musicStatusCtrl.lastRow];
         weakSelf.lrcTextView.string = [NSString stringWithFormat:@"歌词下载失败：err_code: %ld\n%@",error.code,d];
     }];
 }

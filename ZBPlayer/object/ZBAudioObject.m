@@ -3,7 +3,7 @@
 //  OSX
 //
 //  Created by Li28 on 2019/5/8.
-//  Copyright © 2019 李振彪. All rights reserved.
+//  Copyright © 2019 Li28. All rights reserved.
 //
 
 #import "ZBAudioObject.h"
@@ -360,5 +360,108 @@
     }
     return key;
 }
+
+
+#pragma mark - 歌曲信息处理
+/**
+ 分析歌名中的歌手
+ @param audioName 歌名
+ @return 歌手数组
+ */
++ (NSArray *)singersFromFileName:(NSString *)audioName{
+    
+    NSMutableArray *singles = [NSMutableArray array];
+    //前半段
+    NSArray *arr1 = [audioName componentsSeparatedByString:@" -"];
+    if(arr1.count == 1){
+        arr1 = [audioName componentsSeparatedByString:@"-"];
+    }
+    NSString *name = arr1.count > 1 ? arr1[0] : audioName;
+    [singles addObject:name];
+    
+    
+    //附加歌名
+    NSArray *arr2 = [audioName componentsSeparatedByString:@"- "];
+    NSString *title = arr2.count > 1 ? arr2[1] : audioName;
+    NSString *key = [title substringToIndex:title.length - 4];
+    key = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"." withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"：" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@":" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"、" withString:@"&"];
+    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"&"];
+    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"&"];
+    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"&"];
+    key = [key stringByReplacingOccurrencesOfString:@")" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"）" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"]" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"】" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"(by" withString:@"&by"];
+
+
+    //冴えない彼女-2C112- DOUBLE RAINBOW DREAMS（by：澤村・スペンサー・英梨々&大西沙織&霞ヶ丘詩羽&茅野愛衣.mp3
+    NSInteger oldL = key.length;
+    key = [self keyword:key separatkey:@"&by" is0:NO];
+    key = [key localizedLowercaseString];
+    key = [key stringByReplacingOccurrencesOfString:@"cv" withString:@""];
+    key = [key stringByReplacingOccurrencesOfString:@"(" withString:@"&"];
+
+    if([key containsString:@"&"]){//多个歌手
+        NSArray *mults = [key componentsSeparatedByString:@"&"];
+        [singles addObjectsFromArray:mults];
+    }else if (oldL > key.length){
+        [singles addObject:key];
+    }
+    
+    //去除重复
+    NSArray *result = [singles valueForKeyPath:@"@distinctUnionOfObjects.self"];
+    NSMutableArray *lastArr = [NSMutableArray array];
+    for (int i = 0; i < result.count; i++) {
+        if(![result[i] isEqualToString:@""] || [result[i] length] > 0){
+            [lastArr addObject:result[i]];
+        }
+    }
+    return [lastArr mutableCopy];
+}
+/** 歌名处理 */
++(NSString *)musicNameFromFilename:(NSString *)filename{
+    NSArray *arr1 = [filename componentsSeparatedByString:@" -"];
+    if(arr1.count == 1){
+        arr1 = [filename componentsSeparatedByString:@"-"];
+    }
+    NSArray *arr2 = [filename componentsSeparatedByString:@"- "];
+    NSString *name = arr1.count > 1 ? arr1[0] : filename;
+    NSString *title = arr2.count > 1 ? arr2[1] : filename;
+    NSString *key = @"";
+    if (arr1.count < 2  || arr2.count < 2 ) {
+        key = filename;
+    }else{
+        key = [NSString stringWithFormat:@"%@ - %@",name,title];
+    }
+    key = [key substringToIndex:key.length - 4];
+    NSString *point = [key substringFromIndex:key.length-1];
+    key = [point isEqualToString:@"."] ? [key substringToIndex:key.length - 1] : key;
+    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"("];
+    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"("];
+    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"("];
+//    __weak __typeof(self) weakSelf = self;
+    key = [self keyword:key separatkey:@"(by"  is0:YES];
+    return key;
+}
+
+/** 去除歌名后半段的 注释关键词，返回歌名 */
++(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0{
+    keyword = [keyword localizedLowercaseString];
+    if([keyword containsString:separatkey]){
+        if(is0 == YES){
+            return  [keyword componentsSeparatedByString:separatkey][0];
+        }else{
+            return  [keyword componentsSeparatedByString:separatkey][1];
+        }
+    }else{
+        return keyword;
+    }
+}
+
 
 @end
