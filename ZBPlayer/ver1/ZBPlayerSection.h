@@ -3,7 +3,7 @@
 //  OSX
 //
 //  Created by Li28 on 2019/4/7.
-//  Copyright © 2019 李振彪. All rights reserved.
+//  Copyright © 2019 Li28. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>

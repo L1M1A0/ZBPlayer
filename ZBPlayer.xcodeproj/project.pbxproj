@@ -10,10 +10,7 @@
 		0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0521C2DF22D87F5900C7201E /* KRCOperate.m */; };
 		0521C2E422D87F5900C7201E /* jay.krc in Resources */ = {isa = PBXBuildFile; fileRef = 0521C2E022D87F5900C7201E /* jay.krc */; };
 		0521C2E522D87F5900C7201E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0521C2E122D87F5900C7201E /* README.md */; };
-		05226358228F105D00928050 /* ZBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 05226356228F105D00928050 /* ZBPlayer.m */; };
 		05284DD52299AC8A0002DF99 /* ZBAudioOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05284DD42299AC8A0002DF99 /* ZBAudioOutlineView.m */; };
-		05914D86228F8ECD005FCDAF /* ZBPlayerWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */; };
-		05914D87228F8ECD005FCDAF /* ZBPlayerWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */; };
 		05C7164A228EDE180054DF0F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C71649228EDE180054DF0F /* AppDelegate.m */; };
 		05C7164C228EDE1F0054DF0F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C7164B228EDE1F0054DF0F /* Assets.xcassets */; };
 		05C7164F228EDE1F0054DF0F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 05C7164D228EDE1F0054DF0F /* MainMenu.xib */; };
@@ -23,18 +20,22 @@
 		05C716C4228EE0EC0054DF0F /* ZBAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C3228EE0EB0054DF0F /* ZBAudioModel.m */; };
 		05C716C9228EE0F50054DF0F /* ZBAudioObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C6228EE0F50054DF0F /* ZBAudioObject.m */; };
 		05C716CA228EE0F50054DF0F /* ZBDataObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716C8228EE0F50054DF0F /* ZBDataObject.m */; };
-		05C716D7228EE11C0054DF0F /* ZBPlayerSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */; };
 		05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */; };
 		05C716D9228EE11C0054DF0F /* ZBPlayerSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */; };
 		05C716DB228EE11C0054DF0F /* ZBSliderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D2228EE11C0054DF0F /* ZBSliderViewController.m */; };
-		05C716DC228EE11C0054DF0F /* ZBPlayerRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */; };
 		05C716DF228EE13C0054DF0F /* ZBMacOSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */; };
 		05C716E2228EE14E0054DF0F /* TreeNodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716E0228EE14E0054DF0F /* TreeNodeModel.m */; };
 		05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C716E5228EE2B20054DF0F /* ZBTextFieldCell.m */; };
 		05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */; };
 		05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 05E5077D22964EFE008794F3 /* 开发备忘.rtf */; };
 		28C9590A9B6B1A53A635930E /* Pods_ZBPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */; };
-		2CCA9A842CA863A400262FB1 /* ZBPlayer_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */; };
+		2CC1F8902CA9852200403D97 /* ZBMusicStatusControllerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */; };
+		2CC8FB162CA93D590032FF28 /* ZBPlayerWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */; };
+		2CC8FB172CA93D590032FF28 /* ZBPlayerWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */; };
+		2CC8FB182CA93D590032FF28 /* ZBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0E2CA93D580032FF28 /* ZBPlayer.m */; };
+		2CC8FB192CA93D590032FF28 /* ZBPlayerSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0F2CA93D580032FF28 /* ZBPlayerSection.m */; };
+		2CC8FB1A2CA93D590032FF28 /* ZBPlayerRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB102CA93D580032FF28 /* ZBPlayerRow.m */; };
+		2CC8FB1B2CA93D590032FF28 /* ZBPlayer_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB152CA93D580032FF28 /* ZBPlayer_2.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,13 +56,8 @@
 		0521C2E022D87F5900C7201E /* jay.krc */ = {isa = PBXFileReference; lastKnownFileType = file; path = jay.krc; sourceTree = "<group>"; };
 		0521C2E122D87F5900C7201E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0521C2E222D87F5900C7201E /* KRCOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KRCOperate.h; sourceTree = "<group>"; };
-		05226356228F105D00928050 /* ZBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer.m; sourceTree = "<group>"; };
-		05226357228F105D00928050 /* ZBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer.h; sourceTree = "<group>"; };
 		05284DD32299AC8A0002DF99 /* ZBAudioOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBAudioOutlineView.h; sourceTree = "<group>"; };
 		05284DD42299AC8A0002DF99 /* ZBAudioOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBAudioOutlineView.m; sourceTree = "<group>"; };
-		05914D83228F8ECD005FCDAF /* ZBPlayerWC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBPlayerWC.h; sourceTree = "<group>"; };
-		05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerWC.m; sourceTree = "<group>"; };
-		05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ZBPlayerWC.xib; sourceTree = "<group>"; };
 		05914D88228FA7D4005FCDAF /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		05C71645228EDE180054DF0F /* ZBPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZBPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05C71648228EDE180054DF0F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -81,15 +77,11 @@
 		05C716C6228EE0F50054DF0F /* ZBAudioObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBAudioObject.m; sourceTree = "<group>"; };
 		05C716C7228EE0F50054DF0F /* ZBDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBDataObject.h; sourceTree = "<group>"; };
 		05C716C8228EE0F50054DF0F /* ZBDataObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBDataObject.m; sourceTree = "<group>"; };
-		05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerSection.m; sourceTree = "<group>"; };
 		05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlaybackModelViewController.m; sourceTree = "<group>"; };
 		05C716CD228EE11C0054DF0F /* ZBPlayerSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerSplitView.h; sourceTree = "<group>"; };
-		05C716CE228EE11C0054DF0F /* ZBPlayerRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerRow.h; sourceTree = "<group>"; };
-		05C716CF228EE11C0054DF0F /* ZBPlayerSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerSection.h; sourceTree = "<group>"; };
 		05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerSplitView.m; sourceTree = "<group>"; };
 		05C716D2228EE11C0054DF0F /* ZBSliderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBSliderViewController.m; sourceTree = "<group>"; };
 		05C716D3228EE11C0054DF0F /* ZBPlaybackModelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlaybackModelViewController.h; sourceTree = "<group>"; };
-		05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerRow.m; sourceTree = "<group>"; };
 		05C716D6228EE11C0054DF0F /* ZBSliderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBSliderViewController.h; sourceTree = "<group>"; };
 		05C716DD228EE13C0054DF0F /* ZBMacOSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBMacOSObject.h; sourceTree = "<group>"; };
 		05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBMacOSObject.m; sourceTree = "<group>"; };
@@ -117,8 +109,19 @@
 		05E5077B22964180008794F3 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		05E5077D22964EFE008794F3 /* 开发备忘.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "开发备忘.rtf"; sourceTree = "<group>"; };
 		12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.release.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.release.xcconfig"; sourceTree = "<group>"; };
-		2CCA9A822CA863A400262FB1 /* ZBPlayer_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer_2.h; sourceTree = "<group>"; };
-		2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer_2.m; sourceTree = "<group>"; };
+		2CC1F88E2CA9852200403D97 /* ZBMusicStatusControllerObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBMusicStatusControllerObject.h; sourceTree = "<group>"; };
+		2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBMusicStatusControllerObject.m; sourceTree = "<group>"; };
+		2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ZBPlayerWC.xib; sourceTree = "<group>"; };
+		2CC8FB0A2CA93D580032FF28 /* ZBPlayerWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerWC.h; sourceTree = "<group>"; };
+		2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerWC.m; sourceTree = "<group>"; };
+		2CC8FB0D2CA93D580032FF28 /* ZBPlayerRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerRow.h; sourceTree = "<group>"; };
+		2CC8FB0E2CA93D580032FF28 /* ZBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer.m; sourceTree = "<group>"; };
+		2CC8FB0F2CA93D580032FF28 /* ZBPlayerSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerSection.m; sourceTree = "<group>"; };
+		2CC8FB102CA93D580032FF28 /* ZBPlayerRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerRow.m; sourceTree = "<group>"; };
+		2CC8FB112CA93D580032FF28 /* ZBPlayerSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerSection.h; sourceTree = "<group>"; };
+		2CC8FB122CA93D580032FF28 /* ZBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer.h; sourceTree = "<group>"; };
+		2CC8FB142CA93D580032FF28 /* ZBPlayer_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayer_2.h; sourceTree = "<group>"; };
+		2CC8FB152CA93D580032FF28 /* ZBPlayer_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayer_2.m; sourceTree = "<group>"; };
 		54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZBPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF912D09C7A30A32918DE74 /* Pods-ZBPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.debug.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -179,6 +182,9 @@
 				05C716C1228EE0BE0054DF0F /* model */,
 				05C716C0228EE0B30054DF0F /* object */,
 				05C716E3228EE2430054DF0F /* view */,
+				2CC8FB082CA93D580032FF28 /* ver0 */,
+				2CC8FB0C2CA93D580032FF28 /* ver1 */,
+				2CC8FB132CA93D580032FF28 /* ver2 */,
 				05C716BE228EE0160054DF0F /* windows */,
 				05C71648228EDE180054DF0F /* AppDelegate.h */,
 				05C71649228EDE180054DF0F /* AppDelegate.m */,
@@ -225,13 +231,6 @@
 		05C716BE228EE0160054DF0F /* windows */ = {
 			isa = PBXGroup;
 			children = (
-				05226357228F105D00928050 /* ZBPlayer.h */,
-				05226356228F105D00928050 /* ZBPlayer.m */,
-				2CCA9A822CA863A400262FB1 /* ZBPlayer_2.h */,
-				2CCA9A832CA863A400262FB1 /* ZBPlayer_2.m */,
-				05914D83228F8ECD005FCDAF /* ZBPlayerWC.h */,
-				05914D84228F8ECD005FCDAF /* ZBPlayerWC.m */,
-				05914D85228F8ECD005FCDAF /* ZBPlayerWC.xib */,
 				05C716D3228EE11C0054DF0F /* ZBPlaybackModelViewController.h */,
 				05C716CC228EE11C0054DF0F /* ZBPlaybackModelViewController.m */,
 				05C716D6228EE11C0054DF0F /* ZBSliderViewController.h */,
@@ -251,6 +250,8 @@
 				05C716C8228EE0F50054DF0F /* ZBDataObject.m */,
 				05D4D54B2298DB8800BAB177 /* ZBLyricObject.h */,
 				05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */,
+				2CC1F88E2CA9852200403D97 /* ZBMusicStatusControllerObject.h */,
+				2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */,
 			);
 			path = object;
 			sourceTree = "<group>";
@@ -271,10 +272,6 @@
 			children = (
 				05C716E4228EE2B20054DF0F /* ZBTextFieldCell.h */,
 				05C716E5228EE2B20054DF0F /* ZBTextFieldCell.m */,
-				05C716CE228EE11C0054DF0F /* ZBPlayerRow.h */,
-				05C716D4228EE11C0054DF0F /* ZBPlayerRow.m */,
-				05C716CF228EE11C0054DF0F /* ZBPlayerSection.h */,
-				05C716CB228EE11C0054DF0F /* ZBPlayerSection.m */,
 				05C716CD228EE11C0054DF0F /* ZBPlayerSplitView.h */,
 				05C716D0228EE11C0054DF0F /* ZBPlayerSplitView.m */,
 				05284DD32299AC8A0002DF99 /* ZBAudioOutlineView.h */,
@@ -290,6 +287,38 @@
 				12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		2CC8FB082CA93D580032FF28 /* ver0 */ = {
+			isa = PBXGroup;
+			children = (
+				2CC8FB0A2CA93D580032FF28 /* ZBPlayerWC.h */,
+				2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */,
+				2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */,
+			);
+			path = ver0;
+			sourceTree = "<group>";
+		};
+		2CC8FB0C2CA93D580032FF28 /* ver1 */ = {
+			isa = PBXGroup;
+			children = (
+				2CC8FB122CA93D580032FF28 /* ZBPlayer.h */,
+				2CC8FB0E2CA93D580032FF28 /* ZBPlayer.m */,
+				2CC8FB0D2CA93D580032FF28 /* ZBPlayerRow.h */,
+				2CC8FB102CA93D580032FF28 /* ZBPlayerRow.m */,
+				2CC8FB112CA93D580032FF28 /* ZBPlayerSection.h */,
+				2CC8FB0F2CA93D580032FF28 /* ZBPlayerSection.m */,
+			);
+			path = ver1;
+			sourceTree = "<group>";
+		};
+		2CC8FB132CA93D580032FF28 /* ver2 */ = {
+			isa = PBXGroup;
+			children = (
+				2CC8FB142CA93D580032FF28 /* ZBPlayer_2.h */,
+				2CC8FB152CA93D580032FF28 /* ZBPlayer_2.m */,
+			);
+			path = ver2;
 			sourceTree = "<group>";
 		};
 		E986AA6FCFF5DC0CFC079B13 /* Frameworks */ = {
@@ -382,7 +411,7 @@
 			files = (
 				05C7164C228EDE1F0054DF0F /* Assets.xcassets in Resources */,
 				05C7164F228EDE1F0054DF0F /* MainMenu.xib in Resources */,
-				05914D87228F8ECD005FCDAF /* ZBPlayerWC.xib in Resources */,
+				2CC8FB162CA93D590032FF28 /* ZBPlayerWC.xib in Resources */,
 				0521C2E522D87F5900C7201E /* README.md in Resources */,
 				0521C2E422D87F5900C7201E /* jay.krc in Resources */,
 				05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */,
@@ -438,25 +467,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CC8FB192CA93D590032FF28 /* ZBPlayerSection.m in Sources */,
+				2CC8FB1A2CA93D590032FF28 /* ZBPlayerRow.m in Sources */,
 				05C716DF228EE13C0054DF0F /* ZBMacOSObject.m in Sources */,
 				05C716D9228EE11C0054DF0F /* ZBPlayerSplitView.m in Sources */,
 				05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */,
 				05284DD52299AC8A0002DF99 /* ZBAudioOutlineView.m in Sources */,
+				2CC8FB1B2CA93D590032FF28 /* ZBPlayer_2.m in Sources */,
+				2CC8FB182CA93D590032FF28 /* ZBPlayer.m in Sources */,
 				05C7165D228EDE760054DF0F /* FHFileManager.m in Sources */,
 				05C716C4228EE0EC0054DF0F /* ZBAudioModel.m in Sources */,
-				2CCA9A842CA863A400262FB1 /* ZBPlayer_2.m in Sources */,
+				2CC1F8902CA9852200403D97 /* ZBMusicStatusControllerObject.m in Sources */,
 				0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */,
 				05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */,
 				05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */,
-				05226358228F105D00928050 /* ZBPlayer.m in Sources */,
 				05C71652228EDE1F0054DF0F /* main.m in Sources */,
 				05C716E2228EE14E0054DF0F /* TreeNodeModel.m in Sources */,
 				05C716CA228EE0F50054DF0F /* ZBDataObject.m in Sources */,
+				2CC8FB172CA93D590032FF28 /* ZBPlayerWC.m in Sources */,
 				05C716DB228EE11C0054DF0F /* ZBSliderViewController.m in Sources */,
-				05914D86228F8ECD005FCDAF /* ZBPlayerWC.m in Sources */,
-				05C716D7228EE11C0054DF0F /* ZBPlayerSection.m in Sources */,
 				05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */,
-				05C716DC228EE11C0054DF0F /* ZBPlayerRow.m in Sources */,
 				05C7164A228EDE180054DF0F /* AppDelegate.m in Sources */,
 				05C716C9228EE0F50054DF0F /* ZBAudioObject.m in Sources */,
 			);

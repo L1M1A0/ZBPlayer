@@ -1,17 +1,16 @@
 //
-//  ZBPlayer.h
+//  ZBPlayer_2.h
 //  OSX
 //
 //  Created by Li28 on 2019/4/7.
-//  Copyright © 2019 李振彪. All rights reserved.
+//  Copyright © 2019 Li28. All rights reserved.
 //
-//*******播放器 版本1*********
 
 #import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ZBPlayer : NSWindow
+@interface ZBPlayer_2 : NSWindow
 
 
 -(void)initWindow;

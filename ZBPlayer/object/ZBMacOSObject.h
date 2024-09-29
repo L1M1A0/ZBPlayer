@@ -2,8 +2,8 @@
 //  ZBMacOSObject.h
 //  OSX
 //
-//  Created by 李振彪 on 2017/5/25.
-//  Copyright © 2017年 李振彪. All rights reserved.
+//  Created by Li28 on 2017/5/25.
+//  Copyright © 2017年 Li28. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
