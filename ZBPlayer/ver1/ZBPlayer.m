@@ -303,7 +303,7 @@
 //        [_audioListOutlineView setUsesAlternatingRowBackgroundColors:NO];
         
      
-        _audioListOutlineView.tableViewDelegate = self;
+//        _audioListOutlineView.tableViewDelegate = self;
 //        [_audioListOutlineView makeViewWithIdentifier:NSOutlineViewDisclosureButtonKey owner:self];
 //        _audioListOutlineView.allowsMultipleSelection = NO;
         _audioListOutlineView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];

@@ -828,7 +828,7 @@
     //openDlg.URL = @"";////“保存用户选择的文件/文件夹路径path”
     __weak ZBPlayerWC * weakSelf = self;
     [openDlg beginWithCompletionHandler: ^(NSInteger result){
-        if(result==NSFileHandlingPanelOKButton){
+        if(result==NSFileHandlingPanelOKButton || result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
             [weakSelf localFiles:[NSMutableArray arrayWithArray:fileURLs]];
