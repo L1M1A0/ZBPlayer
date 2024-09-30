@@ -188,45 +188,49 @@
     for (int i = 0; i < list.count; i++) {
         NSDictionary *mainDic = list[i];
         TreeNodeModel *mainNode = [[TreeNodeModel alloc]init];
-
-        NSMutableArray *childNodes = [NSMutableArray array];
-        for (int j = 0; j < [mainDic[@"childNodes"] count]; j++) {
+        // 如果选中的列表中包含歌曲，则加入播放列表，没有歌曲，就不加入列表。
+//        if([mainDic[@"childNodes"] count] > 0){
+            NSMutableArray *childNodes = [NSMutableArray array];
+            for (int j = 0; j < [mainDic[@"childNodes"] count]; j++) {
             
-            NSDictionary *childDic = mainDic[@"childNodes"][j];
-            TreeNodeModel *childNode = [[TreeNodeModel alloc]init];
+                NSDictionary *childDic = mainDic[@"childNodes"][j];
+                TreeNodeModel *childNode = [[TreeNodeModel alloc]init];
 
-            ZBAudioModel *childAudio = [[ZBAudioModel alloc]init];
-            childAudio.title = childDic[@"audio"][@"title"];
-            childAudio.path = childDic[@"audio"][@"path"];
-            childAudio.extension = childDic[@"audio"][@"extension"];
+                ZBAudioModel *childAudio = [[ZBAudioModel alloc]init];
+                childAudio.title = childDic[@"audio"][@"title"];
+                childAudio.path = childDic[@"audio"][@"path"];
+                childAudio.extension = childDic[@"audio"][@"extension"];
 
-            childNode.audio = childAudio;;
-            childNode.name = childDic[@"name"];
-            childNode.childNodes = childDic[@"childNodes"];//
-            childNode.isExpand = [childDic[@"isExpand"] boolValue];
-            childNode.nodeLevel = [childDic[@"nodeLevel"] integerValue];//当前层级
-            childNode.superLevel = [childDic[@"superLevel"] integerValue];//父层级
-            childNode.sectionIndex = [childDic[@"sectionIndex"] integerValue];
-            childNode.rowIndex = [childDic[@"rowIndex"] integerValue];
+                childNode.audio = childAudio;;
+                childNode.name = childDic[@"name"];
+                childNode.childNodes = childDic[@"childNodes"];//
+                childNode.isExpand = [childDic[@"isExpand"] boolValue];
+                childNode.nodeLevel = [childDic[@"nodeLevel"] integerValue];//当前层级
+                childNode.superLevel = [childDic[@"superLevel"] integerValue];//父层级
+                childNode.sectionIndex = [childDic[@"sectionIndex"] integerValue];
+                childNode.rowIndex = [childDic[@"rowIndex"] integerValue];
 
-            [childNodes addObject:childNode];
-          }
-        
-        ZBAudioModel *mainAudio = [[ZBAudioModel alloc]init];
-        mainAudio.title = mainDic[@"audio"][@"title"];
-        mainAudio.path = mainDic[@"audio"][@"path"];
-        mainAudio.extension = mainDic[@"audio"][@"extension"];
-        
-        mainNode.audio = mainAudio;;
-        mainNode.name = mainDic[@"name"];
-        mainNode.childNodes = childNodes;//
-        mainNode.isExpand = [mainDic[@"isExpand"] boolValue];
-        mainNode.nodeLevel = [mainDic[@"nodeLevel"] integerValue];//当前层级
-        mainNode.superLevel = [mainDic[@"superLevel"] integerValue];//父层级
-        mainNode.sectionIndex = [mainDic[@"sectionIndex"] integerValue];
-        mainNode.rowIndex = [mainDic[@"rowIndex"] integerValue];
+                [childNodes addObject:childNode];
+            }
+            
+            ZBAudioModel *mainAudio = [[ZBAudioModel alloc]init];
+            mainAudio.title = mainDic[@"audio"][@"title"];
+            mainAudio.path = mainDic[@"audio"][@"path"];
+            mainAudio.extension = mainDic[@"audio"][@"extension"];
+                     
+            mainNode.audio = mainAudio;;
+            mainNode.name = mainDic[@"name"];
+            mainNode.childNodes = childNodes;//
+            mainNode.isExpand = [mainDic[@"isExpand"] boolValue];
+            mainNode.nodeLevel = [mainDic[@"nodeLevel"] integerValue];//当前层级
+            mainNode.superLevel = [mainDic[@"superLevel"] integerValue];//父层级
+            mainNode.sectionIndex = [mainDic[@"sectionIndex"] integerValue];
+            mainNode.rowIndex = [mainDic[@"rowIndex"] integerValue];
 
-        [mainList addObject:mainNode];
+            [mainList addObject:mainNode];
+                 
+//        }
+    
 
     }
     
@@ -260,17 +264,19 @@
             [childs addObject:childDic];
             
         }
-        
+
         NSDictionary *audio = @{@"title":@"",@"path":@"",@"extension":@""};;
         if (mainNode.audio) {
             audio = @{@"title":mainNode.audio.title,@"path":mainNode.audio.path == nil ? @"" : mainNode.audio.path,@"extension":mainNode.audio.extension};
         }
-        NSDictionary *dic = @{@"audio":audio,@"name":mainNode.name,
-                              @"isExpand":@(mainNode.isExpand),@"nodeLevel":@(mainNode.nodeLevel),
-                              @"superLevel":@(mainNode.superLevel),@"sectionIndex":@(mainNode.sectionIndex),
-                              @"rowIndex":@(mainNode.rowIndex),@"childNodes":childs};
-        
+            NSDictionary *dic = @{@"audio":audio,@"name":mainNode.name,
+                                  @"isExpand":@(mainNode.isExpand),@"nodeLevel":@(mainNode.nodeLevel),
+                                  @"superLevel":@(mainNode.superLevel),@"sectionIndex":@(mainNode.sectionIndex),
+                                  @"rowIndex":@(mainNode.rowIndex),@"childNodes":childs};
+            
         [mainList addObject:dic];
+      
+
         
     }
 

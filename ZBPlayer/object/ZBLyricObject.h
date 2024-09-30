@@ -12,6 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZBLyricObject : NSObject
 
+/**
+ 查询歌曲，获取hash
+ */
+- (void)kugouApiSearchMusic:(NSString *)keyword;
+- (void)kugouApiSearchKrc:(NSString *)hash;
+/**
+ 查询歌曲，获取hash
+ */
+- (void)QQApiSearchMusic:(NSString *)keyword;
 @end
 
 NS_ASSUME_NONNULL_END

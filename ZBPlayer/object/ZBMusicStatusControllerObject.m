@@ -109,6 +109,13 @@
                   
                 }
             }
+            //如果当前准备播放的列表歌曲为0
+            if([[treeModel.childNodes[self.currentSection] childNodes] count] == 0){
+                //跳到下一张表，直到有一张表是有歌曲的，如果所有歌曲列表都没有歌曲，那么就暂停播放。
+                
+            }
+            
+            
 //            [self startPlaying];
             return YES;
         }

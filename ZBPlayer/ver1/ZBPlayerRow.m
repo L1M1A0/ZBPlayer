@@ -108,7 +108,7 @@
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.imageView.mas_right).offset(topGap);
 //        make.width.mas_equalTo(@310);//设置宽，同时设置setLineBreakMode支持换行
-        make.right.equalTo(self.mas_right).offset(-35);
+        make.right.equalTo(self.mas_right).offset(-35-topGap);
         make.centerY.equalTo(self.imageView.mas_centerY);//对齐前面的控件，垂直居中（不用设置高度,自动计算高度）
     }];
 
@@ -126,7 +126,7 @@
     [self addSubview:self.moreBtn];
     [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.left.equalTo(self.textField.mas_right).offset(topGap);
-        make.right.equalTo(self.mas_right).offset(-topGap);
+        make.right.equalTo(self.mas_right).offset(-topGap*2);
         make.width.mas_equalTo(@25);
         make.centerY.equalTo(self.textField.mas_centerY);
     }];
