@@ -1012,7 +1012,7 @@
  @param fileURLs <#fileURLs description#>
  */
 -(void)localFiles:(NSMutableArray *)fileURLs{
-    [ZBAudioObject savePlayList:fileURLs];
+    [ZBAudioObject saveFolderPathList:fileURLs];
     NSMutableArray *baseUrls = [NSMutableArray array];
     NSMutableArray *sectionTitles = [NSMutableArray array];
     for(NSURL *url in fileURLs) {
@@ -1034,7 +1034,7 @@
         //dispatch_async(que, ^{
         //更新列表
         ZBAudioObject *ado = [[ZBAudioObject alloc]init];
-        [ado audioInPath:baseUrls[i]];
+        [ado blockSearchInPath:baseUrls[i]];
         [localMusics[i] addObjectsFromArray:ado.audios];
         //});
     }
@@ -1203,7 +1203,7 @@
         //歌词
         //[self kugouApiSearchMusic:audio.title];
 //        [self QQApiSearchMusic:audio.title];
-        NSDictionary *id3 = [ZBAudioObject getID3:audio.path];
+        NSDictionary *id3 = [ZBAudioObject getAudioFileID3:audio.path];
         NSLog(@"即将播放：%@，error__%@,ID3_%@",audio.title,error,id3);
     }
 }

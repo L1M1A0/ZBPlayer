@@ -15,6 +15,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class TreeNodeModel;
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ZBAudioObject : NSObject
@@ -26,25 +29,31 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSMutableArray *audios;
 
 
-/**
- 通过路径 获取本地音频文件（实现获取子文件中的文件）
 
- @param filePath 本地基础路径
- */
--(void)audioInPath:(NSString *)filePath;
-
+#pragma mark - 歌曲信息处理
 /**
- 根据文件基础路径，遍历该路径下的文件
- 
- @param basePath 基础路径
- @param folder  子文件夹名字，可以是空字符串：@"",
- @param block  isFolder：是否是文件夹。basePath：当前基础路径。folder：子文件夹名字
+ 分析歌名中的歌手
+ @param audioName 歌名
+ @return 歌手数组
  */
--(void)enumerateAudio:(NSString *)basePath folder:(NSString *)folder block:(void(^)(BOOL isFolder,NSString *basePath,NSString *folder))block;
++(NSArray *)singersFromFileName:(NSString *)audioName;
+/** 歌名处理 */
++(NSString *)musicNameFromFilename:(NSString *)filename;
+/** 去除歌名后半段的 注释关键词，返回歌名 */
++(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0;
+
+#pragma mark 获取音频文件的元数据 ID3
+/**
+ 获取音频文件的元数据 ID3
+ */
++(NSDictionary *)getAudioFileID3:(NSString *)filePath;
++(NSString *)checkNil:(NSString *)key;
+
+#pragma mark 判断是不是音频文件
 
 /**
  根据扩展名，判断是不是音频文件
-
+ 
  @param extension 扩展名
  @return YES:音频文件
  */
@@ -52,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  是否是AVAudioPlayer支持的格式
- 
+
  @param extension 格式
  @return YES：AVAudioPlayer支持的格式
  */
@@ -60,44 +69,66 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+#pragma mark - 读取文件夹、获取本地文件列表
 /**
- 获取本地列表 在初始化播放列表之后，保存列表路径到本地，用于初始化程序的时候可以初始化列表
+ 传入路径数组（文件夹数组），分别读取本地路径下的文件
 
+ @param paths 传入路径数组（文件夹数组），分别读取本地路径下的文件
+ */
++(TreeNodeModel *)searchFilesInFolderPaths:(NSMutableArray *)paths;
+
+/**
+ 通过路径 获取本地音频文件（实现获取子文件中的文件）
+ 第1步：创建block回调方法
+ 
+ 注：这个方法不太好（应该有系统替代的方法，要去了解文件系统管理相关的API）
+ 
+ @param filePath 本地基础路径
+ */
+-(void)blockSearchInPath:(NSString *)filePath;
+
+/**
+ 通过路径 获取本地音频文件（实现获取子文件中的文件）
+ 第2步：根据文件基础路径，遍历该路径下的文件，真正的遍历查询方法
+ 
+ 注：（应该有系统替代的方法，要去了解文件系统管理相关的API）
+ 
+ @param basePath 基础路径
+ @param folder  子文件夹名字，可以是空字符串：@"",
+ @param block  isFolder：是否是文件夹。basePath：当前基础路径。folder：子文件夹名字
+ */
+-(void)enumerateAudio:(NSString *)basePath folder:(NSString *)folder block:(void (^)(BOOL, NSString * _Nonnull, NSString * _Nonnull))block;
+
+/// 设置TreeNodeModel的节点信息
+/// @param text 节点名字
+/// @param level 当前节点的层级
+/// @param superLevel 父级节点的层级
++(TreeNodeModel *)node:(NSString *)text level:(NSInteger)level superLevel:(NSInteger)superLevel;
+
+
+#pragma mark - 数据本地化
+
+/**
+ 获取本地文件夹路径列表 在初始化播放列表之后，保存列表路径到本地，用于初始化程序的时候可以初始化列表
+ 
  @return 播放列表
  */
-+ (NSMutableArray *)getPlayList;
-
++ (NSMutableArray *)getFolderPathList;
 /**
- 保存播放列表到本地
+ 保存被选中的文件夹的路径列表到本地
  */
-+ (void)savePlayList:(NSMutableArray *)list;
-
-#pragma mark 获取音频文件的元数据 ID3
-/**
- 获取音频文件的元数据 ID3
- */
-+(NSDictionary *)getID3:(NSString *)filePath;
-
-
-+ (NSMutableArray *)getMusicList;
++ (void)saveFolderPathList:(NSMutableArray *)folderPathList;
 
 /**
  保存播放列表到本地
  */
 + (void)saveMusicList:(NSMutableArray *)list;
 
-
-#pragma mark - 歌曲信息处理
 /**
- 传入歌曲的文件名字，分析歌名中包含的歌手（可能是多个）
- @param audioName 歌名
- @return 歌手数组
+ 读取上一次保存在本地的歌曲列表
  */
-+ (NSArray *)singersFromFileName:(NSString *)audioName;
-/** 传入文件名，歌名处理，去除多于信息，保留干净的歌曲信息，格式：歌手 - 歌名 */
-+(NSString *)musicNameFromFilename:(NSString *)filename;
-/** 根据关键词，拆分字符串 */
-+(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0;
++ (NSMutableArray *)getMusicList;
+
 @end
 
 NS_ASSUME_NONNULL_END
