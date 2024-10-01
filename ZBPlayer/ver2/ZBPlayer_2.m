@@ -28,6 +28,8 @@
 #import "ZBAudioModel.h"
 #import "ZBAudioObject.h"
 #import "ZBPlayerSplitView.h"
+#import "ZBScrollOutlineView.h"
+#import "ZBScrollTableView.h"
 #import "ZBSliderViewController.h"
 #import "ZBPlaybackModelViewController.h"
 //#import <objc/runtime.h>
@@ -42,7 +44,7 @@
  * 列表、表格组件：NSTableView
  * 大纲视图、目录结构组件：NSOutlineView，继承自NSTableView。outline：中文意思是：大纲、纲要的意思，常用于表示目录结构图，有子级目录索引展示，可以收起和展开。
  */
-@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
+@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate,NSTableViewDataSource>
 {
     
 }
@@ -92,8 +94,9 @@
 /** 歌曲列表大纲、目录层级页面
  outline：中文意思是：大纲、纲要的意思，常用于表示目录结构图，有子级目录索引展示，可以收起和展开。
  */
-@property (nonatomic, strong) ZBAudioOutlineView *audioListOutlineView;
-
+@property (nonatomic, strong) ZBScrollOutlineView *audioListScrollOutlineView;//左侧
+@property (nonatomic, strong) ZBScrollTableView   *audioListScrollTableView;//右侧
+@property (nonatomic, strong) NSMutableArray *tableViewDatas;
 
 #pragma mark - 数据
 /** 本地路径音频数据，对localMusics进行加工包装，真正用于播放的数据 */
@@ -109,22 +112,9 @@
 /** 播发器 */
 @property (nonatomic, strong) AVAudioPlayer *avPlayer;
 @property (nonatomic, strong) ZBMusicStatusControllerObject *musicStatusCtrl;
-///** 当前播放的歌曲在总列表中的index*/
-//@property (nonatomic, assign) NSInteger currentSection;
-///** 当前播放的歌曲在所在列表中的index*/
-//@property (nonatomic, assign) NSInteger currentRow;
-///** 上一次播放的歌曲在总列表中的index*/
-//@property (nonatomic, assign) NSInteger lastSection;
-///** 上一次播放的歌曲在所在列表中的index*/
-//@property (nonatomic, assign) NSInteger lastRow;
+
 ///** 是否正在播放  */
 @property (nonatomic, assign) BOOL isPlaying;
-///** 播放模式 是否是随机播放 优先级 */
-//@property (nonatomic, assign) BOOL isPlayModelRandom;
-///** 播放模式 是否允许自动切换列表 优先级 */
-//@property (nonatomic, assign) BOOL isPlayModelSwitchList;
-///** 播放模式 是否单曲循环 优先级最高 */
-//@property (nonatomic, assign) BOOL isPlayModelSingleRepeat;
 
 /** 主色调 */
 @property (nonatomic, strong) NSColor *mainColor;
@@ -203,15 +193,25 @@
     self.musicStatusCtrl = [[ZBMusicStatusControllerObject alloc]init];
     self.isVCLPlayMode = YES;
     [self initData];
+    
 
     //注：似乎没法使用懒加载，只能手动调用了
     [self playerSplitView];
-    [self audioListOutlineView];
-//    [self audioListScrollView];
     [self controllBar];
     [self addNotification];
     [self addSubviewsIntoSplitView];
-    [_audioListOutlineView reloadData];
+    [self.audioListScrollOutlineView.outlineView reloadData];
+    
+    NSMutableArray *arr1 =[NSMutableArray arrayWithArray:@[]];
+    NSMutableArray *arr2 =[NSMutableArray arrayWithArray:@[]];
+    for(int i = 0; i < 100 ; i++){
+        NSString *str1 = [NSString stringWithFormat:@"A %d",i];
+        NSString *str2 = [NSString stringWithFormat:@"B %d",i];
+        [arr1 addObject:str1];
+        [arr2 addObject:str2];
+    }
+    self.tableViewDatas = [NSMutableArray arrayWithArray:@[arr1,arr2]];
+    [self.audioListScrollTableView.tableView reloadData];
     
 
 }
@@ -246,13 +246,13 @@
     self.progressSlider.trackFillColor = [NSColor redColor];//跟踪填充颜色，需要先设置appearance
     [self.progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView.mas_left).offset(270);
-        make.bottom.equalTo(self.contentView.mas_bottom).offset(-15);
-        make.height.mas_equalTo(8);
+        make.bottom.equalTo(self.contentView.mas_bottom).offset(-13);
+        make.height.mas_equalTo(18);
         make.right.equalTo(self.contentView.mas_right).offset(-10);
     }];
     
-    self.audioNameTF = [self textField:NSMakeRect(270, 23, 450, 20) holder:@"歌名" fontsize:12];
-    self.durationTF  = [self textField:NSMakeRect(270, 43, 450, 15) holder:@"时长" fontsize:10];
+    self.audioNameTF = [self textField:NSMakeRect(270, 28, 450, 20) holder:@"歌名" fontsize:11];
+    self.durationTF  = [self textField:NSMakeRect(270, 48, 450, 15) holder:@"时长" fontsize:9];
 }
 
 
@@ -511,9 +511,9 @@
 }
 
 
-#pragma mark - playerSplitView 分屏控件（NSSplitView）
+#pragma mark - NSSplitView 分屏控件
 /**
- 播发器主面板
+ 播发器主面板 分屏控件初始化
 
  @return return value description
  */
@@ -546,73 +546,37 @@
     return _playerSplitView;
 }
 
+
+#pragma mark 给分屏控件组件添加 大纲目录列表视图 NSOutlineView
 /**
- 给分屏视图组件添加子视图控件
+ 给分屏视图组件添加子视图控件，左边大纲目录列表视图（歌曲目录列表），右边未定
  */
 - (void)addSubviewsIntoSplitView{
     
     //************增加左右分栏视图,数量任意加
-    //分屏控件左边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitLeft、_audioListOutlineView
+    //分屏控件左边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitLeft、_audioListScrollOutlineView.outlineView
     
-    self.audioListOutlineView = [[ZBAudioOutlineView alloc]init];
-    self.audioListOutlineView.delegate = self;
-    self.audioListOutlineView.dataSource = self;
-    self.audioListOutlineView.wantsLayer = YES;
-    self.audioListOutlineView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
-
-    //设置行与行之间的交替变化属性，如颜色等
-//    [self.audioListOutlineView setIndentationPerLevel:11];
-//    [self.audioListOutlineView setAutoresizesOutlineColumn:NO];
-//    [self.audioListOutlineView setUsesAlternatingRowBackgroundColors:NO];
-//    [self.audioListOutlineView makeViewWithIdentifier:NSOutlineViewDisclosureButtonKey owner:self];
-//    self.audioListOutlineView.allowsMultipleSelection = NO;//是否可以同时选择多个
-//    self.audioListOutlineView.layer.backgroundColor = [NSColor blueColor].CGColor;
-//    self.audioListOutlineView.outlineTableColumn.hidden = YES;//隐藏列表
+    //outlineView一般不建议添加多个column，之添加一个column就行，tableView可以根据需求数量添加
+    self.audioListScrollOutlineView = [[ZBScrollOutlineView alloc]initWithColumnIdentifiers:@[@"columnID1"] className:@"ZBAudioOutlineView"];
+    self.audioListScrollOutlineView.outlineView.delegate = self;
+    self.audioListScrollOutlineView.outlineView.dataSource = self;
+    [self.playerSplitView addSubview:self.audioListScrollOutlineView];
     
-    NSTableColumn *column1 = [[NSTableColumn alloc]initWithIdentifier:@"column1_head_Identifier"];//NSOutlineViewDisclosureButtonKey
-    column1.title = @"第1列";//@"可创建一个空的，不创建的话，内容会跑到bar底下";
-    //注意，要先添加column才能设置conerview，不然显示不出来
-    [self.audioListOutlineView addTableColumn:column1];
-    //注意：先将column1添加到addTableColumn:之后才能设置背景颜色，不然不显示
-//    column1.tableView.backgroundColor = [NSColor redColor];
-   
-    //注意：以下方法为生效，留待以后重试。
-//    NSView *vv =  [[NSView alloc]initWithFrame:NSMakeRect(0, 0, 100, 30)];
-//    vv.wantsLayer = YES;
-//    [column1.tableView.cornerView addSubview:vv];
-//    column1.tableView.cornerView.wantsLayer = YES;
-//    column1.tableView.cornerView.layer.backgroundColor = [NSColor yellowColor].CGColor;
-    
-    NSTableColumn *column2 = [[NSTableColumn alloc]initWithIdentifier:@"column2_head_Identifier"];//NSOutlineViewDisclosureButtonKey
-    column2.title = @"第2列";//@"可创建一个空的，不创建的话，内容会跑到bar底下";
-    column2.headerToolTip = @"列头提示";
-    [self.audioListOutlineView addTableColumn:column2];
-    
-    NSScrollView *scrollViewOnSplitLeft = [[NSScrollView alloc] init];
-    [scrollViewOnSplitLeft setHasVerticalScroller:YES];
-    [scrollViewOnSplitLeft setHasHorizontalScroller:NO];
-    [scrollViewOnSplitLeft setFocusRingType:NSFocusRingTypeNone];
-    [scrollViewOnSplitLeft setAutohidesScrollers:YES];
-    [scrollViewOnSplitLeft setBorderType:NSBezelBorder];
-    [scrollViewOnSplitLeft setTranslatesAutoresizingMaskIntoConstraints:NO];
-//    scrollViewOnSplitLeft.backgroundColor = [NSColor lightGrayColor];
-    [scrollViewOnSplitLeft setDocumentView:self.audioListOutlineView];
-    [self.playerSplitView addSubview:scrollViewOnSplitLeft];
-
     
 
+    //*****右侧视图
     //分屏控件右边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitRight、lrcTextView
-    NSScrollView *scrollViewOnSplitRight = [[NSScrollView alloc]initWithFrame:CGRectMake(0, 0, 500, 500)];
-    [scrollViewOnSplitRight setHasVerticalScroller:YES];
-    [scrollViewOnSplitRight setHasHorizontalScroller:YES];
-    [scrollViewOnSplitRight setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-    scrollViewOnSplitRight.backgroundColor = [NSColor purpleColor];
-    
-    
+//    NSScrollView *scrollViewOnSplitRight = [[NSScrollView alloc]initWithFrame:CGRectMake(0, 0, 500, 500)];
+//    [scrollViewOnSplitRight setHasVerticalScroller:YES];
+//    [scrollViewOnSplitRight setHasHorizontalScroller:YES];
+//    [scrollViewOnSplitRight setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+////    scrollViewOnSplitRight.backgroundColor = [NSColor purpleColor];
+//
+//
     self.lrcTextView = [[NSTextView alloc]initWithFrame:NSMakeRect(0, 0, 400, 500)];
     self.lrcTextView.wantsLayer = YES;
     self.lrcTextView.layer.backgroundColor = [NSColor greenColor].CGColor;
-    [self.lrcTextView setMinSize:NSMakeSize(0.0, scrollViewOnSplitRight.frame.size.height - 80)];
+    [self.lrcTextView setMinSize:NSMakeSize(100, self.playerSplitView.frame.size.height-80)];
     [self.lrcTextView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
     [self.lrcTextView setVerticallyResizable:YES];
     [self.lrcTextView setHorizontallyResizable:YES];
@@ -625,8 +589,15 @@
     style.lineSpacing = 10;//行间距
     [self.lrcTextView setDefaultParagraphStyle:style];
 
-    [scrollViewOnSplitRight setDocumentView:self.lrcTextView];
-    [self.playerSplitView addSubview:scrollViewOnSplitRight];
+//    [scrollViewOnSplitRight setDocumentView:self.lrcTextView];
+//    [self.playerSplitView addSubview:scrollViewOnSplitRight];
+    
+    self.audioListScrollTableView = [[ZBScrollTableView alloc]initWithColumnIdentifiers:@[@"column_table_ID0",@"column_table_ID1"] className:@""];
+    self.audioListScrollTableView.tableView.delegate = self;
+    self.audioListScrollTableView.tableView.dataSource = self;
+    [self.playerSplitView addSubview:self.audioListScrollTableView];
+    //[self.audioListScrollTableView addSubview:self.lrcTextView];
+
     
 }
 
@@ -664,37 +635,7 @@
 
 
 
-#pragma mark - audioListOutlineView 歌曲大纲列表、目录结构组件
-//
-//-(ZBAudioOutlineView *)audioListOutlineView{
-//    if (!_audioListOutlineView) {
-//
-//        _audioListOutlineView = [[ZBAudioOutlineView alloc]init];
-//        _audioListOutlineView.delegate = self;
-//        _audioListOutlineView.dataSource = self;
-//        _audioListOutlineView.wantsLayer = YES;
-//
-//        //设置行与行之间的交替变化属性，如颜色等
-////        [_audioListOutlineView setIndentationPerLevel:11];
-////        [_audioListOutlineView setAutoresizesOutlineColumn:NO];
-////        [_audioListOutlineView setUsesAlternatingRowBackgroundColors:NO];
-//
-//
-////        [_audioListOutlineView makeViewWithIdentifier:NSOutlineViewDisclosureButtonKey owner:self];
-////        _audioListOutlineView.allowsMultipleSelection = NO;
-//        _audioListOutlineView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
-//        //    _audioListOutlineView.layer.backgroundColor = [NSColor blueColor].CGColor;
-//        //    [self.contentView addSubview:s_audioListOutlineView];
-//        //    _audioListOutlineView.outlineTableColumn.hidden = YES;
-//        NSTableColumn *column1 = [[NSTableColumn alloc]initWithIdentifier:@"name"];//NSOutlineViewDisclosureButtonKey
-//        column1.title = @" ";//@"可创建一个空的，不创建的话，内容会跑到bar底下";
-//        [_audioListOutlineView addTableColumn:column1];
-//
-//    }
-//
-//    return _audioListOutlineView;
-//}
-
+#pragma mark - NSOutlineView 歌曲大纲列表、目录结构组件
 
 
 //3.实现数据源协议
@@ -796,24 +737,7 @@
 }
 
 
-/***
- * 疑似废弃代码，无用，不会执行
- * 创建tableview时执行，滚动列表时不会再执行(似乎屏蔽代码不执行也没问题)
- * 页面中没有tableView，也没有需要实现的tableView的代理
- */
-//-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
-//
-//    NSLog(@"faosdjafpdsjaopfsdjfjaspdfjapsdojfadfapsjfpasjdfajspdfjapsdfajsop");
-//    TreeNodeModel *model = (TreeNodeModel*)[self.audioListOutlineView itemAtRow:row];
-//    //根据标识符取column上的子view
-//    NSView *result  =  [self.audioListOutlineView makeViewWithIdentifier:tableColumn.identifier owner:self];
-//    //可以通过这个代理填充数据，也可以通过NSTableRowView（可以自定义）中的drawRect:方法赋值。注：此处需要注意子控件的类型
-//    NSArray *subviews = [result subviews];
-//    //NSImageView *imageView = subviews[0];
-//    NSTextField *field = subviews[1];
-//    field.stringValue = model.name;
-//    return result;
-//}
+
 
 -(CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item{
     TreeNodeModel *model = item;
@@ -944,7 +868,7 @@
 -(void)playerRow:(ZBPlayerRow *)playerRow didSelectRowForModel:(TreeNodeModel *)model{
     
     NSLog(@"ZBPlayerRow__%@",model.name);
-    NSInteger childIndexForItem = [self.audioListOutlineView childIndexForItem:model];
+    NSInteger childIndexForItem = [self.audioListScrollOutlineView.outlineView childIndexForItem:model];
     if (model.nodeLevel == 1) {
         //列表第一层 播放
         if(self.musicStatusCtrl.currentRow != childIndexForItem){
@@ -991,21 +915,21 @@
         if(i == myModel.rowIndex){
             mo = myModel;
             if(myModel.isExpand == YES){
-                [self.audioListOutlineView expandItem:myModel expandChildren:NO];
+                [self.audioListScrollOutlineView.outlineView expandItem:myModel expandChildren:NO];
             }else{
-                [self.audioListOutlineView collapseItem:myModel collapseChildren:NO];
+                [self.audioListScrollOutlineView.outlineView collapseItem:myModel collapseChildren:NO];
             }
         }else{
             if(myModel.isExpand == YES){
                 mo.isExpand = NO;
-                [self.audioListOutlineView collapseItem:mo collapseChildren:NO];
+                [self.audioListScrollOutlineView.outlineView collapseItem:mo collapseChildren:NO];
             }
         }
         [self.treeModel.childNodes removeObjectAtIndex:i];
         [self.treeModel.childNodes insertObject:mo atIndex:i];
     }
     
-    for (id view in self.audioListOutlineView.subviews) {
+    for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
         if([view isKindOfClass:[ZBPlayerSection class]]){
             ZBPlayerSection *sec = (ZBPlayerSection *)view;
             TreeNodeModel *mo = self.treeModel.childNodes[sec.model.rowIndex];
@@ -1013,6 +937,40 @@
         }
     }
 }
+
+
+#pragma mark - 右侧，NSTableView的代理
+-(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView{
+    return [self.tableViewDatas[0] count];//由于每列的row数量是相等的，所以选0即可
+}
+
+-(id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+    if([tableColumn.identifier isEqualToString:@"column_table_ID0"]){
+        return self.tableViewDatas[0][row];
+    }else{
+        return self.tableViewDatas[1][row];
+    }
+    
+}
+
+/***
+ * 疑似废弃代码，无用，不会执行
+ * 创建tableview时执行，滚动列表时不会再执行(似乎屏蔽代码不执行也没问题)
+ * 页面中没有tableView，也没有需要实现的tableView的代理
+ */
+//-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+//
+//    NSLog(@"faosdjafpdsjaopfsdjfjaspdfjapsdojfadfapsjfpasjdfajspdfjapsdfajsop");
+//    TreeNodeModel *model = (TreeNodeModel*)[self.audioListScrollOutlineView.outlineView itemAtRow:row];
+//    //根据标识符取column上的子view
+//    NSView *result  =  [self.audioListScrollOutlineView.outlineView makeViewWithIdentifier:tableColumn.identifier owner:self];
+//    //可以通过这个代理填充数据，也可以通过NSTableRowView（可以自定义）中的drawRect:方法赋值。注：此处需要注意子控件的类型
+//    NSArray *subviews = [result subviews];
+//    //NSImageView *imageView = subviews[0];
+//    NSTextField *field = subviews[1];
+//    field.stringValue = model.name;
+//    return result;
+//}
 
 
 #pragma mark - 面板：NSOpenPanel 读取电脑文件 获取文件名，路径
@@ -1026,12 +984,17 @@
     openDlg.canCreateDirectories = YES;
     openDlg.title = @"导入歌曲列表";
     openDlg.message = @"选择需要导入的歌曲文件夹，每个文件夹就是一张表，歌曲按目录表展示";
+    
+    //初始化数据源
     __weak ZBPlayer_2 * weakSelf = self;
+    self.treeModel = [[TreeNodeModel alloc]init];
     [openDlg beginWithCompletionHandler: ^(NSInteger result){
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
-            [weakSelf localFiles:[NSMutableArray arrayWithArray:fileURLs]];
+            //根据路径数组，分别读取本地路径下的文件
+            weakSelf.treeModel = [ZBAudioObject searchFilesInFolderPaths:[NSMutableArray arrayWithArray:fileURLs]];
+            [weakSelf.audioListScrollOutlineView.outlineView reloadData];
         }
     }];
 }
@@ -1040,105 +1003,23 @@
 -(void)initData{
 
     self.musicStatusCtrl.currentRow = 0;
-    //获取缓存在本地的列表路径
-    //1.重新查找
-//    NSMutableArray *arr =  [ZBAudioObject getPlayList];
-//    if (arr.count > 0) {
-//        [self localFiles:arr];
-//    }
-    //2. 从历史记录中读取
+    //从历史记录中读取播放列表
     NSMutableArray *musicList = [ZBAudioObject getMusicList];
     if (musicList.count > 0) {
         self.treeModel = [[TreeNodeModel alloc]init];
         self.treeModel.childNodes = [NSMutableArray arrayWithArray:musicList];
-        [self.audioListOutlineView reloadData];
+        [self.audioListScrollOutlineView.outlineView reloadData];
     }else{
         self.treeModel = [[TreeNodeModel alloc]init];
         //根节点
-        TreeNodeModel *rootNode1 = [self node:@"默认列表" level:0 superLevel:-1];
-        TreeNodeModel *history   = [self node:@"播放历史" level:0 superLevel:-1];
+        TreeNodeModel *rootNode1 = [ZBAudioObject node:@"默认列表" level:0 superLevel:-1];
+        TreeNodeModel *history   = [ZBAudioObject node:@"播放历史" level:0 superLevel:-1];
         [self.treeModel.childNodes addObjectsFromArray:@[rootNode1,history]];
     }
 
-
 }
 
--(TreeNodeModel *)node:(NSString *)text level:(NSInteger)level superLevel:(NSInteger)superLevel{
-    TreeNodeModel *nod = [[TreeNodeModel alloc]init];
-    nod.name = text;
-    nod.isExpand = NO;
-    nod.nodeLevel = level;
-    nod.superLevel = superLevel;
-    return nod;
-}
 
-/**
- 根据路径数组，分别读取本地路径下的文件
-
- @param fileURLs <#fileURLs description#>
- */
--(void)localFiles:(NSMutableArray *)fileURLs{
-    [ZBAudioObject savePlayList:fileURLs];
-    NSMutableArray *baseUrls = [NSMutableArray array];
-    NSMutableArray *sectionTitles = [NSMutableArray array];
-    for(NSURL *url in fileURLs) {
-        //NSString *string = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
-        NSString *filePath = [[NSString stringWithFormat:@"%@",url] stringByRemovingPercentEncoding];
-        NSArray *ar = [filePath componentsSeparatedByString:@"/"];
-        if([ar.lastObject isEqualToString:@""]){
-            NSLog(@"folderName：%@，filePath：%@",ar[ar.count - 2],filePath);
-            [baseUrls addObject:url.path];
-            [sectionTitles addObject:ar[ar.count-2]];
-        }
-    }
-    //NSString *sourcePath = self.localMusicBasePath.length == 0 ? @"/Volumes/mac biao/music/日系/" : [NSString stringWithFormat:@"%@/",self.localMusicBasePath];
-    //dispatch_queue_t que = dispatch_queue_create("rer", DISPATCH_QUEUE_CONCURRENT);
-    NSMutableArray *localMusics = [NSMutableArray array];
-    for (int i = 0; i < sectionTitles.count; i++) {
-        NSMutableArray *arr = [NSMutableArray array];
-        [localMusics addObject:arr];
-        //dispatch_async(que, ^{
-        //更新列表
-        ZBAudioObject *ado = [[ZBAudioObject alloc]init];
-        [ado audioInPath:baseUrls[i]];
-        [localMusics[i] addObjectsFromArray:ado.audios];
-        //});
-    }
-    
-    //初始化数据源
-    self.treeModel = [[TreeNodeModel alloc]init];
-    
-    //2级节点
-    for(int i = 0; i< localMusics.count; i++){
-        NSMutableArray *audios = localMusics[i];
-        //根节点
-        TreeNodeModel *rootNode1 = [self node:[NSString stringWithFormat:@"%@ [%ld]",sectionTitles[i],audios.count] level:0 superLevel:-1];
-        rootNode1.sectionIndex = -1;//根节点没有sectionIndex
-        rootNode1.rowIndex = i;
-        
-        //排序
-        //NSMutableArray *sortAudios = [weakSelf defaultSort:audios];
-        NSMutableArray *sortAudios = [self.dataObject localSort:audios];
-        for(int j = 0; j < [sortAudios count]; j++){
-            ZBAudioModel *audio = sortAudios[j];
-            TreeNodeModel *childNode = [self node:audio.title level:1 superLevel:0];
-            childNode.audio = audio;
-            childNode.sectionIndex = i;
-            childNode.rowIndex     = j;
-            [rootNode1.childNodes addObject:childNode];
-        }
-        [self.treeModel.childNodes addObjectsFromArray:@[rootNode1]];
-    }
-    TreeNodeModel *history   = [self node:@"播放历史" level:0 superLevel:-1];
-    history.sectionIndex = -1;//根节点没有sectionIndex
-    history.rowIndex     = localMusics.count;
-    [self.treeModel.childNodes addObject:history];
-    [self.audioListOutlineView reloadData];
-    
-
-    [ZBAudioObject saveMusicList:self.treeModel.childNodes];
-
-}
 
 #pragma mark - 音乐
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -1217,11 +1098,11 @@
         }
         
 //        [[(TreeNodeModel *)[self.treeModel.childNodes lastObject] childNodes] addObject:audio];
-//        [self.audioListOutlineView reloadData];
-//        [self.audioListOutlineView reloadItem:[self.treeModel.childNodes lastObject]];
-//        [self.audioListOutlineView beginUpdates];
-//        [self.audioListOutlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0]  inParent:@(1) withAnimation:NSTableViewAnimationEffectFade];
-//        [self.audioListOutlineView endUpdates];
+//        [self.audioListScrollOutlineView.outlineView reloadData];
+//        [self.audioListScrollOutlineView.outlineView reloadItem:[self.treeModel.childNodes lastObject]];
+//        [self.audioListScrollOutlineView.outlineView beginUpdates];
+//        [self.audioListScrollOutlineView.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0]  inParent:@(1) withAnimation:NSTableViewAnimationEffectFade];
+//        [self.audioListScrollOutlineView.outlineView endUpdates];
         self.progressSlider.integerValue = 0;
         self.audioNameTF.stringValue = audio.title;
         self.audioNameTF.toolTip = audio.title;
@@ -1233,7 +1114,7 @@
         //歌词 搜索
         //[self kugouApiSearchMusic:audio.title];
 //        [self QQApiSearchMusic:audio.title];
-        NSDictionary *id3 = [ZBAudioObject getID3:audio.path];
+        NSDictionary *id3 = [ZBAudioObject getAudioFileID3:audio.path];
         NSLog(@"即将播放：%@，error__%@,ID3_%@",audio.title,error,id3);
     }
 }
@@ -1250,11 +1131,11 @@
             if (i == self.musicStatusCtrl.currentSection){
                 mo.isExpand = YES;
                 isE  = YES;
-                [self.audioListOutlineView expandItem:mo expandChildren:YES];
+                [self.audioListScrollOutlineView.outlineView expandItem:mo expandChildren:YES];
             } else{
                 mo.isExpand = NO;
                 isE = NO;
-                [self.audioListOutlineView collapseItem:mo collapseChildren:YES];
+                [self.audioListScrollOutlineView.outlineView collapseItem:mo collapseChildren:YES];
             }
             //这样做法可能比较耗资源
             [self.treeModel.childNodes removeObjectAtIndex:i];
@@ -1263,7 +1144,7 @@
 //            [[self.treeModel.childNodes objectAtIndex:i] setIsExpand:mo.isExpand];
         }
         
-        for (id view in self.audioListOutlineView.subviews) {
+        for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
             if([view isKindOfClass:[ZBPlayerSection class]]){
                 ZBPlayerSection *sec = (ZBPlayerSection *)view;
                 TreeNodeModel *mo = self.treeModel.childNodes[sec.model.rowIndex];
@@ -1274,10 +1155,10 @@
     
     //位置计算错误
     NSLog(@"currSec:%ld,lastSecc:%ld,currRowc:%ld,lastRowc:%ld",self.musicStatusCtrl.currentSection,self.musicStatusCtrl.lastSection,self.musicStatusCtrl.currentRow,self.musicStatusCtrl.lastRow);
-    //[self.audioListOutlineView reloadData];
+    //[self.audioListScrollOutlineView.outlineView reloadData];
     //页面滚动到当前row，根据row+section的数目总和确定位置，每+1代表多一行
-    [self.audioListOutlineView scrollRowToVisible:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
-    [self.audioListOutlineView deselectRow:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
+    [self.audioListScrollOutlineView.outlineView scrollRowToVisible:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
+    [self.audioListScrollOutlineView.outlineView deselectRow:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
 
 
 }

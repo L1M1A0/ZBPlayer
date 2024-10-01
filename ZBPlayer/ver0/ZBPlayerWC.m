@@ -840,7 +840,7 @@
 -(void)initData{
     self.currentRow = 0;
     //获取缓存在本地的列表路径
-    NSMutableArray *arr =  [ZBAudioObject getPlayList];
+    NSMutableArray *arr =  [ZBAudioObject getMusicList];
     if (arr.count > 0) {
         [self localFiles:arr];
     }else{
@@ -870,7 +870,7 @@
  @param fileURLs <#fileURLs description#>
  */
 -(void)localFiles:(NSMutableArray *)fileURLs{
-    [ZBAudioObject savePlayList:fileURLs];
+    [ZBAudioObject searchFilesInFolderPaths:fileURLs];
     NSMutableArray *baseUrls = [NSMutableArray array];
     NSMutableArray *sectionTitles = [NSMutableArray array];
     for(NSURL *url in fileURLs) {
@@ -892,7 +892,7 @@
         //dispatch_async(que, ^{
         //更新列表
         ZBAudioObject *ado = [[ZBAudioObject alloc]init];
-        [ado audioInPath:baseUrls[i]];
+        [ado blockSearchInPath:baseUrls[i]];
         [localMusics[i] addObjectsFromArray:ado.audios];
         //});
     }
@@ -1074,7 +1074,7 @@
         //        [self kugouApiSearchMusic:audio.title];
         [self QQApiSearchMusic:audio.title];
         [self reloadSectionStaus];
-        [ZBAudioObject getID3:audio.path];
+        [ZBAudioObject getAudioFileID3:audio.path];
     }
 }
 -(void)reloadSectionStaus{
