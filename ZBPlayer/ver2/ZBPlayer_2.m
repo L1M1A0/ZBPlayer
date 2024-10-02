@@ -18,7 +18,7 @@
 #import <VLCKit/VLCKit.h>
 #import "AFNetworking.h"
 #import "Masonry.h"
-#import "ISSoundAdditions.h"//音量管理
+//#import "ISSoundAdditions.h"//音量管理
 
 #import "ZBDataObject.h"
 #import "ZBMacOSObject.h"
@@ -30,6 +30,7 @@
 #import "ZBPlayerSplitView.h"
 #import "ZBScrollOutlineView.h"
 #import "ZBScrollTableView.h"
+#import "ZBScrollTextView.h"
 #import "ZBSliderViewController.h"
 #import "ZBPlaybackModelViewController.h"
 //#import <objc/runtime.h>
@@ -44,7 +45,7 @@
  * 列表、表格组件：NSTableView
  * 大纲视图、目录结构组件：NSOutlineView，继承自NSTableView。outline：中文意思是：大纲、纲要的意思，常用于表示目录结构图，有子级目录索引展示，可以收起和展开。
  */
-@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate,NSTableViewDataSource>
+@interface ZBPlayer_2 ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate,NSTableViewDataSource,NSFileManagerDelegate>
 {
     
 }
@@ -52,7 +53,7 @@
 @property (nonatomic, strong) ZBDataObject *dataObject;
 
 
-#pragma mark - 常用功能
+#pragma mark - 主功能：播放功能
 /** 上一曲 */
 @property (nonatomic, strong) NSButton *lastBtn;
 /** 播放 or 暂停 */
@@ -81,8 +82,23 @@
 @property (nonatomic, strong) NSPopover *volumePopover;
 /**当前音量*/
 @property (nonatomic, strong) NSString *volumeString;
-/** 歌词背景窗口 */
-@property (nonatomic, strong) NSTextView *lrcTextView;
+
+#pragma mark - 副功能：列表数据管理
+/** 搜索历史按钮 */
+@property (nonatomic, strong) NSButton *searchHistoryBtn;
+/** 搜索输入框 */
+@property (nonatomic, strong) ZBScrollTextView *searchScrollTextView;
+/** 搜索按钮 */
+@property (nonatomic, strong) NSButton *searchBtn;
+/** 更换背景颜色按钮 */
+@property (nonatomic, strong) NSButton *bgColorBtn;
+/** 播放历史按钮 */
+@property (nonatomic, strong) NSButton *playHistoryBtn;
+/** 列表操作按钮 */
+@property (nonatomic, strong) NSButton *listActionBtn;
+/** 播放管理按钮*/
+@property (nonatomic, strong) NSButton *playActionBtn;
+
 #pragma mark - 主功能
 /** 创建列表 */
 @property (nonatomic, strong) NSButton *createListBtn;
@@ -97,6 +113,8 @@
 @property (nonatomic, strong) ZBScrollOutlineView *audioListScrollOutlineView;//左侧
 @property (nonatomic, strong) ZBScrollTableView   *audioListScrollTableView;//右侧
 @property (nonatomic, strong) NSMutableArray *tableViewDatas;
+
+
 
 #pragma mark - 数据
 /** 本地路径音频数据，对localMusics进行加工包装，真正用于播放的数据 */
@@ -204,7 +222,7 @@
     
     NSMutableArray *arr1 =[NSMutableArray arrayWithArray:@[]];
     NSMutableArray *arr2 =[NSMutableArray arrayWithArray:@[]];
-    for(int i = 0; i < 100 ; i++){
+    for(int i = 0; i < 10000 ; i++){
         NSString *str1 = [NSString stringWithFormat:@"A %d",i];
         NSString *str2 = [NSString stringWithFormat:@"B %d",i];
         [arr1 addObject:str1];
@@ -255,6 +273,18 @@
     self.durationTF  = [self textField:NSMakeRect(270, 48, 450, 15) holder:@"时长" fontsize:9];
 }
 
+- (NSButton *)buttonTitle:(NSString *)title tag:(NSInteger)tag superView:(NSView *)superView{
+    NSButton *btn = [self.object button:CGRectZero title:title tag:tag type:NSButtonTypeMomentaryChange target:self superView:superView];
+    btn.wantsLayer = YES;
+    btn.layer.backgroundColor = [NSColor colorWithCalibratedRed:0x2C/255.0 green:0x28/255.0 blue:0x2D/255.0 alpha:0xFF/255.0].CGColor;
+    btn.action = @selector(btnAction:);
+    btn.bordered = NO;//是否带边框
+    btn.layer.masksToBounds = YES;
+    btn.layer.cornerRadius = btn.frame.size.width/2;
+    btn.layer.borderColor = [NSColor whiteColor].CGColor;
+    btn.layer.borderWidth = 3;
+    return btn;
+}
 
 - (NSButton *)button:(NSRect)frame title:(NSString *)title tag:(NSInteger)tag image:(NSString *)image alternateImage:(NSString *)alternateImage {
     NSButton *btn = [self.object button:frame title:title tag:tag type:NSButtonTypeMomentaryChange target:self superView:self.contentView];
@@ -278,6 +308,7 @@
     return btn;
 }
 -(void)btnAction:(NSButton *)sender{
+    NSLog(@"sender.tag = %d",sender.tag);
 
     if(sender.tag == 0){
        
@@ -553,51 +584,136 @@
  */
 - (void)addSubviewsIntoSplitView{
     
-    //************增加左右分栏视图,数量任意加
-    //分屏控件左边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitLeft、_audioListScrollOutlineView.outlineView
+    CGFloat tempWidth = self.frame.size.width/3;
+    CGFloat tempHeight = self.frame.size.height - 80;
     
+    
+    //************增加左右分栏视图,数量任意加
+    //添加分屏 1
+    //分屏控件左边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitLeft、_audioListScrollOutlineView.outlineView
     //outlineView一般不建议添加多个column，之添加一个column就行，tableView可以根据需求数量添加
     self.audioListScrollOutlineView = [[ZBScrollOutlineView alloc]initWithColumnIdentifiers:@[@"columnID1"] className:@"ZBAudioOutlineView"];
+    self.audioListScrollOutlineView.frame = NSMakeRect(0, 0, tempWidth, tempHeight);
     self.audioListScrollOutlineView.outlineView.delegate = self;
     self.audioListScrollOutlineView.outlineView.dataSource = self;
-    [self.playerSplitView addSubview:self.audioListScrollOutlineView];
+    [self.playerSplitView addSubview:self.audioListScrollOutlineView];//如果后续不继续添加分屏界面，那么就不会分屏，占满窗口
     
     
 
     //*****右侧视图
-    //分屏控件右边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitRight、lrcTextView
-//    NSScrollView *scrollViewOnSplitRight = [[NSScrollView alloc]initWithFrame:CGRectMake(0, 0, 500, 500)];
-//    [scrollViewOnSplitRight setHasVerticalScroller:YES];
-//    [scrollViewOnSplitRight setHasHorizontalScroller:YES];
-//    [scrollViewOnSplitRight setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-////    scrollViewOnSplitRight.backgroundColor = [NSColor purpleColor];
-//
-//
-    self.lrcTextView = [[NSTextView alloc]initWithFrame:NSMakeRect(0, 0, 400, 500)];
-    self.lrcTextView.wantsLayer = YES;
-    self.lrcTextView.layer.backgroundColor = [NSColor greenColor].CGColor;
-    [self.lrcTextView setMinSize:NSMakeSize(100, self.playerSplitView.frame.size.height-80)];
-    [self.lrcTextView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-    [self.lrcTextView setVerticallyResizable:YES];
-    [self.lrcTextView setHorizontallyResizable:YES];
-    [self.lrcTextView setAutoresizingMask:NSViewWidthSizable];
-    [[self.lrcTextView textContainer]setContainerSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-    [[self.lrcTextView textContainer]setWidthTracksTextView:YES];
-    [self.lrcTextView setFont:[NSFont fontWithName:@"PingFang-SC-Regular" size:17.0]];
-    [self.lrcTextView setEditable:NO];
-    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
-    style.lineSpacing = 10;//行间距
-    [self.lrcTextView setDefaultParagraphStyle:style];
+    
+    //添加分屏2
+    //分屏控件右边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitRight
+    //UI顺序是从底部到上的
+    NSView *splitRightView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    splitRightView.wantsLayer = YES;
+    splitRightView.layer.backgroundColor = [NSColor yellowColor].CGColor;
+    [self.playerSplitView addSubview:splitRightView];
+    
 
-//    [scrollViewOnSplitRight setDocumentView:self.lrcTextView];
-//    [self.playerSplitView addSubview:scrollViewOnSplitRight];
+    CGFloat btnwidth = 65;
+    CGFloat btnheight = 32;
+    CGFloat topOff = 5;
+    CGFloat splitRightTopViewHeight = btnheight * 2 + topOff * 3 + 15;
     
     self.audioListScrollTableView = [[ZBScrollTableView alloc]initWithColumnIdentifiers:@[@"column_table_ID0",@"column_table_ID1"] className:@""];
     self.audioListScrollTableView.tableView.delegate = self;
     self.audioListScrollTableView.tableView.dataSource = self;
-    [self.playerSplitView addSubview:self.audioListScrollTableView];
-    //[self.audioListScrollTableView addSubview:self.lrcTextView];
+    [splitRightView addSubview:self.audioListScrollTableView];
+    [self.audioListScrollTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightView.mas_top).offset(splitRightTopViewHeight);
+        make.bottom.equalTo(splitRightView).offset(-10);
+        make.left.equalTo(splitRightView.mas_left).offset(10);
+        make.width.equalTo(splitRightView.mas_width).offset(-20);
+//        make.height.mas_equalTo(tempHeight-100);
+    }];
 
+    NSView *splitRightTopView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    splitRightTopView.wantsLayer = YES;
+    splitRightTopView.layer.backgroundColor = [NSColor greenColor].CGColor;
+    [splitRightView addSubview:splitRightTopView];
+    [splitRightTopView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightView.mas_top).offset(10);
+        make.bottom.equalTo(self.audioListScrollTableView.mas_top).offset(-5);
+        make.left.equalTo(splitRightView.mas_left).offset(10);
+        make.width.equalTo(splitRightView.mas_width).offset(-20);
+//        make.height.mas_equalTo(tempHeight/3);
+
+    }];
+    
+    
+
+    
+    /** 搜索历史按钮 */
+    self.searchHistoryBtn = [self buttonTitle:@"搜索历史" tag:21 superView:splitRightTopView];
+    [self.searchHistoryBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    self.searchScrollTextView = [[ZBScrollTextView alloc]initWithScrollTextView];
+    [splitRightTopView addSubview:self.searchScrollTextView];
+    [self.searchScrollTextView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchHistoryBtn.mas_right).offset(10);
+        make.width.mas_equalTo(230);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    /** 搜索按钮 */
+    self.searchBtn = [self buttonTitle:@"搜索" tag:22 superView:splitRightTopView];
+    [self.searchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchScrollTextView.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    /** 更换背景颜色按钮 */
+    self.bgColorBtn = [self buttonTitle:@"背景颜色" tag:23 superView:splitRightTopView];
+    [self.bgColorBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    
+    /** 播放历史按钮 */
+    self.playHistoryBtn = [self buttonTitle:@"播放历史" tag:24 superView:splitRightTopView];
+    [self.playHistoryBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.searchHistoryBtn.mas_bottom).offset(5);
+        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    /** 列表操作按钮 */
+    self.listActionBtn = [self buttonTitle:@"列表操作" tag:25 superView:splitRightTopView];
+    [self.listActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.playHistoryBtn.mas_top);
+        make.left.equalTo(self.playHistoryBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    /** 播放管理按钮*/
+    self.playActionBtn = [self buttonTitle:@"播放管理" tag:26 superView:splitRightTopView];
+    [self.playActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.listActionBtn.mas_top);
+        make.left.equalTo(self.listActionBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+
+    
+    
     
 }
 
@@ -606,18 +722,25 @@
 #pragma mark  NSSplitViewDelegate 分屏组件代理
 /** 设置每个栏的最小值，可以根据dividerIndex单独设置 */
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex {
+    CGFloat width0 = self.frame.size.width/3;
+    width0 = width0>350?350:width0;
+    
     if (dividerIndex == 0) {
-        return 400;
+        return width0;
     }else{
-        return 600;
+        CGFloat tempWidth = CGRectGetWidth(self.frame) - width0;
+        return tempWidth;
     }
 }
 /** 设置每个栏的最大值，可以根据dividerIndex单独设置 */
 -(CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex{
+    CGFloat width0 = self.frame.size.width/3;
+    width0 = width0>350?350:width0;
     if (dividerIndex == 0) {
-        return 500;
+        return width0;
     }else{
-        return 600;
+        CGFloat tempWidth = CGRectGetWidth(self.frame) - width0;
+        return tempWidth;
     }
 }
 
@@ -981,7 +1104,7 @@
     openDlg.allowsMultipleSelection = YES;//--“是否允许多选”
     openDlg.allowedFileTypes = @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac"];//---“允许的文件名后缀”
     openDlg.treatsFilePackagesAsDirectories = YES;
-    openDlg.canCreateDirectories = YES;
+    openDlg.canCreateDirectories = YES;//显示“新建文件夹”按钮
     openDlg.title = @"导入歌曲列表";
     openDlg.message = @"选择需要导入的歌曲文件夹，每个文件夹就是一张表，歌曲按目录表展示";
     
@@ -992,12 +1115,35 @@
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
-            //根据路径数组，分别读取本地路径下的文件
+            
+            //根据路径数组，分别读取本地路径下的文件（版本1，回调方法找寻文件）
             weakSelf.treeModel = [ZBAudioObject searchFilesInFolderPaths:[NSMutableArray arrayWithArray:fileURLs]];
             [weakSelf.audioListScrollOutlineView.outlineView reloadData];
+            
+            //版本2 使用文件系统寻找文件
+            [weakSelf filemanagerDoInPath:[NSMutableArray arrayWithArray:fileURLs]];
         }
     }];
 }
+
+#pragma mark - 文件管理
+
+-(void)filemanagerDoInPath:(NSMutableArray *)fileURLs{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSMutableArray *arr = [NSMutableArray array];
+    for (int i = 0; i< fileURLs.count; i++) {
+        NSLog(@"获取本地文件的路径：%@",fileURLs[i]);
+//        [fm subpathsOfDirectoryAtPath:fileURLs[i] error:nil];//subpathsAtPath:fileURLs[i]]
+//        [arr addObject:lsit];
+//        NSLog(@"获取本地文件的路径：%@，，列表数据：%@",fileURLs[i],lsit);
+
+    }
+    NSLog(@"列表数据：%@",arr);
+
+    
+}
+
+
 
 #pragma mark - 数据源
 -(void)initData{
@@ -1187,6 +1333,8 @@
    
     
 }
+
+
 
 
 

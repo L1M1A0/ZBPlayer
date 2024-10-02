@@ -6,20 +6,31 @@
 //  Copyright © 2019 Li28. All rights reserved.
 //
 
+
+/**
+ * 注：本文件目录结构以 控件初始化+功能实现 为一组，尽量
+ 
+ 
+ */
+
 #import "ZBPlayer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <VLCKit/VLCKit.h>
 #import "AFNetworking.h"
 #import "Masonry.h"
-#import "ISSoundAdditions.h"//音量管理
+//#import "ISSoundAdditions.h"//音量管理
 
 #import "ZBDataObject.h"
 #import "ZBMacOSObject.h"
+#import "ZBMusicStatusControllerObject.h"
 #import "ZBPlayerSection.h"
 #import "ZBPlayerRow.h"
 #import "ZBAudioModel.h"
 #import "ZBAudioObject.h"
 #import "ZBPlayerSplitView.h"
+#import "ZBScrollOutlineView.h"
+#import "ZBScrollTableView.h"
+#import "ZBScrollTextView.h"
 #import "ZBSliderViewController.h"
 #import "ZBPlaybackModelViewController.h"
 //#import <objc/runtime.h>
@@ -29,14 +40,20 @@
 #define kListNamesKey @"kListNamesKey"//存数组转字符串，播放列表路径
 
 
-@interface ZBPlayer ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate>
+/**
+ * 分屏组件：NSSplitViewController、NSSplitView、NSSplitViewItem。
+ * 列表、表格组件：NSTableView
+ * 大纲视图、目录结构组件：NSOutlineView，继承自NSTableView。outline：中文意思是：大纲、纲要的意思，常用于表示目录结构图，有子级目录索引展示，可以收起和展开。
+ */
+@interface ZBPlayer ()<NSSplitViewDelegate,NSOutlineViewDelegate,NSOutlineViewDataSource,AVAudioPlayerDelegate,ZBPlayerSectionDelegate,ZBPlayerRowDelegate,NSTableViewDelegate,NSTableViewDataSource>
 {
     
 }
 @property (nonatomic, strong) ZBMacOSObject *object;
 @property (nonatomic, strong) ZBDataObject *dataObject;
 
-#pragma mark - 常用功能
+
+#pragma mark - 主功能：播放功能
 /** 上一曲 */
 @property (nonatomic, strong) NSButton *lastBtn;
 /** 播放 or 暂停 */
@@ -65,20 +82,38 @@
 @property (nonatomic, strong) NSPopover *volumePopover;
 /**当前音量*/
 @property (nonatomic, strong) NSString *volumeString;
-/** 歌词背景窗口 */
-@property (nonatomic, strong) NSTextView *lrcTextView;
+
+#pragma mark - 副功能：列表数据管理
+/** 搜索历史按钮 */
+@property (nonatomic, strong) NSButton *searchHistoryBtn;
+/** 搜索输入框 */
+@property (nonatomic, strong) ZBScrollTextView *searchScrollTextView;
+/** 搜索按钮 */
+@property (nonatomic, strong) NSButton *searchBtn;
+/** 更换背景颜色按钮 */
+@property (nonatomic, strong) NSButton *bgColorBtn;
+/** 播放历史按钮 */
+@property (nonatomic, strong) NSButton *playHistoryBtn;
+/** 列表操作按钮 */
+@property (nonatomic, strong) NSButton *listActionBtn;
+/** 播放管理按钮*/
+@property (nonatomic, strong) NSButton *playActionBtn;
+
 #pragma mark - 主功能
 /** 创建列表 */
 @property (nonatomic, strong) NSButton *createListBtn;
 
 
 #pragma mark - 主界面
-/** 播放器主活动界面 左边存放歌曲列表，右边显示歌词等其他界面 */
-@property (nonatomic, strong) ZBPlayerSplitView *playerMainBoard;
-/** 歌曲列表层级页面 */
-@property (nonatomic, strong) ZBAudioOutlineView *audioListOutlineView;
-/** 歌曲列表层级页面 的背景页面 */
-@property (nonatomic, strong) NSScrollView *audioListScrollView;
+/** 分屏组件 播放器主活动界面 左边存放歌曲列表，右边显示歌词等其他界面 */
+@property (nonatomic, strong) ZBPlayerSplitView *playerSplitView;
+/** 歌曲列表大纲、目录层级页面
+ outline：中文意思是：大纲、纲要的意思，常用于表示目录结构图，有子级目录索引展示，可以收起和展开。
+ */
+@property (nonatomic, strong) ZBScrollOutlineView *audioListScrollOutlineView;//左侧
+@property (nonatomic, strong) ZBScrollTableView   *audioListScrollTableView;//右侧
+@property (nonatomic, strong) NSMutableArray *tableViewDatas;
+
 
 
 #pragma mark - 数据
@@ -94,22 +129,10 @@
 @property (nonatomic, strong) VLCMediaPlayer *vlcPlayer;
 /** 播发器 */
 @property (nonatomic, strong) AVAudioPlayer *avPlayer;
-/** 当前播放的歌曲在总列表中的index*/
-@property (nonatomic, assign) NSInteger currentSection;
-/** 当前播放的歌曲在所在列表中的index*/
-@property (nonatomic, assign) NSInteger currentRow;
-/** 上一次播放的歌曲在总列表中的index*/
-@property (nonatomic, assign) NSInteger lastSection;
-/** 上一次播放的歌曲在所在列表中的index*/
-@property (nonatomic, assign) NSInteger lastRow;
-/** 是否正在播放  */
+@property (nonatomic, strong) ZBMusicStatusControllerObject *musicStatusCtrl;
+
+///** 是否正在播放  */
 @property (nonatomic, assign) BOOL isPlaying;
-/** 播放模式 是否是随机播放 优先级 */
-@property (nonatomic, assign) BOOL isPlayModelRandom;
-/** 播放模式 是否允许自动切换列表 优先级 */
-@property (nonatomic, assign) BOOL isPlayModelSwitchList;
-/** 播放模式 是否单曲循环 优先级最高 */
-@property (nonatomic, assign) BOOL isPlayModelSingleRepeat;
 
 /** 主色调 */
 @property (nonatomic, strong) NSColor *mainColor;
@@ -117,6 +140,7 @@
 @property (nonatomic, assign) CFRunLoopTimerRef timerForRemainTime;
 /** VLC 播放模式下，当前歌曲的播放进度 */
 @property (nonatomic, assign) int vlcCurrentTime;
+@property (nonatomic, strong) NSNotification *mainNoti;
 
 @end
 
@@ -128,7 +152,7 @@
 //        [self initWindow];
 //    }
 //    return self;
-//    
+//
 //}
 
 #pragma mark - 设置 window 的相关属性
@@ -184,154 +208,35 @@
     
     self.object = [[ZBMacOSObject alloc]init];
     self.dataObject = [[ZBDataObject alloc]init];
+    self.musicStatusCtrl = [[ZBMusicStatusControllerObject alloc]init];
     self.isVCLPlayMode = YES;
     [self initData];
+    
 
     //注：似乎没法使用懒加载，只能手动调用了
-    [self playerMainBoard];
-    [self audioListOutlineView];
-    [self audioListScrollView];
+    [self playerSplitView];
     [self controllBar];
     [self addNotification];
-    [self addSubViews];
-    [_audioListOutlineView reloadData];
+    [self addSubviewsIntoSplitView];
+    [self.audioListScrollOutlineView.outlineView reloadData];
     
-//    NSTreeController *dfdf = [[NSTreeController alloc]init];
-
-}
-
-
-- (void)addSubViews{
-    NSView *view1 = [self viewForSplitView:[NSColor orangeColor]];
-    //增加左右分栏视图,数量任意加
-    [_playerMainBoard addSubview:view1];
-    [view1 addSubview:_audioListScrollView];
-    [_audioListScrollView  mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(view1.mas_top).with.offset(0);
-        make.bottom.equalTo(view1.mas_bottom).with.offset(0);
-        make.left.equalTo(view1.mas_left).with.offset(0);
-        make.right.equalTo(view1.mas_right).with.offset(0);
-    }];
-    
-    NSScrollView *textScrollView = [[NSScrollView alloc]initWithFrame:CGRectMake(0, 0, 500, 500)];
-    //    [textScrollView setBorderType:NSNoBorder];
-    [textScrollView setHasVerticalScroller:YES];
-    [textScrollView setHasHorizontalScroller:YES];
-    [textScrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-    
-    self.lrcTextView = [[NSTextView alloc]initWithFrame:NSMakeRect(0, 0, 400, 500)];
-    self.lrcTextView.wantsLayer = YES;
-    self.lrcTextView.layer.backgroundColor = [NSColor greenColor].CGColor;
-    [self.lrcTextView setMinSize:NSMakeSize(0.0, textScrollView.frame.size.height - 80)];
-    [self.lrcTextView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-    [self.lrcTextView setVerticallyResizable:YES];
-    [self.lrcTextView setHorizontallyResizable:YES];
-    [self.lrcTextView setAutoresizingMask:NSViewWidthSizable];
-    [[self.lrcTextView textContainer]setContainerSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-    [[self.lrcTextView textContainer]setWidthTracksTextView:YES];
-    [self.lrcTextView setFont:[NSFont fontWithName:@"PingFang-SC-Regular" size:17.0]];
-    [self.lrcTextView setEditable:NO];
-    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
-    style.lineSpacing = 10;//行间距
-    [self.lrcTextView setDefaultParagraphStyle:style];
-
-    [textScrollView setDocumentView:self.lrcTextView];
-    [_playerMainBoard addSubview:textScrollView];
-    
-}
-
-- (NSView *)viewForSplitView:(NSColor *)color{
-    //设置frame的值似乎没什么意义
-    NSView *leftView = [[NSView alloc]initWithFrame:NSZeroRect];
-    leftView.autoresizingMask = NSViewMinXMargin;
-    leftView.wantsLayer = YES;
-    leftView.layer.backgroundColor = color.CGColor;
-    [leftView setAutoresizesSubviews:YES];
-    return leftView;
-}
-
-
-#pragma mark - UI
-
-
-#pragma mark playerMainBoard
-/**
- 播发器主面板
-
- @return <#return value description#>
- */
--(ZBPlayerSplitView *)playerMainBoard{
-    if(!_playerMainBoard){
-        _playerMainBoard = [[ZBPlayerSplitView alloc]init];
-        _playerMainBoard.dividerStyle = NSSplitViewDividerStyleThick;
-        _playerMainBoard.vertical = YES;
-        _playerMainBoard.delegate = self;
-        _playerMainBoard.wantsLayer = YES;
-        _playerMainBoard.layer.backgroundColor = [NSColor greenColor].CGColor;
-        [_playerMainBoard adjustSubviews];
-        [self.contentView addSubview:_playerMainBoard];
-        [_playerMainBoard mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.contentView.mas_top).offset(0);
-            make.bottom.equalTo(self.contentView.mas_bottom).offset(-70);
-            make.left.equalTo(self.contentView.mas_left).offset(0);
-            make.right.equalTo(self.contentView.mas_right).offset(0);
-        }];
-        
-        //增加左右视图
-//        [_playerMainBoard addSubview:view1];
-//        [_playerMainBoard addSubview:view2];
-//    [_playerMainBoard insertArrangedSubview:[self viewForSplitView:[NSColor orangeColor]] atIndex:1];
-//            [_playerMainBoard drawDividerInRect:NSMakeRect(80, 0, 50, 50)];
-        [_playerMainBoard setPosition:100 ofDividerAtIndex:1];
+    NSMutableArray *arr1 =[NSMutableArray arrayWithArray:@[]];
+    NSMutableArray *arr2 =[NSMutableArray arrayWithArray:@[]];
+    for(int i = 0; i < 10000 ; i++){
+        NSString *str1 = [NSString stringWithFormat:@"A %d",i];
+        NSString *str2 = [NSString stringWithFormat:@"B %d",i];
+        [arr1 addObject:str1];
+        [arr2 addObject:str2];
     }
-    return _playerMainBoard;
-}
-
-
-
--(ZBAudioOutlineView *)audioListOutlineView{
-    if (!_audioListOutlineView) {
-     
-        _audioListOutlineView = [[ZBAudioOutlineView alloc]init];
-        _audioListOutlineView.delegate = self;
-        _audioListOutlineView.dataSource = self;
-        _audioListOutlineView.wantsLayer = YES;
-        
-        //设置行与行之间的交替变化属性，如颜色等
-//        [_audioListOutlineView setIndentationPerLevel:11];
-//        [_audioListOutlineView setAutoresizesOutlineColumn:NO];
-//        [_audioListOutlineView setUsesAlternatingRowBackgroundColors:NO];
-        
-     
-//        _audioListOutlineView.tableViewDelegate = self;
-//        [_audioListOutlineView makeViewWithIdentifier:NSOutlineViewDisclosureButtonKey owner:self];
-//        _audioListOutlineView.allowsMultipleSelection = NO;
-        _audioListOutlineView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
-        //    _audioListOutlineView.layer.backgroundColor = [NSColor blueColor].CGColor;
-        //    [self.contentView addSubview:s_audioListOutlineView];
-        //    _audioListOutlineView.outlineTableColumn.hidden = YES;
-        NSTableColumn *column1 = [[NSTableColumn alloc]initWithIdentifier:@"name"];//NSOutlineViewDisclosureButtonKey
-        column1.title = @" ";//@"可创建一个空的，不创建的话，内容会跑到bar底下";
-        [_audioListOutlineView addTableColumn:column1];
-        
-    }
+    self.tableViewDatas = [NSMutableArray arrayWithArray:@[arr1,arr2]];
+    [self.audioListScrollTableView.tableView reloadData];
     
-    return _audioListOutlineView;
+
 }
 
--(NSScrollView *)audioListScrollView{
-    if(!_audioListScrollView){
-        _audioListScrollView = [[NSScrollView alloc] init];
-        [_audioListScrollView setHasVerticalScroller:YES];
-        [_audioListScrollView setHasHorizontalScroller:NO];
-        [_audioListScrollView setFocusRingType:NSFocusRingTypeNone];
-        [_audioListScrollView setAutohidesScrollers:YES];
-        [_audioListScrollView setBorderType:NSBezelBorder];
-        [_audioListScrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [_audioListScrollView setDocumentView:_audioListOutlineView];
-    }
-    return _audioListScrollView;
-}
+
+
+#pragma mark - 播放器功能区 播放、暂停等
 
 -(void)controllBar{
     self.lastBtn = [self button:NSMakeRect(10, 15, 40, 40) title:@"上一曲" tag:1 image:@"statusBarPreviewSelected" alternateImage:@"statusBarPreview"];
@@ -359,15 +264,27 @@
     self.progressSlider.trackFillColor = [NSColor redColor];//跟踪填充颜色，需要先设置appearance
     [self.progressSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView.mas_left).offset(270);
-        make.bottom.equalTo(self.contentView.mas_bottom).offset(-15);
-        make.height.mas_equalTo(8);
+        make.bottom.equalTo(self.contentView.mas_bottom).offset(-13);
+        make.height.mas_equalTo(18);
         make.right.equalTo(self.contentView.mas_right).offset(-10);
     }];
     
-    self.audioNameTF = [self textField:NSMakeRect(270, 23, 450, 20) holder:@"歌名" fontsize:12];
-    self.durationTF  = [self textField:NSMakeRect(270, 43, 450, 15) holder:@"时长" fontsize:10];
+    self.audioNameTF = [self textField:NSMakeRect(270, 28, 450, 20) holder:@"歌名" fontsize:11];
+    self.durationTF  = [self textField:NSMakeRect(270, 48, 450, 15) holder:@"时长" fontsize:9];
 }
 
+- (NSButton *)buttonTitle:(NSString *)title tag:(NSInteger)tag superView:(NSView *)superView{
+    NSButton *btn = [self.object button:CGRectZero title:title tag:tag type:NSButtonTypeMomentaryChange target:self superView:superView];
+    btn.wantsLayer = YES;
+    btn.layer.backgroundColor = [NSColor colorWithCalibratedRed:0x2C/255.0 green:0x28/255.0 blue:0x2D/255.0 alpha:0xFF/255.0].CGColor;
+    btn.action = @selector(btnAction:);
+    btn.bordered = NO;//是否带边框
+    btn.layer.masksToBounds = YES;
+    btn.layer.cornerRadius = btn.frame.size.width/2;
+    btn.layer.borderColor = [NSColor whiteColor].CGColor;
+    btn.layer.borderWidth = 3;
+    return btn;
+}
 
 - (NSButton *)button:(NSRect)frame title:(NSString *)title tag:(NSInteger)tag image:(NSString *)image alternateImage:(NSString *)alternateImage {
     NSButton *btn = [self.object button:frame title:title tag:tag type:NSButtonTypeMomentaryChange target:self superView:self.contentView];
@@ -391,6 +308,7 @@
     return btn;
 }
 -(void)btnAction:(NSButton *)sender{
+    NSLog(@"sender.tag = %d",sender.tag);
 
     if(sender.tag == 0){
        
@@ -469,8 +387,12 @@
         _volumePopover.animates = YES;
         _volumePopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
         //[_popover close];
+        
+        ////监听方法只添加一次就可以了，重复添加会造成发送多个监听命令响应
+        ///监听音量变化
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(volumeSliderIsChanging:) name:@"volumeSliderIsChanging" object:nil];
     }
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(volumeSliderIsChanging:) name:@"volumeSliderIsChanging" object:nil];
+    
     return _volumePopover;
 }
 
@@ -491,62 +413,56 @@
         _playbackModelPopover.behavior = NSPopoverBehaviorTransient;
         _playbackModelPopover.animates = YES;
         _playbackModelPopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+        
+        //监听方法只添加一次就可以了，重复添加会造成发送多个监听命令响应
+        //监听播放模式改变：顺序、随机、循环等等
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelChanging:) name:@"playbackModelChanging" object:nil];
+        //监听是否允许切换播放列表
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelSwitchList:) name:@"playbackModelSwitchList" object:nil];
     }
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelChanging:) name:@"playbackModelChanging" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(playModelSwitchList:) name:@"playbackModelSwitchList" object:nil];
+   
+
     return _playbackModelPopover;
 }
 
 -(void)playModelChanging:(NSNotification *)noti{
     NSNumber *tag = noti.object[@"playbackModel"];
     if ([tag isEqual:@(0)]) {
-        NSLog(@"isCrossList_noti_随机播放_%@",tag);
-        self.isPlayModelRandom = YES;
-        self.isPlayModelSingleRepeat = NO;
+        NSLog(@"playModelChanging_noti_随机播放_%@",tag);
+        self.musicStatusCtrl.isPlayModelRandom = YES;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = NO;
         [self.playbackModelBtn setTitle:@"随机"];
     }else if ([tag isEqual:@(1)]){
-        NSLog(@"isCrossList_noti_循序播放_%@",tag);
-        self.isPlayModelRandom = NO;
-        self.isPlayModelSingleRepeat = NO;
+        NSLog(@"playModelChanging_noti_循序播放_%@",tag);
+        self.musicStatusCtrl.isPlayModelRandom = NO;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = NO;
         [self.playbackModelBtn setTitle:@"顺序"];
     }else if ([tag isEqual:@(2)]){
-        NSLog(@"isCrossList_noti_单曲循环_%@",tag);
+        NSLog(@"playModelChanging_noti_单曲循环_%@",tag);
         [self.playbackModelBtn setTitle:@"单曲"];
-        self.isPlayModelSingleRepeat = YES;
+        self.musicStatusCtrl.isPlayModelSingleRepeat = YES;
     }
 }
 -(void)playModelSwitchList:(NSNotification *)noti{
     NSNumber *tag = noti.object[@"isSwitchList"];
     if ([tag isEqual:@(0)]) {
-        NSLog(@"isSwitchList_noti_不允许跨列表_%@",tag);
-        self.isPlayModelSwitchList = NO;
+        NSLog(@"playModelSwitchListnoti_不允许跨列表_%@",tag);
+        self.musicStatusCtrl.isPlayModelSwitchList = NO;
     }else if ([tag isEqual:@(1)]){
-        NSLog(@"isSwitchList_noti_允许跨列表_%@",tag);
-        self.isPlayModelSwitchList = YES;
+        NSLog(@"playModelSwitchList_noti_允许跨列表_%@",tag);
+        self.musicStatusCtrl.isPlayModelSwitchList = YES;
     }
     
 }
 
-/** 随机播放 下一首音轨随机计算*/
--(void)randomNum{
-    //允许自动切换列表的时候才改变currentSection的值
-    if(self.isPlayModelSwitchList == YES){
-        u_int32_t sectionCount = (u_int32_t)self.treeModel.childNodes.count - 1;//减去播放历史的表
-        u_int32_t section = arc4random_uniform(sectionCount);
-        self.currentSection = section;
-    }
-    u_int32_t childsCount = (u_int32_t)[[self.treeModel.childNodes[self.currentSection] childNodes] count];
-    u_int32_t row = arc4random_uniform(childsCount);
-    self.currentRow = row;
-}
 
 /** 是否播放 */
 -(void)setIsPlaying:(BOOL)isPlaying{
     _isPlaying = isPlaying;
     if(isPlaying == YES){
         //播放
-        if (self.currentRow > [[self.treeModel.childNodes[self.currentSection] childNodes] count] || !self.currentRow) {
-            self.currentRow = 0;
+        if (self.musicStatusCtrl.currentRow > [[self.treeModel.childNodes[self.musicStatusCtrl.currentSection] childNodes] count] || !self.musicStatusCtrl.currentRow) {
+            self.musicStatusCtrl.currentRow = 0;
         }
         [self startPlaying];
     }else{
@@ -625,21 +541,206 @@
     }
 }
 
-#pragma mark -  NSSplitViewDelegate
+
+#pragma mark - NSSplitView 分屏控件
+/**
+ 播发器主面板 分屏控件初始化
+
+ @return return value description
+ */
+-(ZBPlayerSplitView *)playerSplitView{
+    if(!_playerSplitView){
+        _playerSplitView = [[ZBPlayerSplitView alloc]init];
+        _playerSplitView.dividerStyle = NSSplitViewDividerStyleThick;//分隔线的样式
+        _playerSplitView.vertical = YES;//方向
+        _playerSplitView.delegate = self;
+        _playerSplitView.wantsLayer = YES;
+        _playerSplitView.layer.backgroundColor = [NSColor blueColor].CGColor;
+        [_playerSplitView adjustSubviews];
+        [_playerSplitView setAutoresizesSubviews:YES];
+        [_playerSplitView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+        [self.contentView addSubview:_playerSplitView];
+        [_playerSplitView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self.contentView.mas_top).offset(0);
+            make.bottom.equalTo(self.contentView.mas_bottom).offset(-70);
+            make.left.equalTo(self.contentView.mas_left).offset(0);
+            make.right.equalTo(self.contentView.mas_right).offset(0);
+        }];
+        
+        //增加左右视图
+//        [_playerSplitView addSubview:view1];
+//        [_playerSplitView addSubview:view2];
+//    [_playerSplitView insertArrangedSubview:[self viewForSplitView:[NSColor orangeColor]] atIndex:1];
+//            [_playerSplitView drawDividerInRect:NSMakeRect(80, 0, 50, 50)];
+        [_playerSplitView setPosition:100 ofDividerAtIndex:1];
+    }
+    return _playerSplitView;
+}
+
+
+#pragma mark 给分屏控件组件添加 大纲目录列表视图 NSOutlineView
+/**
+ 给分屏视图组件添加子视图控件，左边大纲目录列表视图（歌曲目录列表），右边未定
+ */
+- (void)addSubviewsIntoSplitView{
+    
+    CGFloat tempWidth = self.frame.size.width/3;
+    CGFloat tempHeight = self.frame.size.height - 80;
+    
+    
+    //************增加左右分栏视图,数量任意加
+    //添加分屏 1
+    //分屏控件左边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitLeft、_audioListScrollOutlineView.outlineView
+    //outlineView一般不建议添加多个column，之添加一个column就行，tableView可以根据需求数量添加
+    self.audioListScrollOutlineView = [[ZBScrollOutlineView alloc]initWithColumnIdentifiers:@[@"columnID1"] className:@"ZBAudioOutlineView"];
+    self.audioListScrollOutlineView.frame = NSMakeRect(0, 0, tempWidth, tempHeight);
+    self.audioListScrollOutlineView.outlineView.delegate = self;
+    self.audioListScrollOutlineView.outlineView.dataSource = self;
+    [self.playerSplitView addSubview:self.audioListScrollOutlineView];//如果后续不继续添加分屏界面，那么就不会分屏，占满窗口
+    
+    
+
+    //*****右侧视图
+    
+    //添加分屏2
+    //分屏控件右边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitRight
+    //UI顺序是从底部到上的
+    NSView *splitRightView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    splitRightView.wantsLayer = YES;
+    splitRightView.layer.backgroundColor = [NSColor yellowColor].CGColor;
+    [self.playerSplitView addSubview:splitRightView];
+    
+
+    CGFloat btnwidth = 65;
+    CGFloat btnheight = 32;
+    CGFloat topOff = 5;
+    CGFloat splitRightTopViewHeight = btnheight * 2 + topOff * 3 + 15;
+    
+    self.audioListScrollTableView = [[ZBScrollTableView alloc]initWithColumnIdentifiers:@[@"column_table_ID0",@"column_table_ID1"] className:@""];
+    self.audioListScrollTableView.tableView.delegate = self;
+    self.audioListScrollTableView.tableView.dataSource = self;
+    [splitRightView addSubview:self.audioListScrollTableView];
+    [self.audioListScrollTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightView.mas_top).offset(splitRightTopViewHeight);
+        make.bottom.equalTo(splitRightView).offset(-10);
+        make.left.equalTo(splitRightView.mas_left).offset(10);
+        make.width.equalTo(splitRightView.mas_width).offset(-20);
+//        make.height.mas_equalTo(tempHeight-100);
+    }];
+
+    NSView *splitRightTopView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    splitRightTopView.wantsLayer = YES;
+    splitRightTopView.layer.backgroundColor = [NSColor greenColor].CGColor;
+    [splitRightView addSubview:splitRightTopView];
+    [splitRightTopView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightView.mas_top).offset(10);
+        make.bottom.equalTo(self.audioListScrollTableView.mas_top).offset(-5);
+        make.left.equalTo(splitRightView.mas_left).offset(10);
+        make.width.equalTo(splitRightView.mas_width).offset(-20);
+//        make.height.mas_equalTo(tempHeight/3);
+
+    }];
+    
+    
+
+    
+    /** 搜索历史按钮 */
+    self.searchHistoryBtn = [self buttonTitle:@"搜索历史" tag:21 superView:splitRightTopView];
+    [self.searchHistoryBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    self.searchScrollTextView = [[ZBScrollTextView alloc]initWithScrollTextView];
+    [splitRightTopView addSubview:self.searchScrollTextView];
+    [self.searchScrollTextView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchHistoryBtn.mas_right).offset(10);
+        make.width.mas_equalTo(230);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    /** 搜索按钮 */
+    self.searchBtn = [self buttonTitle:@"搜索" tag:22 superView:splitRightTopView];
+    [self.searchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchScrollTextView.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    /** 更换背景颜色按钮 */
+    self.bgColorBtn = [self buttonTitle:@"背景颜色" tag:23 superView:splitRightTopView];
+    [self.bgColorBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.searchBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+
+    }];
+    
+    
+    /** 播放历史按钮 */
+    self.playHistoryBtn = [self buttonTitle:@"播放历史" tag:24 superView:splitRightTopView];
+    [self.playHistoryBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.searchHistoryBtn.mas_bottom).offset(5);
+        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    /** 列表操作按钮 */
+    self.listActionBtn = [self buttonTitle:@"列表操作" tag:25 superView:splitRightTopView];
+    [self.listActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.playHistoryBtn.mas_top);
+        make.left.equalTo(self.playHistoryBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+    /** 播放管理按钮*/
+    self.playActionBtn = [self buttonTitle:@"播放管理" tag:26 superView:splitRightTopView];
+    [self.playActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.listActionBtn.mas_top);
+        make.left.equalTo(self.listActionBtn.mas_right).offset(10);
+        make.width.mas_equalTo(btnwidth);
+        make.height.mas_equalTo(btnheight);
+    }];
+    
+
+    
+    
+    
+}
+
+
+
+#pragma mark  NSSplitViewDelegate 分屏组件代理
 /** 设置每个栏的最小值，可以根据dividerIndex单独设置 */
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex {
+    CGFloat width0 = self.frame.size.width/3;
+    width0 = width0>350?350:width0;
+    
     if (dividerIndex == 0) {
-        return 400;
+        return width0;
     }else{
-        return 600;
+        CGFloat tempWidth = CGRectGetWidth(self.frame) - width0;
+        return tempWidth;
     }
 }
 /** 设置每个栏的最大值，可以根据dividerIndex单独设置 */
 -(CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex{
+    CGFloat width0 = self.frame.size.width/3;
+    width0 = width0>350?350:width0;
     if (dividerIndex == 0) {
-        return 500;
+        return width0;
     }else{
-        return 600;
+        CGFloat tempWidth = CGRectGetWidth(self.frame) - width0;
+        return tempWidth;
     }
 }
 
@@ -656,8 +757,12 @@
 }
 
 
+
+#pragma mark - NSOutlineView 歌曲大纲列表、目录结构组件
+
+
 //3.实现数据源协议
-#pragma mark - NSOutlineViewDataSource
+#pragma mark  NSOutlineViewDataSource 大纲目录、列表结构数据源
 -(NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item{
     //当item为空时表示根节点.
     if(!item){
@@ -701,7 +806,9 @@
     return result;
 }
 
-#pragma mark - NSOutlineViewDelegate
+
+
+#pragma mark  NSOutlineViewDelegate 大纲、目录结构视图代理
 
 -(NSTableRowView *)outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item{
     TreeNodeModel *nodeModel = item;
@@ -735,10 +842,11 @@
 
 
 //4.实现代理方法,绑定数据到节点视图
+//列表滚动时,出现新的column时，会执行这个代理，重载数据
 -(NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item{
 
     TreeNodeModel *model = item;
-
+    //根据标识符取column上的子view
     NSView *result  =  [outlineView makeViewWithIdentifier:tableColumn.identifier owner:nil];
     //可以通过这个代理填充数据，也可以通过NSTableRowView（可以自定义）中的drawRect:方法赋值。注：此处需要注意子控件的类型
     NSArray *subviews = [result subviews];
@@ -753,17 +861,6 @@
 
 
 
--(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
-    TreeNodeModel *model = (TreeNodeModel*)[self.audioListOutlineView itemAtRow:row];
-
-    NSView *result  =  [self.audioListOutlineView makeViewWithIdentifier:tableColumn.identifier owner:self];
-    //可以通过这个代理填充数据，也可以通过NSTableRowView（可以自定义）中的drawRect:方法赋值。注：此处需要注意子控件的类型
-    NSArray *subviews = [result subviews];
-    //NSImageView *imageView = subviews[0];
-    NSTextField *field = subviews[1];
-    field.stringValue = model.name;
-    return result;
-}
 
 -(CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item{
     TreeNodeModel *model = item;
@@ -775,9 +872,22 @@
 }
 
 
--(void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn{
-    NSLog(@"tableColumn_%@",tableColumn);
+-(void)outlineView:(NSOutlineView *)outlineView mouseDownInHeaderOfTableColumn:(NSTableColumn *)tableColumn{
+    NSLog(@"鼠标点击了tableColumn_%@",tableColumn);
 }
+//方法相似：-(void)outlineView:(NSOutlineView *)outlineView mouseDownInHeaderOfTableColumn:(NSTableColumn *)tableColumn
+-(void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn{
+    //可以通过identifie 区别点击的是哪一列表，也可以设置点击方法
+    NSLog(@"点击了tableColumn_%@",tableColumn);
+}
+-(void)outlineView:(NSOutlineView *)outlineView didDragTableColumn:(NSTableColumn *)tableColumn{
+    NSLog(@"拖拽了tableColumn_%@",tableColumn);
+}
+
+-(void)outlineView:(NSOutlineView *)outlineView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors{
+    
+}
+
 
 //“5.节点选择的变化事件通知
 //实现代理方法 outlineViewSelectionDidChange获取到选择节点后的通知
@@ -836,17 +946,17 @@
         //列表第一层 播放
         if (
             //self.currentSection != self.lastSection ||
-            self.currentRow != childIndexForItem ||
+            self.musicStatusCtrl.currentRow != childIndexForItem ||
 //            (self.currentSection == self.lastSection && self.currentRow != childIndexForItem) ||
-            (self.currentRow == childIndexForItem && self.currentSection != self.lastSection)
+            (self.musicStatusCtrl.currentRow == childIndexForItem && self.musicStatusCtrl.currentSection != self.musicStatusCtrl.lastSection)
             ){
             //记录上一次播放的位置
-            self.lastSection = self.currentSection;
-            self.lastRow     = self.currentRow;
+            self.musicStatusCtrl.lastSection = self.musicStatusCtrl.currentSection;
+            self.musicStatusCtrl.lastRow     = self.musicStatusCtrl.currentRow;
             
             //更新播放位置
-            self.currentSection = model.sectionIndex;
-            self.currentRow = childIndexForItem;
+            self.musicStatusCtrl.currentSection = model.sectionIndex;
+            self.musicStatusCtrl.currentRow = childIndexForItem;
             self.isPlaying = YES;
             NSLog(@"点击row:%ld , section:%ld",childIndexForItem,model.sectionIndex);
         }else{
@@ -881,11 +991,11 @@
 -(void)playerRow:(ZBPlayerRow *)playerRow didSelectRowForModel:(TreeNodeModel *)model{
     
     NSLog(@"ZBPlayerRow__%@",model.name);
-    NSInteger childIndexForItem = [self.audioListOutlineView childIndexForItem:model];
+    NSInteger childIndexForItem = [self.audioListScrollOutlineView.outlineView childIndexForItem:model];
     if (model.nodeLevel == 1) {
         //列表第一层 播放
-        if(self.currentRow != childIndexForItem){
-            self.currentRow = childIndexForItem;
+        if(self.musicStatusCtrl.currentRow != childIndexForItem){
+            self.musicStatusCtrl.currentRow = childIndexForItem;
             self.isPlaying = YES;
         }else{
             NSLog(@"正在播放：%@",model.name);
@@ -928,21 +1038,21 @@
         if(i == myModel.rowIndex){
             mo = myModel;
             if(myModel.isExpand == YES){
-                [self.audioListOutlineView expandItem:myModel expandChildren:NO];
+                [self.audioListScrollOutlineView.outlineView expandItem:myModel expandChildren:NO];
             }else{
-                [self.audioListOutlineView collapseItem:myModel collapseChildren:NO];
+                [self.audioListScrollOutlineView.outlineView collapseItem:myModel collapseChildren:NO];
             }
         }else{
             if(myModel.isExpand == YES){
                 mo.isExpand = NO;
-                [self.audioListOutlineView collapseItem:mo collapseChildren:NO];
+                [self.audioListScrollOutlineView.outlineView collapseItem:mo collapseChildren:NO];
             }
         }
         [self.treeModel.childNodes removeObjectAtIndex:i];
         [self.treeModel.childNodes insertObject:mo atIndex:i];
     }
     
-    for (id view in self.audioListOutlineView.subviews) {
+    for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
         if([view isKindOfClass:[ZBPlayerSection class]]){
             ZBPlayerSection *sec = (ZBPlayerSection *)view;
             TreeNodeModel *mo = self.treeModel.childNodes[sec.model.rowIndex];
@@ -950,6 +1060,40 @@
         }
     }
 }
+
+
+#pragma mark - 右侧，NSTableView的代理
+-(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView{
+    return [self.tableViewDatas[0] count];//由于每列的row数量是相等的，所以选0即可
+}
+
+-(id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+    if([tableColumn.identifier isEqualToString:@"column_table_ID0"]){
+        return self.tableViewDatas[0][row];
+    }else{
+        return self.tableViewDatas[1][row];
+    }
+    
+}
+
+/***
+ * 疑似废弃代码，无用，不会执行
+ * 创建tableview时执行，滚动列表时不会再执行(似乎屏蔽代码不执行也没问题)
+ * 页面中没有tableView，也没有需要实现的tableView的代理
+ */
+//-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+//
+//    NSLog(@"faosdjafpdsjaopfsdjfjaspdfjapsdojfadfapsjfpasjdfajspdfjapsdfajsop");
+//    TreeNodeModel *model = (TreeNodeModel*)[self.audioListScrollOutlineView.outlineView itemAtRow:row];
+//    //根据标识符取column上的子view
+//    NSView *result  =  [self.audioListScrollOutlineView.outlineView makeViewWithIdentifier:tableColumn.identifier owner:self];
+//    //可以通过这个代理填充数据，也可以通过NSTableRowView（可以自定义）中的drawRect:方法赋值。注：此处需要注意子控件的类型
+//    NSArray *subviews = [result subviews];
+//    //NSImageView *imageView = subviews[0];
+//    NSTextField *field = subviews[1];
+//    field.stringValue = model.name;
+//    return result;
+//}
 
 
 #pragma mark - 面板：NSOpenPanel 读取电脑文件 获取文件名，路径
@@ -960,12 +1104,20 @@
     openDlg.allowsMultipleSelection = YES;//--“是否允许多选”
     openDlg.allowedFileTypes = @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac"];//---“允许的文件名后缀”
     openDlg.treatsFilePackagesAsDirectories = YES;
+    openDlg.canCreateDirectories = YES;
+    openDlg.title = @"导入歌曲列表";
+    openDlg.message = @"选择需要导入的歌曲文件夹，每个文件夹就是一张表，歌曲按目录表展示";
+    
+    //初始化数据源
     __weak ZBPlayer * weakSelf = self;
+    self.treeModel = [[TreeNodeModel alloc]init];
     [openDlg beginWithCompletionHandler: ^(NSInteger result){
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
-            [weakSelf localFiles:[NSMutableArray arrayWithArray:fileURLs]];
+            //根据路径数组，分别读取本地路径下的文件
+            weakSelf.treeModel = [ZBAudioObject searchFilesInFolderPaths:[NSMutableArray arrayWithArray:fileURLs]];
+            [weakSelf.audioListScrollOutlineView.outlineView reloadData];
         }
     }];
 }
@@ -973,104 +1125,24 @@
 #pragma mark - 数据源
 -(void)initData{
 
-    self.currentRow = 0;
-    //获取缓存在本地的列表路径
-    //1.重新查找
-//    NSMutableArray *arr =  [ZBAudioObject getPlayList];
-//    if (arr.count > 0) {
-//        [self localFiles:arr];
-//    }
-    //2. 从历史记录中读取
+    self.musicStatusCtrl.currentRow = 0;
+    //从历史记录中读取播放列表
     NSMutableArray *musicList = [ZBAudioObject getMusicList];
     if (musicList.count > 0) {
         self.treeModel = [[TreeNodeModel alloc]init];
         self.treeModel.childNodes = [NSMutableArray arrayWithArray:musicList];
-        [self.audioListOutlineView reloadData];
+        [self.audioListScrollOutlineView.outlineView reloadData];
     }else{
         self.treeModel = [[TreeNodeModel alloc]init];
         //根节点
-        TreeNodeModel *rootNode1 = [self node:@"默认列表" level:0 superLevel:-1];
-        TreeNodeModel *history   = [self node:@"播放历史" level:0 superLevel:-1];
+        TreeNodeModel *rootNode1 = [ZBAudioObject node:@"默认列表" level:0 superLevel:-1];
+        TreeNodeModel *history   = [ZBAudioObject node:@"播放历史" level:0 superLevel:-1];
         [self.treeModel.childNodes addObjectsFromArray:@[rootNode1,history]];
     }
 
-
 }
 
--(TreeNodeModel *)node:(NSString *)text level:(NSInteger)level superLevel:(NSInteger)superLevel{
-    TreeNodeModel *nod = [[TreeNodeModel alloc]init];
-    nod.name = text;
-    nod.isExpand = NO;
-    nod.nodeLevel = level;
-    nod.superLevel = superLevel;
-    return nod;
-}
 
-/**
- 根据路径数组，分别读取本地路径下的文件
-
- @param fileURLs <#fileURLs description#>
- */
--(void)localFiles:(NSMutableArray *)fileURLs{
-    [ZBAudioObject saveFolderPathList:fileURLs];
-    NSMutableArray *baseUrls = [NSMutableArray array];
-    NSMutableArray *sectionTitles = [NSMutableArray array];
-    for(NSURL *url in fileURLs) {
-        //NSString *string = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
-        NSString *filePath = [[NSString stringWithFormat:@"%@",url] stringByRemovingPercentEncoding];
-        NSArray *ar = [filePath componentsSeparatedByString:@"/"];
-        if([ar.lastObject isEqualToString:@""]){
-            NSLog(@"folderName：%@，filePath：%@",ar[ar.count - 2],filePath);
-            [baseUrls addObject:url.path];
-            [sectionTitles addObject:ar[ar.count-2]];
-        }
-    }
-    //NSString *sourcePath = self.localMusicBasePath.length == 0 ? @"/Volumes/mac biao/music/日系/" : [NSString stringWithFormat:@"%@/",self.localMusicBasePath];
-    //dispatch_queue_t que = dispatch_queue_create("rer", DISPATCH_QUEUE_CONCURRENT);
-    NSMutableArray *localMusics = [NSMutableArray array];
-    for (int i = 0; i < sectionTitles.count; i++) {
-        NSMutableArray *arr = [NSMutableArray array];
-        [localMusics addObject:arr];
-        //dispatch_async(que, ^{
-        //更新列表
-        ZBAudioObject *ado = [[ZBAudioObject alloc]init];
-        [ado blockSearchInPath:baseUrls[i]];
-        [localMusics[i] addObjectsFromArray:ado.audios];
-        //});
-    }
-    self.treeModel = [[TreeNodeModel alloc]init];
-    
-    //2级节点
-    for(int i = 0; i< localMusics.count; i++){
-        NSMutableArray *audios = localMusics[i];
-        //根节点
-        TreeNodeModel *rootNode1 = [self node:[NSString stringWithFormat:@"%@ [%ld]",sectionTitles[i],audios.count] level:0 superLevel:-1];
-        rootNode1.sectionIndex = -1;//根节点没有sectionIndex
-        rootNode1.rowIndex = i;
-        
-        //排序
-        //NSMutableArray *sortAudios = [weakSelf defaultSort:audios];
-        NSMutableArray *sortAudios = [self.dataObject localSort:audios];
-        for(int j = 0; j < [sortAudios count]; j++){
-            ZBAudioModel *audio = sortAudios[j];
-            TreeNodeModel *childNode = [self node:audio.title level:1 superLevel:0];
-            childNode.audio = audio;
-            childNode.sectionIndex = i;
-            childNode.rowIndex     = j;
-            [rootNode1.childNodes addObject:childNode];
-        }
-        [self.treeModel.childNodes addObjectsFromArray:@[rootNode1]];
-    }
-    TreeNodeModel *history   = [self node:@"播放历史" level:0 superLevel:-1];
-    history.sectionIndex = -1;//根节点没有sectionIndex
-    history.rowIndex     = localMusics.count;
-    [self.treeModel.childNodes addObject:history];
-    [self.audioListOutlineView reloadData];
-    
-
-    [ZBAudioObject saveMusicList:self.treeModel.childNodes];
-
-}
 
 #pragma mark - 音乐
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -1082,53 +1154,14 @@
 
 /** 切歌  isNext：是否是下一首歌*/
 - (void)changeAudio:(BOOL)isNext{
-    if (self.treeModel != nil && self.treeModel.childNodes.count > 0) {
-        //记录上一次播放的位置
-        self.lastSection = self.currentSection;
-        self.lastRow     = self.currentRow;
-        
-        if (self.isPlayModelSingleRepeat == YES) {
-            //单曲循环，不切换音频索引
-            [self startPlaying];
-        }else{
-            if (self.isPlayModelRandom == YES) {
-                //随机播放，并判断是否需要切换列表
-                [self randomNum];
-            }else{
-                //下一首歌
-                if(isNext == YES){
-                    if(self.isPlayModelSwitchList == YES){
-                        //循序播放，自动切换列表
-                        if (self.currentRow + 1 >= [[self.treeModel.childNodes[self.currentSection] childNodes] count]) {
-                            if (self.currentSection + 1 >= self.treeModel.childNodes.count) {
-                                self.currentSection = 0;
-                            }else{
-                                self.currentSection = self.currentSection + 1;
-                            }
-                            self.currentRow = 0;
-                        }else{
-                            self.currentRow = self.currentRow + 1;
-                        }
-                    }else{
-                        //循序播放，不切换列表
-                        if (self.currentRow + 1 >= [[self.treeModel.childNodes[self.currentSection] childNodes] count]) {
-                            self.currentRow = 0;
-                        }else{
-                            self.currentRow = self.currentRow + 1;
-                        }
-                    }
-                }else{
-                    //上一首(不支持切换列表，以后考虑支持记忆前面播放的一首歌)
-                    if (self.currentRow - 1 < 0) {
-                        self.currentRow = 0;
-                    }else{
-                        self.currentRow = self.currentRow - 1;
-                    }
-                }
-            }
-            [self startPlaying];
-        }
+    
+    BOOL isStart = [self.musicStatusCtrl changeAudio:isNext dataSource:self.treeModel];
+    if(isStart == YES){
+        [self startPlaying];
+    }else{
+        NSLog(@"没有歌曲，不播放");
     }
+    
 }
 
 #pragma mark 开始播放本地音乐
@@ -1156,7 +1189,7 @@
     }
     if (self.treeModel != nil && self.treeModel.childNodes.count > 0) {
       
-        TreeNodeModel *model = (TreeNodeModel *)[self.treeModel.childNodes[self.currentSection] childNodes][self.currentRow];
+        TreeNodeModel *model = (TreeNodeModel *)[self.treeModel.childNodes[self.musicStatusCtrl.currentSection] childNodes][self.musicStatusCtrl.currentRow];
         ZBAudioModel *audio = [model audio];
         NSError *error =  nil;
         ZBAudioObject *abo = [[ZBAudioObject alloc]init];
@@ -1188,11 +1221,11 @@
         }
         
 //        [[(TreeNodeModel *)[self.treeModel.childNodes lastObject] childNodes] addObject:audio];
-//        [self.audioListOutlineView reloadData];
-//        [self.audioListOutlineView reloadItem:[self.treeModel.childNodes lastObject]];
-//        [self.audioListOutlineView beginUpdates];
-//        [self.audioListOutlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0]  inParent:@(1) withAnimation:NSTableViewAnimationEffectFade];
-//        [self.audioListOutlineView endUpdates];
+//        [self.audioListScrollOutlineView.outlineView reloadData];
+//        [self.audioListScrollOutlineView.outlineView reloadItem:[self.treeModel.childNodes lastObject]];
+//        [self.audioListScrollOutlineView.outlineView beginUpdates];
+//        [self.audioListScrollOutlineView.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0]  inParent:@(1) withAnimation:NSTableViewAnimationEffectFade];
+//        [self.audioListScrollOutlineView.outlineView endUpdates];
         self.progressSlider.integerValue = 0;
         self.audioNameTF.stringValue = audio.title;
         self.audioNameTF.toolTip = audio.title;
@@ -1200,30 +1233,41 @@
         [self.playBtn setAlternateImage:[NSImage imageNamed:@"statusBarPause"]];
         [self runLoopTimerForRemainTime];
         [self reloadSectionStaus];
-        //歌词
+        
+        //歌词 搜索
         //[self kugouApiSearchMusic:audio.title];
 //        [self QQApiSearchMusic:audio.title];
         NSDictionary *id3 = [ZBAudioObject getAudioFileID3:audio.path];
         NSLog(@"即将播放：%@，error__%@,ID3_%@",audio.title,error,id3);
     }
 }
+
+/**
+ 调整列表的收起与展开，并定位到当前为止
+ */
 -(void)reloadSectionStaus{
     //如果切换了列表，收起旧列表，展开当前歌曲所在列表
-    if(self.currentSection != self.lastSection){
+    if(self.musicStatusCtrl.currentSection != self.musicStatusCtrl.lastSection){
         for (int i = 0; i < self.treeModel.childNodes.count - 1; i++) {//减去随机
             TreeNodeModel *mo = self.treeModel.childNodes[i];
-            if (i == self.currentSection){
+            BOOL isE = NO;
+            if (i == self.musicStatusCtrl.currentSection){
                 mo.isExpand = YES;
-                [self.audioListOutlineView expandItem:mo expandChildren:YES];
+                isE  = YES;
+                [self.audioListScrollOutlineView.outlineView expandItem:mo expandChildren:YES];
             } else{
                 mo.isExpand = NO;
-                [self.audioListOutlineView collapseItem:mo collapseChildren:YES];
+                isE = NO;
+                [self.audioListScrollOutlineView.outlineView collapseItem:mo collapseChildren:YES];
             }
+            //这样做法可能比较耗资源
             [self.treeModel.childNodes removeObjectAtIndex:i];
             [self.treeModel.childNodes insertObject:mo atIndex:i];
+            //改成这种方式
+//            [[self.treeModel.childNodes objectAtIndex:i] setIsExpand:mo.isExpand];
         }
         
-        for (id view in self.audioListOutlineView.subviews) {
+        for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
             if([view isKindOfClass:[ZBPlayerSection class]]){
                 ZBPlayerSection *sec = (ZBPlayerSection *)view;
                 TreeNodeModel *mo = self.treeModel.childNodes[sec.model.rowIndex];
@@ -1233,26 +1277,11 @@
     }
     
     //位置计算错误
-//    for (id view in self.audioListOutlineView.subviews) {
-//        if([view isKindOfClass:[ZBPlayerRow class]]){
-//            ZBPlayerRow *ro = (ZBPlayerRow *)view;
-//            NSLog(@"ro.model.rowIndex_%ld",ro.model.rowIndex);
-//            if(ro.model.sectionIndex == self.currentSection){
-//                if(ro.model.rowIndex == self.currentRow){
-//                    ro.isSelectedMe = YES;
-//                }else{
-//                    ro.isSelectedMe = NO;
-//                }
-//            }else{
-//                ro.isSelectedMe = NO;
-//            }
-//        }
-//    }
-    NSLog(@"currSec:%ld,lastSecc:%ld,currRowc:%ld,lastRowc:%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow);
-    //[self.audioListOutlineView reloadData];
-    //页面滚动到当前row
-    [self.audioListOutlineView scrollRowToVisible:self.currentRow + self.currentSection + 5];
-    [self.audioListOutlineView deselectRow:self.currentRow + self.currentSection + 5];
+    NSLog(@"currSec:%ld,lastSecc:%ld,currRowc:%ld,lastRowc:%ld",self.musicStatusCtrl.currentSection,self.musicStatusCtrl.lastSection,self.musicStatusCtrl.currentRow,self.musicStatusCtrl.lastRow);
+    //[self.audioListScrollOutlineView.outlineView reloadData];
+    //页面滚动到当前row，根据row+section的数目总和确定位置，每+1代表多一行
+    [self.audioListScrollOutlineView.outlineView scrollRowToVisible:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
+    [self.audioListScrollOutlineView.outlineView deselectRow:(self.musicStatusCtrl.currentRow+1) + (self.musicStatusCtrl.currentSection+1) + 5];
 
 
 }
@@ -1277,277 +1306,12 @@
     //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didMiniaturize:) name:NSWindowDidMiniaturizeNotification object:nil];
     //    //窗口即将关闭
     //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(willClose:) name:NSWindowWillCloseNotification object:nil];
-}
-
-#pragma mark - 歌词
-/**
- 分析歌名中的歌手
- @param audioName 歌名
- @return 歌手数组
- */
-- (NSArray *)singers:(NSString *)audioName{
     
-    NSMutableArray *singles = [NSMutableArray array];
-    //前半段
-    NSArray *arr1 = [audioName componentsSeparatedByString:@" -"];
-    if(arr1.count == 1){
-        arr1 = [audioName componentsSeparatedByString:@"-"];
-    }
-    NSString *name = arr1.count > 1 ? arr1[0] : audioName;
-    [singles addObject:name];
+   
     
-    
-    //附加歌名
-    NSArray *arr2 = [audioName componentsSeparatedByString:@"- "];
-    NSString *title = arr2.count > 1 ? arr2[1] : audioName;
-    NSString *key = [title substringToIndex:title.length - 4];
-    key = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"." withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"：" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@":" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"、" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"&"];
-    key = [key stringByReplacingOccurrencesOfString:@")" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"）" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"]" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"】" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"(by" withString:@"&by"];
-
-
-    //冴えない彼女-2C112- DOUBLE RAINBOW DREAMS（by：澤村・スペンサー・英梨々&大西沙織&霞ヶ丘詩羽&茅野愛衣.mp3
-    NSInteger oldL = key.length;
-    key = [self keyword:key separatkey:@"&by" is0:NO];
-    key = [key localizedLowercaseString];
-    key = [key stringByReplacingOccurrencesOfString:@"cv" withString:@""];
-    key = [key stringByReplacingOccurrencesOfString:@"(" withString:@"&"];
-
-    if([key containsString:@"&"]){//多个歌手
-        NSArray *mults = [key componentsSeparatedByString:@"&"];
-        [singles addObjectsFromArray:mults];
-    }else if (oldL > key.length){
-        [singles addObject:key];
-    }
-    
-    //去除重复
-    NSArray *result = [singles valueForKeyPath:@"@distinctUnionOfObjects.self"];
-    NSMutableArray *lastArr = [NSMutableArray array];
-    for (int i = 0; i < result.count; i++) {
-        if(![result[i] isEqualToString:@""] || [result[i] length] > 0){
-            [lastArr addObject:result[i]];
-        }
-    }
-    return [lastArr mutableCopy];
-}
-/** 歌名处理 */
--(NSString *)keyword:(NSString *)keyword{
-    NSArray *arr1 = [keyword componentsSeparatedByString:@" -"];
-    if(arr1.count == 1){
-        arr1 = [keyword componentsSeparatedByString:@"-"];
-    }
-    NSArray *arr2 = [keyword componentsSeparatedByString:@"- "];
-    NSString *name = arr1.count > 1 ? arr1[0] : keyword;
-    NSString *title = arr2.count > 1 ? arr2[1] : keyword;
-    NSString *key = @"";
-    if (arr1.count < 2  || arr2.count < 2 ) {
-        key = keyword;
-    }else{
-        key = [NSString stringWithFormat:@"%@ - %@",name,title];
-    }
-    key = [key substringToIndex:key.length - 4];
-    NSString *point = [key substringFromIndex:key.length-1];
-    key = [point isEqualToString:@"."] ? [key substringToIndex:key.length - 1] : key;
-    key = [key stringByReplacingOccurrencesOfString:@"（" withString:@"("];
-    key = [key stringByReplacingOccurrencesOfString:@"[" withString:@"("];
-    key = [key stringByReplacingOccurrencesOfString:@"【" withString:@"("];
-    key = [self keyword:key separatkey:@"(by"  is0:YES];
-    return key;
-}
-
-/** 去除歌名后半段的 注释关键词，返回歌名 */
--(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0{
-    keyword = [keyword localizedLowercaseString];
-    if([keyword containsString:separatkey]){
-        if(is0 == YES){
-            return  [keyword componentsSeparatedByString:separatkey][0];
-        }else{
-            return  [keyword componentsSeparatedByString:separatkey][1];
-        }
-    }else{
-        return keyword;
-    }
-}
-/**
- 查询歌曲，获取hash
- */
-- (void)kugouApiSearchMusic:(NSString *)keyword{
-    keyword = [self keyword:keyword];
-    AFHTTPSessionManager *ma = [AFHTTPSessionManager manager];
-    ma.requestSerializer = [AFJSONRequestSerializer serializer];
-    ma.responseSerializer = [AFJSONResponseSerializer serializer];
-    ma.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", nil];
-    NSString *url = [NSString stringWithFormat:@"http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword=%@&page=1&pagesize=20&showtype=1",keyword];
-
-    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
-    [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"searchMusicFromKugou：%@",responseObject);
-        NSArray *ar = responseObject[@"data"][@"info"];
-        if (ar.count > 0) {
-            [weakSelf kugouApiSearchKrc:ar[0][@"hash"]];
-        }
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"searchMusicFromKugouError：%@",error);
-    }];
-}
-
-- (void)kugouApiSearchKrc:(NSString *)hash{
-    AFHTTPSessionManager *ma = [AFHTTPSessionManager manager];
-    ma.requestSerializer = [AFJSONRequestSerializer serializer];
-    ma.responseSerializer = [AFJSONResponseSerializer serializer];
-    ma.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", nil];
-//    http://www.kugou.com/yy/index.php?r=play/getdata&hash=67f4b520ee80d68959f4bf8a213f6774
-    NSString *url = [NSString stringWithFormat:@"http://www.kugou.com/yy/index.php?r=play/getdata&hash=%@",hash];
-    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
-    [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"searchKRCFromKugou：%@",responseObject);
-        if([responseObject[@"data"] count]>0){
-            weakSelf.lrcTextView.string = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"lyrics"]];
-        }else{
-
-            NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow];
-            weakSelf.lrcTextView.string = [NSString stringWithFormat:@"歌词下载失败：err_code: %ld\n%@",[responseObject[@"err_code"] integerValue],d];
-        }
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"searchKRCFromKugouError：%@",error);
-    }];
 }
 
 
-/**
- 查询歌曲，获取hash
- */
-- (void)QQApiSearchMusic:(NSString *)keyword{
-    
-    NSArray *singers = [self singers:keyword];
-    keyword = [self keyword:keyword];
-    
-    AFHTTPSessionManager *ma = [AFHTTPSessionManager manager];
-    ma.requestSerializer = [AFJSONRequestSerializer serializer];
-    ma.responseSerializer = [AFJSONResponseSerializer serializer];
-    ma.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", nil];
-    NSString *url = [NSString stringWithFormat:@"https://api.bzqll.com/music/tencent/search?key=579621905&s=%@&limit=100&offset=0&type=lrc",keyword];
-    
-    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    __weak ZBPlayer * weakSelf = self;
-    [ma GET:url parameters:nil headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"QQApiSearchMusic：%@",responseObject);
-        NSArray *ar = responseObject[@"data"];
-        
-        //对比失误率较高，应该允许选择
-        NSString *songName = [keyword componentsSeparatedByString:@"- "][1];
-        NSMutableArray *arr = [NSMutableArray array];
-        for (int i = 0; i < ar.count; i++){
-            NSDictionary *dic = ar[i];
-            NSArray *dicSingers = dic[@"singer"];
-            BOOL isSameSinger   = NO;
-            for (int j = 0; j < dicSingers.count; j++) {
-                NSDictionary *dicj = dicSingers[j];
-                NSString *js = [NSString stringWithFormat:@"%@",dicj[@"name"]];
-                for (int k = 0; k < singers.count; k++) {
-                    NSString *ks = [NSString stringWithFormat:@"%@",singers[k]];
-                    if ([ks isEqualToString:js]) {
-                        isSameSinger = YES;
-                    }
-                }
-            }
-            
-            NSString *dicSong = dic[@"songname"];
-            BOOL isSameSong   = NO;
-            songName = [songName localizedLowercaseString];
-            dicSong = [dicSong localizedLowercaseString];
-            songName = [songName stringByReplacingOccurrencesOfString:@" " withString:@""];
-            dicSong = [dicSong stringByReplacingOccurrencesOfString:@" " withString:@""];
-            if([songName isEqualToString:dicSong]){
-                isSameSong = YES;
-            }else if (songName.length == dicSong.length){
-                isSameSong = YES;
-            }
-            //
-            if(isSameSong == YES && isSameSinger == YES){
-                [arr addObject:dic];
-            }
-                
-//            float pe = [self likePercent:songName OrString:dicSong];
-//            NSLog(@"当前：%@，\n字段：%@",songName,dicSong);
-        }
-        
-        if (arr.count > 0) {
-            NSString *str = [NSString stringWithFormat:@"%@",arr[0][@"content"]];
-            str = [str stringByReplacingOccurrencesOfString:@"<em>" withString:@""];
-            str = [str stringByReplacingOccurrencesOfString:@"</em>" withString:@""];
-            str = [str stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
-            str = [str stringByReplacingOccurrencesOfString:@"\n " withString:@"\n"];
-            weakSelf.lrcTextView.string = [NSString stringWithFormat:@"%@",str];
-        }else{
-            weakSelf.lrcTextView.string = keyword;
-        }
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"searchMusicFromKugouError：%@",error);
-        NSString *d = [NSString stringWithFormat:@"currentSection：%ld，lastSection：%ld,currentRow：%ld,lastRow：%ld",self.currentSection,self.lastSection,self.currentRow,self.lastRow];
-        weakSelf.lrcTextView.string = [NSString stringWithFormat:@"歌词下载失败：err_code: %ld\n%@",error.code,d];
-    }];
-}
-
-//- (float)likePercent:(NSString *)target OrString:(NSString *)orString{
-//
-//    int n = (int)orString.length;
-//    int m = (int)target.length;
-//    if (m == 0) return n;
-//    if (n == 0) return m;
-//    //Construct a matrix, need C99 support
-//
-//    int matrix[n + 1][m + 1];
-//    memset(&matrix[0], 0, m+1);
-//    for(int i=1; i<=n; i++) {
-//        memset(&matrix[i], 0, m+1);
-//        matrix[i][0]=i;
-//    }
-//    for(int i=1; i<=m; i++) {
-//        matrix[0][i]=i;
-//    }
-//    for(int i=1;i<=n;i++) {
-//        unichar si = [orString characterAtIndex:i-1];
-//        for(int j=1;j<=m;j++){
-//
-//            unichar dj = [target characterAtIndex:j-1];
-//            int cost;
-//            if(si==dj){
-//                cost=0;
-//            }
-//            else{
-//                cost=1;
-//            }
-//            const int above=matrix[i-1][j]+1;
-//            const int left=matrix[i][j-1]+1;
-//            const int diag=matrix[i-1][j-1]+cost;
-//            matrix[i][j]=min(above,min(left,diag));
-//        }
-//    }
-//    return 100.0 - 100.0*matrix[n][m]/target.length;
-//
-//}
 
 
 
