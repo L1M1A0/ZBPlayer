@@ -334,8 +334,8 @@
             filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1037"
-            endingLineNumber = "1037"
+            startingLineNumber = "1183"
+            endingLineNumber = "1183"
             landmarkName = "-changeAudio:"
             landmarkType = "7">
          </BreakpointContent>
@@ -350,8 +350,8 @@
             filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1039"
-            endingLineNumber = "1039"
+            startingLineNumber = "1185"
+            endingLineNumber = "1185"
             landmarkName = "-changeAudio:"
             landmarkType = "7">
          </BreakpointContent>
@@ -398,8 +398,8 @@
             filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1111"
-            endingLineNumber = "1111"
+            startingLineNumber = "1257"
+            endingLineNumber = "1257"
             landmarkName = "-startPlaying"
             landmarkType = "7">
          </BreakpointContent>
@@ -439,16 +439,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "ACA403E0-EE24-415B-9003-B53AA1D8AD08"
+            uuid = "E1789266-2E0E-4FBB-BBC3-E5CB62FB8B09"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
+            filePath = "ZBPlayer/object/ZBAudioObject.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "892"
-            endingLineNumber = "892"
-            landmarkName = "-playerRow:menuItem:"
+            startingLineNumber = "453"
+            endingLineNumber = "453"
+            landmarkName = "-enumerateAudio:folder:block:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "89BE9971-7B5F-4E8D-A466-47D932DF8E3D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZBPlayer/object/ZBAudioObject.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "425"
+            endingLineNumber = "425"
+            landmarkName = "-enumerateAudio:folder:block:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "55345163-1762-4A95-8813-8019648B251D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZBPlayer/object/ZBAudioObject.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
+            landmarkName = "-enumerateAudio:folder:block:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

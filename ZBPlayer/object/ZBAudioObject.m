@@ -349,6 +349,8 @@
  
  注：这个方法不太好（应该有系统替代的方法，要去了解文件系统管理相关的API）
  
+ 思路：1. 先找出文件
+ 
  @param filePath 本地基础路径
  */
 -(void)blockSearchInPath:(NSString *)filePath{
@@ -422,6 +424,11 @@
     NSError *error;
     NSArray  *newDirs = [fileManager contentsOfDirectoryAtPath:newPath error:&error];
     NSLog(@"遍历：error：%@",error);
+    for(int i = 0;i<newDirs.count;i++){
+        NSLog(@"遍历：error：%@",[newDirs[i] stringByRemovingPercentEncoding]);
+    }
+    
+    
     __weak ZBAudioObject * weakSelf = self;
     [newDirs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSString *filename = (NSString *)obj;
@@ -437,7 +444,7 @@
             //url编码 解码路劲（重要）
             filePath = [filePath stringByRemovingPercentEncoding];
             
-            NSLog(@"正在导入：%@",filename);
+//            NSLog(@"正在导入：%@",filename);
             ZBAudioModel *model = [[ZBAudioModel alloc]init];
             model.title = filename;
             model.path = filePath;
@@ -447,9 +454,13 @@
         }else if(extension.length == 0){
             //如果是文件夹，那就继续遍历子文件夹中的
             block(YES,newPath,obj);
+        }else {
+//            NSLog(@"正在导入其他格式的文件：%@",filename);
         }
     }];
 }
+
+
 
 
 /// 设置TreeNodeModel的节点信息
