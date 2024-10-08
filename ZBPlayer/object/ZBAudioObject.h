@@ -18,15 +18,15 @@
 @class TreeNodeModel;
 
 
+
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ZBAudioObject : NSObject
 
 
-/**
- 遍历之后获得的文件数组
- */
-@property (nonatomic, strong) NSMutableArray *audios;
+
 
 
 
@@ -42,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 /** 去除歌名后半段的 注释关键词，返回歌名 */
 +(NSString *)keyword:(NSString *)keyword separatkey:(NSString*)separatkey is0:(BOOL)is0;
 
+/// 根据传入的字符串，使用key分隔成数组，返回前部分，最后如果有多的，用空格拼接成新的字符串
+/// @param string 传入的字符串
+/// @param separatedkey 分隔符
+-(NSString *)artistNameInString:(NSString *)string separatedkey:(NSString *)separatedkey;
 #pragma mark 获取音频文件的元数据 ID3
 /**
  获取音频文件的元数据 ID3
@@ -54,10 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  根据扩展名，判断是不是音频文件
  
- @param extension 扩展名
+ @param filename 文件名
  @return YES:音频文件
  */
--(BOOL)isAudioFile:(NSString *)extension;
+-(BOOL)isAudioFile:(NSString *)filename;
 
 /**
  是否是AVAudioPlayer支持的格式
@@ -98,6 +102,14 @@ NS_ASSUME_NONNULL_BEGIN
  @param block  isFolder：是否是文件夹。basePath：当前基础路径。folder：子文件夹名字
  */
 -(void)enumerateAudio:(NSString *)basePath folder:(NSString *)folder block:(void (^)(BOOL, NSString * _Nonnull, NSString * _Nonnull))block;
+
+/**
+ 
+ 被选中的文件夹的路径作为基础路径，由此搜索该文件夹及其子目录下的所有符合条件的数据
+ 
+ */
+/// @param basePath 被选中的文件夹的路径作为基础路径
+-(void)findAudiosInPath:(NSString *)basePath sectionTitle:(NSString *)sectionTitle countIndex:(int)countIndex;
 
 /// 设置TreeNodeModel的节点信息
 /// @param text 节点名字

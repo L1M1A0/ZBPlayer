@@ -32,8 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
  @param array description
  @return 指定地区信息的顺序是数字、中文、英文
  */
-- (NSMutableArray *)localSort:(NSMutableArray<ZBAudioModel*> *)array;
+- (NSMutableArray *)sortZBAudioModelWithArray:(NSMutableArray<ZBAudioModel*> *)array;
 
+/// 根据字符串数组，排序
+/// @param array 字符串数据
+-(NSMutableArray *)sortWithString:(NSMutableArray *)array;
 
 #pragma mark - 时间计算
 

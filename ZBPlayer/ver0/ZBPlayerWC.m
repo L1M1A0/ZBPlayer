@@ -791,17 +791,11 @@
     }
 }
 -(void)playerRow:(ZBPlayerRow *)playerRow menuItem:(NSMenuItem *)menuItem{
-    if ([menuItem.title isEqualToString:kMenuItemInitializeList]) {//初始列表
+    if ([menuItem.title isEqualToString:kMenuItemImportFolderList]) {//初始列表
         [self openPanel];
-    }else if ([menuItem.title isEqualToString:kMenuItemInsertSection]) {//新增列表
+    }else if ([menuItem.title isEqualToString:kMenuItemSectionInsert]) {//新增列表
         
-    }else if ([menuItem.title isEqualToString:kMenuItemUpdateSection]) {//更新本组
-        
-    }else if ([menuItem.title isEqualToString:kMenuItemDeleteSection]) {//删除本组
-        
-    }else if ([menuItem.title isEqualToString:kMenuItemLocatePlaying]) {//当前播放
-        [self reloadSectionStaus];
-    }else if ([menuItem.title isEqualToString:kMenuItemSearchMusic])  {//搜索音乐
+    }else if ([menuItem.title isEqualToString:kMenuItemSectionUpdate]) {//更新本组
         
     }else if ([menuItem.title isEqualToString:kMenuItemShowInFinder]) {//定位文件
         [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[[NSURL fileURLWithPath:playerRow.model.audio.path]]];
@@ -831,7 +825,13 @@
         if(result==NSFileHandlingPanelOKButton || result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
-            [weakSelf localFiles:[NSMutableArray arrayWithArray:fileURLs]];
+//            [weakSelf localFiles:[NSMutableArray arrayWithArray:fileURLs]];
+            
+            //根据路径数组，分别读取本地路径下的文件（版本1，回调方法找寻文件）
+            weakSelf.treeModel = [ZBAudioObject searchFilesInFolderPaths:[NSMutableArray arrayWithArray:fileURLs]];
+            [weakSelf.audioListOutlineView reloadData];
+            
+            
         }
     }];
 }
@@ -893,7 +893,7 @@
         //更新列表
         ZBAudioObject *ado = [[ZBAudioObject alloc]init];
         [ado blockSearchInPath:baseUrls[i]];
-        [localMusics[i] addObjectsFromArray:ado.audios];
+//        [localMusics[i] addObjectsFromArray:ado.audios];
         //});
     }
     self.treeModel = [[TreeNodeModel alloc]init];
@@ -906,7 +906,7 @@
         
         //排序
         //NSMutableArray *sortAudios = [weakSelf defaultSort:audios];
-        NSMutableArray *sortAudios = [self.dataObject localSort:audios];
+        NSMutableArray *sortAudios = [self.dataObject sortZBAudioModelWithArray:audios];
         for(int j = 0; j < [sortAudios count]; j++){
             ZBAudioModel *audio = sortAudios[j];
             TreeNodeModel *childNode = [self node:audio.title level:1 superLevel:0];
@@ -1074,7 +1074,7 @@
         //        [self kugouApiSearchMusic:audio.title];
         [self QQApiSearchMusic:audio.title];
         [self reloadSectionStaus];
-        [ZBAudioObject getAudioFileID3:audio.path];
+//        [ZBAudioObject getAudioFileID3:audio.path];
     }
 }
 -(void)reloadSectionStaus{

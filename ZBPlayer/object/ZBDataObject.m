@@ -41,7 +41,7 @@
  @param array description
  @return 指定地区信息的顺序是数字、中文、英文
  */
-- (NSMutableArray *)localSort:(NSMutableArray<ZBAudioModel*> *)array
+- (NSMutableArray *)sortZBAudioModelWithArray:(NSMutableArray<ZBAudioModel*> *)array
 {
     
     //        NSCaseInsensitiveSearch = 1,    //不区分大小写比较
@@ -63,6 +63,27 @@
     }];
     //    NSLog(@"after %@ , result is %@",NSStringFromSelector(_cmd),sortedArray);
     return [sortedArray mutableCopy];
+}
+
+
+/// 根据字符串数组，排序，与上面方法是一样的，不一样写法而已
+/// @param array 字符串数据
+-(NSMutableArray *)sortWithString:(NSMutableArray *)array{
+    
+    NSMutableArray *sortedArr = [NSMutableArray array];
+
+
+    //排序方式1 ：对音频文件进行排序：设置排序的规则
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"];
+    NSSortDescriptor *sortDescriptor1 = [[NSSortDescriptor alloc] initWithKey:nil ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
+        NSRange string1Range = NSMakeRange(0, [obj1 length]);
+        return [obj1 compare:obj2 options:NSForcedOrderingSearch range:string1Range locale:locale];
+    }];
+    //开始排序，返回排序后的数组
+    [sortedArr addObjectsFromArray:[array sortedArrayUsingDescriptors:@[sortDescriptor1]]];
+
+    return sortedArr;
+    
 }
 
 

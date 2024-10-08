@@ -9,7 +9,11 @@
 #import "ZBPlayerRow.h"
 #import "Masonry.h"
 
+@interface ZBPlayerRow(){
+    NSString *appVersionType;
+}
 
+@end
 @implementation ZBPlayerRow
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -17,7 +21,7 @@
     
     // Drawing code here.
     //跟踪鼠标
-    NSTrackingArea *trackingArea = [[NSTrackingArea alloc]initWithRect:dirtyRect options:NSTrackingMouseEnteredAndExited|NSTrackingActiveAlways owner:self userInfo:nil];
+    NSTrackingArea *trackingArea = [[NSTrackingArea alloc]initWithRect:self.bounds options:NSTrackingMouseEnteredAndExited|NSTrackingActiveAlways owner:self userInfo:nil];
     [self addTrackingArea:trackingArea];
  
 //    self.textField.stringValue = self.model.name;
@@ -27,7 +31,10 @@
 
 }
 -(void)drawSelectionInRect:(NSRect)dirtyRect{
-    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
+    NSLog(@"点击列表时重绘当前row的样式_%d,%d",self.model.sectionIndex,self.model.rowIndex);
+
+//    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
+
         NSRect selectionRect = NSInsetRect(self.bounds, 1, 1);//重绘的范围
         [[NSColor colorWithWhite:0.9 alpha:1] setStroke];//绘制边框
 //        [[NSColor greenColor] setFill];//绘制背景色
@@ -37,7 +44,7 @@
         //NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRect:selectionRect];
         [selectionPath fill];
         [selectionPath stroke];
-    }
+//    }
 }
 
 //-(void)setIsSelectedMe:(BOOL)isSelectedMe{
@@ -60,29 +67,21 @@
 
 
 -(void)creatViewWithLevel:(NSInteger)level{
+    
+    //获取app的界面版本
+    NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+    appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
+  
+    
+    
     //0：不向右缩进。1、2等其他数字，像右缩进倍数
     level = 0;
     NSInteger leftgap = 10;
     NSInteger topGap = 5;
     NSInteger rowHeight = ZBPlayerRowHeight - topGap * 2;
     NSColor *color = [NSColor colorWithRed:1 green:1 blue:1 alpha:0];
-
-    self.wantsLayer = YES;
-    self.layer.backgroundColor = color.CGColor;
-    self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];
-    self.imageView.wantsLayer = YES;
-    self.imageView.layer.backgroundColor = color.CGColor;
-    self.imageView.image = [NSImage imageNamed:@"more_addTo"];
-    self.imageView.hidden  = YES;//鼠标滑过的时候显示
-    [self addSubview:self.imageView];
-    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.mas_left).offset(leftgap+leftgap*level);
-        make.top.equalTo(self.mas_top).offset(topGap);
-        make.width.mas_equalTo(rowHeight);
-        make.height.mas_equalTo(rowHeight);
-    }];
-    
-    
+ 
+ 
     //ZBTextFieldCell
 //    self.textField = [[ZBTextFieldCell alloc]init];
 //    self.textField.textColor = [NSColor whiteColor];
@@ -104,32 +103,60 @@
 //    self.textField.layer.backgroundColor = [NSColor orangeColor].CGColor;
 //    self.textField.stringValue = @"";
 //    self.textField.backgroundColor = [NSColor cyanColor];
-    [self addSubview:self.textField];
-    [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.imageView.mas_right).offset(topGap);
-//        make.width.mas_equalTo(@310);//设置宽，同时设置setLineBreakMode支持换行
-        make.right.equalTo(self.mas_right).offset(-35-topGap);
-        make.centerY.equalTo(self.imageView.mas_centerY);//对齐前面的控件，垂直居中（不用设置高度,自动计算高度）
-    }];
+    
+    if([appVersionType isEqualToString:@"1"]){
+        self.wantsLayer = YES;
+        self.layer.backgroundColor = color.CGColor;
+        self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];
+        self.imageView.wantsLayer = YES;
+        self.imageView.layer.backgroundColor = color.CGColor;
+        self.imageView.image = [NSImage imageNamed:@"more_addTo"];
+        self.imageView.hidden  = YES;//鼠标滑过的时候显示
+        [self addSubview:self.imageView];
+        [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.mas_left).offset(leftgap+leftgap*level);
+            make.top.equalTo(self.mas_top).offset(topGap);
+            make.width.mas_equalTo(rowHeight);
+            make.height.mas_equalTo(rowHeight);
+        }];
+        
+        [self addSubview:self.textField];
+        [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.imageView.mas_right).offset(topGap*2);
+    //        make.width.mas_equalTo(@310);//设置宽，同时设置setLineBreakMode支持换行
+            make.right.equalTo(self.mas_right).offset(-35-topGap);
+            make.centerY.equalTo(self.imageView.mas_centerY);//对齐前面的控件，垂直居中（不用设置高度,自动计算高度）
+            
+        }];
+        
+        self.moreBtn = [[NSButton alloc]initWithFrame:NSZeroRect];
+        [self.moreBtn setButtonType:NSButtonTypeMomentaryChange];
+        self.moreBtn.bezelStyle = NSBezelStyleRounded;
+        self.moreBtn.title = @"";
+        self.moreBtn.image = [NSImage imageNamed:@"cellMore"];
+        self.moreBtn.hidden = YES;
+        self.moreBtn.bordered = NO;//是否带边框
+        self.moreBtn.wantsLayer = YES;
+        self.moreBtn.layer.backgroundColor = color.CGColor;
+        self.moreBtn.target = self;
+        self.moreBtn.action = @selector(btnAction:);
+        [self addSubview:self.moreBtn];
+        [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    //        make.left.equalTo(self.textField.mas_right).offset(topGap);
+            make.right.equalTo(self.mas_right).offset(-topGap*2);
+            make.width.mas_equalTo(@25);
+            make.centerY.equalTo(self.textField.mas_centerY);
+        }];
+        
+    }else {
+        [self addSubview:self.textField];
+        [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.mas_left).offset(leftgap*4 + leftgap*level);
+            make.right.equalTo(self.mas_right).offset(-35-topGap);
+            make.centerY.equalTo(self.mas_centerY);//对齐前面的控件，垂直居中（不用设置高度,自动计算高度）
+        }];
+    }
 
-    self.moreBtn = [[NSButton alloc]initWithFrame:NSZeroRect];
-    [self.moreBtn setButtonType:NSButtonTypeMomentaryChange];
-    self.moreBtn.bezelStyle = NSBezelStyleRounded;
-    self.moreBtn.title = @"";
-    self.moreBtn.image = [NSImage imageNamed:@"cellMore"];
-    self.moreBtn.hidden = YES;
-    self.moreBtn.bordered = NO;//是否带边框
-    self.moreBtn.wantsLayer = YES;
-    self.moreBtn.layer.backgroundColor = color.CGColor;
-    self.moreBtn.target = self;
-    self.moreBtn.action = @selector(btnAction:);
-    [self addSubview:self.moreBtn];
-    [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(self.textField.mas_right).offset(topGap);
-        make.right.equalTo(self.mas_right).offset(-topGap*2);
-        make.width.mas_equalTo(@25);
-        make.centerY.equalTo(self.textField.mas_centerY);
-    }];
 }
 
 -(void)setModel:(TreeNodeModel *)model{
@@ -159,8 +186,7 @@
 //    NSLog(@"按下了鼠标右键");
     NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
 //    NSArray *arr = @[@"初始列表",@"新增列表",@"更新本组",@"删除本组",@"当前播放",@"搜索音乐",@"定位文件"];
-    NSArray *arr = @[kMenuItemInitializeList,kMenuItemInsertSection,kMenuItemUpdateSection,
-                     kMenuItemDeleteSection,kMenuItemLocatePlaying,kMenuItemSearchMusic,kMenuItemShowAll,kMenuItemShowInFinder];
+    NSArray *arr = @[kMenuItemImportFolderList,kMenuItemSectionInsert,kMenuItemSectionUpdate,kMenuItemLocatePlaying,kMenuItemSectionCollapseAll,kMenuItemShowInFinder];
 
     for (int i = 0; i < arr.count; i++) {
         [theMenu insertItem:[self menuItem:arr[i] tag:i] atIndex:i];

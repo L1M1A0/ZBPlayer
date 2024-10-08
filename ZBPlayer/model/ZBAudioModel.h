@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
  音频文件扩展名（文件格式）
  */
 @property (nonatomic, copy) NSString *extension;
+/**
+ 音频文件 的艺术家（歌手、作者等创作者）
+ */
+@property (nonatomic, copy) NSString *artist;
 
 @end
 

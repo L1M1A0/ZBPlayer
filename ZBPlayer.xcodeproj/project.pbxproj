@@ -29,10 +29,11 @@
 		05D4D54D2298DB8800BAB177 /* ZBLyricObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D54C2298DB8800BAB177 /* ZBLyricObject.m */; };
 		05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 05E5077D22964EFE008794F3 /* 开发备忘.rtf */; };
 		28C9590A9B6B1A53A635930E /* Pods_ZBPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54AF3BAD3A642887FC39EAB5 /* Pods_ZBPlayer.framework */; };
+		2C9F2CD42CB26F1900952C50 /* ZBTableRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9F2CD32CB26F1900952C50 /* ZBTableRowView.m */; };
 		2CA121DE2CAC42CF00646E0E /* ZBScrollOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA121DD2CAC42CF00646E0E /* ZBScrollOutlineView.m */; };
 		2CA121E12CAC608B00646E0E /* ZBScrollTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA121E02CAC608B00646E0E /* ZBScrollTableView.m */; };
+		2CA4E25F2CB120EB00C6242E /* 英文规范 笔记.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2CA4E25E2CB120EB00C6242E /* 英文规范 笔记.rtf */; };
 		2CC1F8902CA9852200403D97 /* ZBMusicStatusControllerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */; };
-		2CC4DEBB2CAD944E00F1EB72 /* ZBAudioObject_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC4DEBA2CAD944D00F1EB72 /* ZBAudioObject_2.m */; };
 		2CC8FB162CA93D590032FF28 /* ZBPlayerWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */; };
 		2CC8FB172CA93D590032FF28 /* ZBPlayerWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */; };
 		2CC8FB182CA93D590032FF28 /* ZBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0E2CA93D580032FF28 /* ZBPlayer.m */; };
@@ -113,14 +114,15 @@
 		05E5077B22964180008794F3 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		05E5077D22964EFE008794F3 /* 开发备忘.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "开发备忘.rtf"; sourceTree = "<group>"; };
 		12FA03CF7846F4070C2167E9 /* Pods-ZBPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZBPlayer.release.xcconfig"; path = "Target Support Files/Pods-ZBPlayer/Pods-ZBPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		2C9F2CD22CB26F1900952C50 /* ZBTableRowView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBTableRowView.h; sourceTree = "<group>"; };
+		2C9F2CD32CB26F1900952C50 /* ZBTableRowView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBTableRowView.m; sourceTree = "<group>"; };
 		2CA121DC2CAC42CF00646E0E /* ZBScrollOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBScrollOutlineView.h; sourceTree = "<group>"; };
 		2CA121DD2CAC42CF00646E0E /* ZBScrollOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBScrollOutlineView.m; sourceTree = "<group>"; };
 		2CA121DF2CAC608B00646E0E /* ZBScrollTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBScrollTableView.h; sourceTree = "<group>"; };
 		2CA121E02CAC608B00646E0E /* ZBScrollTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBScrollTableView.m; sourceTree = "<group>"; };
+		2CA4E25E2CB120EB00C6242E /* 英文规范 笔记.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "英文规范 笔记.rtf"; sourceTree = "<group>"; };
 		2CC1F88E2CA9852200403D97 /* ZBMusicStatusControllerObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBMusicStatusControllerObject.h; sourceTree = "<group>"; };
 		2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBMusicStatusControllerObject.m; sourceTree = "<group>"; };
-		2CC4DEB92CAD944D00F1EB72 /* ZBAudioObject_2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBAudioObject_2.h; sourceTree = "<group>"; };
-		2CC4DEBA2CAD944D00F1EB72 /* ZBAudioObject_2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBAudioObject_2.m; sourceTree = "<group>"; };
 		2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ZBPlayerWC.xib; sourceTree = "<group>"; };
 		2CC8FB0A2CA93D580032FF28 /* ZBPlayerWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBPlayerWC.h; sourceTree = "<group>"; };
 		2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZBPlayerWC.m; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				05914D88228FA7D4005FCDAF /* PrefixHeader.pch */,
 				05D4D54E2298DDCA00BAB177 /* ZBMacro.h */,
 				05E5077D22964EFE008794F3 /* 开发备忘.rtf */,
+				2CA4E25E2CB120EB00C6242E /* 英文规范 笔记.rtf */,
 				05C7164B228EDE1F0054DF0F /* Assets.xcassets */,
 				05C7164D228EDE1F0054DF0F /* MainMenu.xib */,
 				05C71650228EDE1F0054DF0F /* Info.plist */,
@@ -258,8 +261,6 @@
 				05C716DE228EE13C0054DF0F /* ZBMacOSObject.m */,
 				05C716C5228EE0F40054DF0F /* ZBAudioObject.h */,
 				05C716C6228EE0F50054DF0F /* ZBAudioObject.m */,
-				2CC4DEB92CAD944D00F1EB72 /* ZBAudioObject_2.h */,
-				2CC4DEBA2CAD944D00F1EB72 /* ZBAudioObject_2.m */,
 				05C716C7228EE0F50054DF0F /* ZBDataObject.h */,
 				05C716C8228EE0F50054DF0F /* ZBDataObject.m */,
 				05D4D54B2298DB8800BAB177 /* ZBLyricObject.h */,
@@ -337,6 +338,8 @@
 				2CA121E02CAC608B00646E0E /* ZBScrollTableView.m */,
 				2CA121DC2CAC42CF00646E0E /* ZBScrollOutlineView.h */,
 				2CA121DD2CAC42CF00646E0E /* ZBScrollOutlineView.m */,
+				2C9F2CD22CB26F1900952C50 /* ZBTableRowView.h */,
+				2C9F2CD32CB26F1900952C50 /* ZBTableRowView.m */,
 			);
 			path = ver2;
 			sourceTree = "<group>";
@@ -432,6 +435,7 @@
 				05C7164C228EDE1F0054DF0F /* Assets.xcassets in Resources */,
 				05C7164F228EDE1F0054DF0F /* MainMenu.xib in Resources */,
 				2CC8FB162CA93D590032FF28 /* ZBPlayerWC.xib in Resources */,
+				2CA4E25F2CB120EB00C6242E /* 英文规范 笔记.rtf in Resources */,
 				0521C2E522D87F5900C7201E /* README.md in Resources */,
 				0521C2E422D87F5900C7201E /* jay.krc in Resources */,
 				05E5077E22964EFE008794F3 /* 开发备忘.rtf in Resources */,
@@ -505,9 +509,9 @@
 				05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */,
 				05C71652228EDE1F0054DF0F /* main.m in Sources */,
 				05C716E2228EE14E0054DF0F /* TreeNodeModel.m in Sources */,
-				2CC4DEBB2CAD944E00F1EB72 /* ZBAudioObject_2.m in Sources */,
 				05C716CA228EE0F50054DF0F /* ZBDataObject.m in Sources */,
 				2CC8FB172CA93D590032FF28 /* ZBPlayerWC.m in Sources */,
+				2C9F2CD42CB26F1900952C50 /* ZBTableRowView.m in Sources */,
 				05C716DB228EE11C0054DF0F /* ZBSliderViewController.m in Sources */,
 				2CA121E12CAC608B00646E0E /* ZBScrollTableView.m in Sources */,
 				05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */,

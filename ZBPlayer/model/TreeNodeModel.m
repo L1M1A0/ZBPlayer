@@ -14,7 +14,9 @@
     if(self = [super init]){
         self.name = @"";
         self.childNodes = [NSMutableArray array];
+        self.artists = [NSMutableArray array];
         self.isExpand = NO;
+        self.isSelected = YES;
     }
     return self;
 }
