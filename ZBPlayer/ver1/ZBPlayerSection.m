@@ -9,7 +9,10 @@
 #import "ZBPlayerSection.h"
 #import "Masonry.h"
 
-@interface ZBPlayerSection()<NSTextFieldDelegate>
+
+@interface ZBPlayerSection()<NSTextFieldDelegate>{
+    NSString *appVersionType;
+}
 
 @end
 
@@ -20,7 +23,8 @@
     
     // Drawing code here.
     //跟踪鼠标
-    NSTrackingArea *trackingArea = [[NSTrackingArea alloc]initWithRect:dirtyRect options:NSTrackingMouseEnteredAndExited|NSTrackingActiveAlways owner:self userInfo:nil];
+    
+    NSTrackingArea *trackingArea = [[NSTrackingArea alloc]initWithRect:self.bounds options:NSTrackingMouseEnteredAndExited|NSTrackingActiveAlways owner:self userInfo:@{@"aaa":@"你比"}];
     [self addTrackingArea:trackingArea];
     
 }
@@ -35,16 +39,29 @@
 
 
 -(void)creatViewWithLevel:(NSInteger)level{
-    NSInteger leftgap = 10;
+    
+    //获取app的界面版本
+    NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+    appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
+  
+    
+    
+    NSInteger leftgap = 15;
     NSInteger topGap = 5;
     NSInteger rowHeight = ZBPlayerSectionHeight - 5 * 2;
     NSColor *color = [NSColor colorWithRed:100 green:100 blue:1 alpha:0];
     
+    
     self.wantsLayer = YES;
     self.layer.backgroundColor = color.CGColor;
+    
+
+    
+    
+    //用于展示选中或者取消选择的状态，而不再是指示列表的折叠与展开（系统控制）
     self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];
     self.imageView.wantsLayer = YES;
-    self.imageView.layer.backgroundColor = color.CGColor;
+    self.imageView.layer.backgroundColor = [NSColor redColor].CGColor;//color.CGColor;
     self.imageView.image = [NSImage imageNamed:@"list_hide"];
     [self addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -68,10 +85,9 @@
     [[self.textField cell] setLineBreakMode:NSLineBreakByCharWrapping];//支持换行模式
     [[self.textField cell] setTruncatesLastVisibleLine:YES];//过长字符，显示省略号...
 
-    //    self.textField.wantsLayer = YES;
-    //    self.textField.layer.backgroundColor = [NSColor orangeColor].CGColor;
+        self.textField.wantsLayer = YES;
+        self.textField.layer.backgroundColor = [NSColor orangeColor].CGColor;
     //    self.textField.stringValue = @"";
-    //    self.textField.backgroundColor = [NSColor cyanColor];
     [self addSubview:self.textField];
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.imageView.mas_right).offset(topGap);
@@ -79,6 +95,9 @@
         make.right.equalTo(self.mas_right).offset(-35);
         make.centerY.equalTo(self.imageView.mas_centerY);//对齐前面的控件，垂直居中（不用设置高度,自动计算高度）
     }];
+    
+
+    
     
     self.moreBtn = [[NSButton alloc]initWithFrame:NSZeroRect];
     [self.moreBtn setButtonType:NSButtonTypeMomentaryChange];
@@ -130,17 +149,40 @@
 -(void)mouseEntered:(NSEvent *)event{
     self.textField.textColor = [NSColor redColor];
     self.moreBtn.hidden = NO;
-
+//    NSLog(@"执行鼠标进入");
 }
 //鼠标移出
 -(void)mouseExited:(NSEvent *)event{
+//    NSLog(@"执行鼠标离开");
     self.textField.textColor = [NSColor whiteColor];
     self.moreBtn.hidden = YES;
 }
 
--(void)rightMouseDown:(NSEvent *)event{
-    NSLog(@"执行鼠标右键方法");
+- (void)rightMouseDown:(NSEvent *)event{
+//    NSLog(@"执行鼠标右键方法");
 }
+- (void)otherMouseDown:(NSEvent *)event{
+//    NSLog(@"otherMouseDown");
+}
+- (void)mouseUp:(NSEvent *)event{
+//    NSLog(@"mouseUp");
+}
+- (void)rightMouseUp:(NSEvent *)event{
+//    NSLog(@"rightMouseUp");
+}
+- (void)otherMouseUp:(NSEvent *)event{
+//    NSLog(@"otherMouseUp");
+}
+- (void)mouseMoved:(NSEvent *)event{
+//    NSLog(@"mouseMoved");
+}
+- (void)mouseDragged:(NSEvent *)event{
+//    NSLog(@"mouseDragged");
+}
+- (void)scrollWheel:(NSEvent *)event{
+//    NSLog(@"scrollWheel");
+}
+
 -(void)mouseDown:(NSEvent *)event{
 //    [NSApp sendAction:@selector(imageViewAction) to:self.imageView from:self];
 //    NSLog(@"执行鼠标左键点击方法");
@@ -191,5 +233,17 @@
     NSLog(@"textFieldAction");
 }
 
+-(void)imageViewAction:(id)sender{
+    NSLog(@"imageViewAction");
+    if(self.delegate){
+        
+//        if (self.model.isExpand == YES) {
+//            self.imageView.image = [NSImage imageNamed:@"list_show"];
+//        }else{
+//            self.imageView.image = [NSImage imageNamed:@"list_hide"];
+//        }
+        [self.delegate playerSectionImageAction:self];
+    }
+}
 
 @end

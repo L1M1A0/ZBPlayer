@@ -1003,19 +1003,15 @@
     }
 }
 -(void)playerRow:(ZBPlayerRow *)playerRow menuItem:(NSMenuItem *)menuItem{
-    if ([menuItem.title isEqualToString:kMenuItemInitializeList]) {//初始列表
+    if ([menuItem.title isEqualToString:kMenuItemImportFolderList]) {//初始列表
         [self openPanel];
-    }else if ([menuItem.title isEqualToString:kMenuItemInsertSection]) {//新增列表
+    }else if ([menuItem.title isEqualToString:kMenuItemSectionInsert]) {//新增列表
         
-    }else if ([menuItem.title isEqualToString:kMenuItemUpdateSection]) {//更新本组
+    }else if ([menuItem.title isEqualToString:kMenuItemSectionUpdate]) {//更新本组
         NSLog(@"当前组：%ld",playerRow.model.sectionIndex);
-    }else if ([menuItem.title isEqualToString:kMenuItemDeleteSection]) {//删除本组
-        
     }else if ([menuItem.title isEqualToString:kMenuItemLocatePlaying]) {//当前播放
         [self reloadSectionStaus];
-    }else if ([menuItem.title isEqualToString:kMenuItemSearchMusic])  {//搜索音乐
-        
-    }else if ([menuItem.title isEqualToString:kMenuItemShowAll])      {//显示全部
+    }else if ([menuItem.title isEqualToString:kMenuItemSectionCollapseAll])      {//显示全部
         
     }else if ([menuItem.title isEqualToString:kMenuItemShowInFinder]) {//定位文件
         [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[[NSURL fileURLWithPath:playerRow.model.audio.path]]];
@@ -1237,8 +1233,8 @@
         //歌词 搜索
         //[self kugouApiSearchMusic:audio.title];
 //        [self QQApiSearchMusic:audio.title];
-        NSDictionary *id3 = [ZBAudioObject getAudioFileID3:audio.path];
-        NSLog(@"即将播放：%@，error__%@,ID3_%@",audio.title,error,id3);
+        //        NSDictionary *id3 = [ZBAudioObject getAudioFileID3:audio.path];
+        NSLog(@"即将播放：%@，error__%@",audio.title,error);
     }
 }
 

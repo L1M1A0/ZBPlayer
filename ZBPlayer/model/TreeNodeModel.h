@@ -25,10 +25,19 @@
 
 @interface TreeNodeModel : NSObject
 
+/// 用于存储当前播放的歌曲的模型，更换歌曲时更新模型数据
 @property (nonatomic, strong) ZBAudioModel *audio;
 @property (nonatomic, strong) NSString *name;//当前节点的名字
+
+/***
+ //从本节点的数据源childNodes中，提取出有共同点的信息出来，作为key用来方便搜索childNodes中的数据，比如childNodes中包含歌曲数据，那么keys里面保存的就是childNodes中出现的所有歌手的名字，我们通过点击歌手名字，找到childNodes中对应的数据。
+ */
+@property (nonatomic, strong) NSMutableArray *artists;
+/**childNodes 当使用keys作为二级节点的数据时，childNodes可以作为3级节点使用。就看数据结构怎么调整*/
 @property (nonatomic, strong) NSMutableArray *childNodes;//当前节点的数据源
-@property (nonatomic, assign) BOOL isExpand;//YES展开、NO收起
+@property (nonatomic, assign) BOOL isExpand;//是否展开，默认NO
+@property (nonatomic, assign) BOOL isSelected;//默认：YES选中，NO未选中，用于表示当前模型是否被选中。主要是根节点的数据使用。被选中的列表才会参与播放
+
 
 /**
  节点层级：

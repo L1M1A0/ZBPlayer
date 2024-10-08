@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 @protocol ZBPlayerSectionDelegate <NSObject>
 
+-(void)playerSectionImageAction:(ZBPlayerSection *)playerSection;
+
 -(void)playerSectionDidSelect:(ZBPlayerSection *)playerSection;
 
 -(void)playerSectionMoreBtn:(ZBPlayerSection *)playerSection;
