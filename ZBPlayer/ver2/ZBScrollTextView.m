@@ -7,6 +7,7 @@
 //
 
 #import "ZBScrollTextView.h"
+#import "ZBThemeObject.h"
 
 @implementation ZBScrollTextView
 
@@ -31,7 +32,10 @@
     [self setHasVerticalScroller:YES];
     [self setHasHorizontalScroller:YES];
     [self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-//    self.backgroundColor = [NSColor purpleColor];
+    
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
+    self.backgroundColor = theme.scrollViewColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.8];
 
 
     self.textView = [[NSTextView alloc]initWithFrame:CGRectZero];
@@ -52,6 +56,12 @@
     //将NSTextView 设置为NSScrollView的DocumentView，使其可以滚动
     [self setDocumentView:self.textView];
 //    [self.playerSplitView addSubview:slef];
+    /**
+     重要：******禁止绘制ScrollView的背景，解决ScrollView无法设置透明背景问题***
+     但是，此后所有【绘制背景的方法都失效】
+     */
+    [self setDrawsBackground:NO];
+    
     
     
 }

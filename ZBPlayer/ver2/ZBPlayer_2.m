@@ -23,10 +23,12 @@
 #import "ZBDataObject.h"
 #import "ZBMacOSObject.h"
 #import "ZBMusicStatusControllerObject.h"
-#import "ZBPlayerSection.h"
-#import "ZBPlayerRow.h"
 #import "ZBAudioModel.h"
 #import "ZBAudioObject.h"
+#import "ZBThemeObject.h"
+
+#import "ZBPlayerSection.h"
+#import "ZBPlayerRow.h"
 #import "ZBPlayerSplitView.h"
 #import "ZBScrollOutlineView.h"
 #import "ZBScrollTableView.h"
@@ -53,6 +55,8 @@
 @property (nonatomic, strong) ZBMacOSObject *object;
 @property (nonatomic, strong) ZBDataObject *dataObject;
 
+/** 主题管理：颜色等*/
+@property (nonatomic, strong) ZBThemeObject *themeObject;
 
 #pragma mark - 主功能：播放功能
 /** 上一曲 */
@@ -114,6 +118,8 @@
 @property (nonatomic, strong) ZBScrollOutlineView *audioListScrollOutlineView;//左侧
 @property (nonatomic, strong) ZBScrollTableView   *audioListScrollTableView;//右侧
 @property (nonatomic, strong) NSMutableArray *tableViewDatas;
+@property (nonatomic, strong) NSView *splitRightView;
+@property (nonatomic, strong) NSView *splitRightTopView;
 
 
 
@@ -139,13 +145,14 @@
 ///** 是否正在播放  */
 @property (nonatomic, assign) BOOL isPlaying;
 
-/** 主色调 */
-@property (nonatomic, strong) NSColor *mainColor;
 
 @property (nonatomic, assign) CFRunLoopTimerRef timerForRemainTime;
 /** VLC 播放模式下，当前歌曲的播放进度 */
 @property (nonatomic, assign) int vlcCurrentTime;
 @property (nonatomic, strong) NSNotification *mainNoti;
+
+
+
 
 @end
 
@@ -166,24 +173,21 @@
  */
 - (void)initWindow{
     //----------1、titleBar-------
-    //1、设置titlebar透明，实现titlebar的隐藏或显示效果
-    self.titlebarAppearsTransparent = NO;
+
     
+    //是否不透明
+    [self setOpaque:NO];
+    //设置titlebar透明，实现titlebar的隐藏或显示效果
+    self.titlebarAppearsTransparent = YES;
     //2、titlebar中的标题是否显示
     //self.titleVisibility = NSWindowTitleHidden;
     
     //3、设置窗口标题
-    self.title = @"ZBPlayer_2";
+    self.title = @"本地音乐播放器";
     
     //如果设置minSize后拉动窗口有明显的大小变化，需要在MainWCtrl.xib中勾选Mininum content size
     self.minSize = NSMakeSize(900, 556);//标准尺寸
     
-    //是否不透明
-    [self setOpaque:NO];
-    
-    //窗口背景颜色
-    NSColor *windowBackgroundColor = [NSColor colorWithRed:0 green:0 blue:0 alpha:0.5];//[NSColor colorWithRed:30/255.0 green:30/255.0 blue:30/255.0 alpha:1.0];
-    [self setBackgroundColor: windowBackgroundColor];
     
     //可移动的窗口背景
     self.movableByWindowBackground = YES;
@@ -195,7 +199,8 @@
     self.restorable = NO;
     //窗口居中
     [self center];
-    
+
+
     [self viewInWindow];
     
     //KRC歌词解析测试
@@ -205,37 +210,130 @@
 
 -(void)viewInWindow{
     
-    //窗口标题栏透明
-    self.titlebarAppearsTransparent = YES;
-    //窗口背景颜色
-    self.mainColor = [NSColor colorWithCalibratedRed:0x22/255.0 green:0x22/255.0 blue:0x22/255.0 alpha:0xFF/255.0];
-    [self setBackgroundColor: self.mainColor];
-    
-    self.object = [[ZBMacOSObject alloc]init];
-    self.dataObject = [[ZBDataObject alloc]init];
-    self.musicStatusCtrl = [[ZBMusicStatusControllerObject alloc]init];
-    self.isVCLPlayMode = YES;
+    //初始化数据源
     [self initData];
     
     
     //注：似乎没法使用懒加载，只能手动调用了
     [self playerSplitView];
     [self controllBar];
-    [self addNotification];
     [self addSubviewsIntoSplitView];
     [self.audioListScrollOutlineView.outlineView reloadData];
+
     
-    NSMutableArray *arr1 =[NSMutableArray arrayWithArray:@[]];
-    NSMutableArray *arr2 =[NSMutableArray arrayWithArray:@[]];
-    for(int i = 0; i < 10000 ; i++){
-        NSString *str1 = [NSString stringWithFormat:@"A %d",i];
-        NSString *str2 = [NSString stringWithFormat:@"B %d",i];
-        [arr1 addObject:str1];
-        [arr2 addObject:str2];
+    [self mainTheme];
+    [self addNotification];//添加通知//无用
+
+    
+}
+#pragma mark - 数据源
+-(void)initData{
+    self.themeObject = [[ZBThemeObject alloc]init];
+    [self.themeObject colorModelWithType:0];
+    
+    self.object = [[ZBMacOSObject alloc]init];
+    self.dataObject = [[ZBDataObject alloc]init];
+    self.musicStatusCtrl = [[ZBMusicStatusControllerObject alloc]init];
+   
+    self.isVCLPlayMode = YES;
+    
+    //获取app的界面版本
+    NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+    self.appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
+    if(!self.appVersionType || [self.appVersionType isEqualToString:@""]){
+        [user setValue:@"2" forKey:kDefaultAppViewVersionKey];
     }
-    self.tableViewDatas = [NSMutableArray array];//[NSMutableArray arrayWithArray:@[arr1,arr2]];
-    [self.audioListScrollTableView.tableView reloadData];
     
+    self.tableViewDatas = [NSMutableArray array];
+//    NSMutableArray *arr1 =[NSMutableArray arrayWithArray:@[]];
+//    NSMutableArray *arr2 =[NSMutableArray arrayWithArray:@[]];
+//    for(int i = 0; i < 10000 ; i++){
+//        NSString *str1 = [NSString stringWithFormat:@"A %d",i];
+//        NSString *str2 = [NSString stringWithFormat:@"B %d",i];
+//        [arr1 addObject:str1];
+//        [arr2 addObject:str2];
+//    }
+//    [self.tableViewDatas addObjectsFromArray:@[arr1,arr2]];
+//    [self.audioListScrollTableView.tableView reloadData];
+
+    
+    
+    self.musicStatusCtrl.currentRow = 0;
+    //从历史记录中读取播放列表
+    NSMutableArray *musicList = [ZBAudioObject getMusicList];
+    if (musicList.count > 0) {
+        self.treeModel = [[TreeNodeModel alloc]init];
+        self.treeModel.childNodes = [NSMutableArray arrayWithArray:musicList];
+//        [self.audioListScrollOutlineView.outlineView reloadData];
+    }else{
+        self.treeModel = [[TreeNodeModel alloc]init];
+        //根节点
+        TreeNodeModel *rootNode1 = [ZBAudioObject node:@"默认列表" level:0 superLevel:-1];
+        TreeNodeModel *history   = [ZBAudioObject node:@"播放历史" level:0 superLevel:-1];
+        [self.treeModel.childNodes addObjectsFromArray:@[rootNode1,history]];
+    }
+    
+}
+
+/// 主题设置
+-(void)mainTheme{
+
+    //窗口背景颜色
+//    NSColor *windowBackgroundColor = [NSColor colorWithCalibratedWhite:0 alpha:0.3];// [NSColor colorWithRed:0 green:0 blue:0 alpha:0.2];//[NSColor colorWithRed:30/255.0 green:30/255.0 blue:30/255.0 alpha:1.0];
+//    [self setBackgroundColor: windowBackgroundColor];
+    
+    //窗口标题栏透明
+    self.titlebarAppearsTransparent = YES;
+    
+    [self setBackgroundColor: self.themeObject.mainWindowColor];
+    //是否不透明
+    [self setOpaque:NO];
+    
+    self.playerSplitView.layer.backgroundColor = self.themeObject.splitViewColor.CGColor; //[NSColor blueColor].CGColor;
+    self.audioListScrollOutlineView.backgroundColor = self.themeObject.scrollViewColor;
+    self.audioListScrollOutlineView.outlineView.backgroundColor = self.themeObject.outlineViewColor;
+    self.audioListScrollTableView.backgroundColor = self.themeObject.scrollViewColor;
+    self.audioListScrollTableView.tableView.backgroundColor = self.themeObject.tableViewColor;
+    self.audioListScrollOutlineView.wantsLayer = YES;
+    self.audioListScrollOutlineView.layer.backgroundColor = [[NSColor clearColor] colorWithAlphaComponent:0].CGColor;
+    self.splitRightView.layer.backgroundColor = self.themeObject.splitViewColor.CGColor;
+    self.splitRightTopView.layer.backgroundColor = self.themeObject.splitRightTopViewColor.CGColor;
+    
+//
+//    self.audioListScrollTableView.alphaValue = self.themeObject.scrollViewAlphaValue;
+//    self.audioListScrollTableView.tableView.alphaValue = self.themeObject.tableViewAlphaValue;
+//    self.audioListScrollOutlineView.alphaValue  = self.themeObject.scrollViewAlphaValue;
+//    self.audioListScrollOutlineView.outlineView.alphaValue = self.themeObject.outlineViewAlphaValue;
+//    self.splitRightView.alphaValue = self.themeObject.scrollViewAlphaValue;
+//    self.splitRightTopView.alphaValue = self.themeObject.splitRightTopViewAlphaValue;
+    
+    self.lastBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.playBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.nextBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.volumeBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.playbackModelBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.searchHistoryBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.searchBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.bgColorBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.versionBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.listActionBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.playActionBtn.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    
+    self.searchScrollTextView.textView.layer.backgroundColor = self.themeObject.btnColor.CGColor;
+    self.searchScrollTextView.textView.drawsBackground = NO;
+    self.progressSlider.trackFillColor = self.themeObject.btnColor;
+    
+    
+    for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
+        if([view isKindOfClass:[ZBPlayerSection class]]){
+            ZBPlayerSection *sec = (ZBPlayerSection *)view;
+            sec.layer.backgroundColor = self.themeObject.outlineSectionColor.CGColor;
+        //    self.backgroundColor = color;
+        }else if([view isKindOfClass:[ZBPlayerRow class]]){
+            ZBPlayerRow *ro = (ZBPlayerRow *)view;
+            ro.layer.backgroundColor = self.themeObject.outlineRowColor.CGColor;
+        }
+    }
     
 }
 
@@ -262,7 +360,7 @@
     [self playbackModelPopover];
     
     self.progressSlider = [self.object slider:NSSliderTypeLinear frame:NSZeroRect superView:self.contentView target:self action:@selector(progressAction:)];
-    self.progressSlider.layer.backgroundColor = [NSColor colorWithRed:1 green:1 blue:1 alpha:0.2].CGColor;
+    self.progressSlider.layer.backgroundColor = [NSColor colorWithRed:0 green:0 blue:0 alpha:0.1].CGColor;
     //    self.progressSlider.numberOfTickMarks = 0;//标尺分节段数量，将无法设置线条颜色,且滑动指示器会变成三角模式
     self.progressSlider.appearance = [NSAppearance currentAppearance];
     self.progressSlider.trackFillColor = [NSColor redColor];//跟踪填充颜色，需要先设置appearance
@@ -288,6 +386,9 @@
     btn.layer.borderColor = [NSColor whiteColor].CGColor;
     btn.layer.borderWidth = 3;
     btn.toolTip = [NSString stringWithFormat:@"单击右键，查看【%@】的更多功能",title];
+    NSFont *font = [NSFont boldSystemFontOfSize:13];
+    btn.font = font;
+    
     return btn;
 }
 
@@ -345,6 +446,16 @@
         
     }else if(sender.tag == 23){
         //背景颜色
+//        NSColorPicker
+        NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
+        [NSColorPanel setPickerMask:NSColorPanelRGBModeMask];
+        [NSColorPanel setPickerMode:NSColorPanelModeCrayon];
+        [colorPanel setAction:@selector(colorAction:)];
+        [colorPanel setTarget:self];
+        [colorPanel orderFront:nil];
+        
+        
+        
     }else if(sender.tag == 24){
         //列表操作
         //收起所已展开的列表
@@ -356,6 +467,17 @@
     }else if(sender.tag == 26){
        
     }
+}
+
+
+-(void)colorAction:(id)sender{
+    NSLog(@"COLOR:%@",sender);
+    NSColorPanel *colorpanel = sender;
+    NSColor *color = colorpanel.color;
+    [self.themeObject changeColor:color];
+    [self mainTheme];
+    [self.audioListScrollOutlineView.outlineView reloadData];
+    [self.audioListScrollTableView.tableView reloadData];
 }
 
 -(void)progressAction:(NSSlider *)slider{
@@ -669,7 +791,7 @@
         [_playerSplitView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self.contentView.mas_top).offset(0);
             make.bottom.equalTo(self.contentView.mas_bottom).offset(-70);
-            make.left.equalTo(self.contentView.mas_left).offset(0);
+            make.left.equalTo(self.contentView.mas_left).offset(5);
             make.right.equalTo(self.contentView.mas_right).offset(0);
         }];
         
@@ -703,18 +825,16 @@
     self.audioListScrollOutlineView.outlineView.delegate = self;
     self.audioListScrollOutlineView.outlineView.dataSource = self;
     [self.playerSplitView addSubview:self.audioListScrollOutlineView];//如果后续不继续添加分屏界面，那么就不会分屏，占满窗口
-    
-    
-    
+
     //*****右侧视图
     
     //添加分屏2
     //分屏控件右边视图的层级关系，由底到面：_playerSplitView、scrollViewOnSplitRight
     //UI顺序是从底部到上的
-    NSView *splitRightView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
-    splitRightView.wantsLayer = YES;
-    splitRightView.layer.backgroundColor = [NSColor yellowColor].CGColor;
-    [self.playerSplitView addSubview:splitRightView];
+    self.splitRightView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    self.splitRightView.wantsLayer = YES;
+    self.splitRightView.layer.backgroundColor = self.themeObject.splitViewColor.CGColor;//[NSColor yellowColor].CGColor;
+    [self.playerSplitView addSubview:self.splitRightView];
     
 //    
 //    NSVisualEffectView *visualEffectView = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0, 0, tempWidth, tempHeight)];
@@ -752,39 +872,41 @@
     self.audioListScrollTableView = [[ZBScrollTableView alloc]initWithColumnIdentifiers:@[@"column_table_ID0"] className:@""];
     self.audioListScrollTableView.tableView.delegate = self;
     self.audioListScrollTableView.tableView.dataSource = self;
-    [splitRightView addSubview:self.audioListScrollTableView];
+    [self.splitRightView addSubview:self.audioListScrollTableView];
     [self.audioListScrollTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightView.mas_top).offset(splitRightTopViewHeight);
-        make.bottom.equalTo(splitRightView).offset(-10);
-        make.left.equalTo(splitRightView.mas_left).offset(10);
-        make.width.equalTo(splitRightView.mas_width).offset(-20);
+        make.top.equalTo(self.splitRightView.mas_top).offset(splitRightTopViewHeight);
+        make.bottom.equalTo(self.splitRightView).offset(0);
+        make.left.equalTo(self.splitRightView.mas_left).offset(10);
+        make.width.equalTo(self.splitRightView.mas_width).offset(-20);
         //        make.height.mas_equalTo(tempHeight-100);
     }];
-    
+//    self.audioListScrollTableView.tableView.headerView.wantsLayer =YES;
+//    self.audioListScrollTableView.tableView.headerView.layer.backgroundColor = [NSColor clearColor].CGColor;
+
+
 
 
     
-    NSView *splitRightTopView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
-    splitRightTopView.wantsLayer = YES;
-    splitRightTopView.layer.backgroundColor = [NSColor greenColor].CGColor;
-    [splitRightView addSubview:splitRightTopView];
-    [splitRightTopView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightView.mas_top).offset(10);
+    self.splitRightTopView = [[NSView alloc]initWithFrame:NSMakeRect(0, 80, tempWidth, tempHeight)];
+    self.splitRightTopView.wantsLayer = YES;
+    self.splitRightTopView.layer.backgroundColor =self.themeObject.splitRightTopViewColor.CGColor;// [NSColor greenColor].CGColor;
+    [self.splitRightView addSubview:self.splitRightTopView];
+    [self.splitRightTopView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.splitRightView.mas_top).offset(10);
         make.bottom.equalTo(self.audioListScrollTableView.mas_top).offset(-5);
-        make.left.equalTo(splitRightView.mas_left).offset(10);
-        make.width.equalTo(splitRightView.mas_width).offset(-20);
+        make.left.equalTo(self.splitRightView.mas_left).offset(10);
+        make.width.equalTo(self.splitRightView.mas_width).offset(-20);
         //        make.height.mas_equalTo(tempHeight/3);
         
     }];
-    
-    
+ 
     
     
     /** 版本切换按钮 */
-    self.versionBtn = [self buttonTitle:@"版本切换" tag:21 superView:splitRightTopView];
+    self.versionBtn = [self buttonTitle:@"版本切换" tag:21 superView:self.splitRightTopView];
     [self.versionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
-        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.top.equalTo(self.splitRightTopView.mas_top).offset(topOff);
+        make.left.equalTo(self.splitRightTopView.mas_left).offset(10);
         make.width.mas_equalTo(btnwidth);
         make.height.mas_equalTo(btnheight);
     }];
@@ -794,9 +916,9 @@
     
     
     self.searchScrollTextView = [[ZBScrollTextView alloc]initWithScrollTextView];
-    [splitRightTopView addSubview:self.searchScrollTextView];
+    [self.splitRightTopView addSubview:self.searchScrollTextView];
     [self.searchScrollTextView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.top.equalTo(self.splitRightTopView.mas_top).offset(topOff);
         make.left.equalTo(self.versionBtn.mas_right).offset(10);
         make.width.mas_equalTo(230);
         make.height.mas_equalTo(btnheight);
@@ -804,9 +926,9 @@
     }];
     
     /** 搜索按钮 */
-    self.searchBtn = [self buttonTitle:@"搜索" tag:22 superView:splitRightTopView];
+    self.searchBtn = [self buttonTitle:@"搜索" tag:22 superView:self.splitRightTopView];
     [self.searchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.top.equalTo(self.splitRightTopView.mas_top).offset(topOff);
         make.left.equalTo(self.searchScrollTextView.mas_right).offset(10);
         make.width.mas_equalTo(btnwidth);
         make.height.mas_equalTo(btnheight);
@@ -816,9 +938,9 @@
     
     
     /** 更换背景颜色按钮 */
-    self.bgColorBtn = [self buttonTitle:@"背景颜色" tag:23 superView:splitRightTopView];
+    self.bgColorBtn = [self buttonTitle:@"背景颜色" tag:23 superView:self.splitRightTopView];
     [self.bgColorBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(splitRightTopView.mas_top).offset(topOff);
+        make.top.equalTo(self.splitRightTopView.mas_top).offset(topOff);
         make.left.equalTo(self.searchBtn.mas_right).offset(10);
         make.width.mas_equalTo(btnwidth);
         make.height.mas_equalTo(btnheight);
@@ -827,10 +949,10 @@
     
     
     /** 列表操作按钮 */
-    self.listActionBtn = [self buttonTitle:@"列表管理" tag:24 superView:splitRightTopView];
+    self.listActionBtn = [self buttonTitle:@"列表管理" tag:24 superView:self.splitRightTopView];
     [self.listActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.versionBtn.mas_bottom).offset(5);
-        make.left.equalTo(splitRightTopView.mas_left).offset(10);
+        make.left.equalTo(self.splitRightTopView.mas_left).offset(10);
         make.width.mas_equalTo(btnwidth);
         make.height.mas_equalTo(btnheight);
     }];
@@ -840,7 +962,7 @@
     
 
     /** 播放管理按钮*/
-    self.playActionBtn = [self buttonTitle:@"播放管理" tag:25 superView:splitRightTopView];
+    self.playActionBtn = [self buttonTitle:@"播放管理" tag:25 superView:self.splitRightTopView];
     [self.playActionBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.listActionBtn.mas_top);
         make.left.equalTo(self.versionBtn.mas_right).offset(10);
@@ -862,11 +984,12 @@
 //    NSMenu *historyMenu = [self addMenu:@[kMenuItemSearchHistory,kMenuItemPlayHistory]];
 //    [self.searchHistoryBtn setMenu:historyMenu];
     
-    
-    
+
+    NSSplitViewController *spc = [[NSSplitViewController alloc]init];
     
     
 }
+
 
 
 
@@ -907,7 +1030,9 @@
     [splitView setPosition:oldWidth ofDividerAtIndex:0];
 }
 
-
+- (BOOL)splitView:(NSSplitView *)splitView shouldHideDivider:(NSInteger)dividerIndex {
+    return YES;
+}
 
 #pragma mark - NSOutlineView 歌曲大纲列表、目录结构组件
 
@@ -1288,7 +1413,7 @@
             NSLog(@"点击了 歌手section：%ld，childIndexForItem:%ld，层级：%ld",self.musicStatusCtrl.artistSection,childIndexForItem,levelForRow);
     
             //~~~~~点击左侧歌手名字。读取并在右侧tableview中显示其所在列表， 定向滚动到当前 歌手 在歌曲列表所在的位置。匹配歌手的位置
-            //注意，当这个歌手的名字出现在别的歌手的歌曲名字里面的时候，点击歌手名字，而显示在右边列表的时候，可能显示的就是那位歌手的那首歌，由此导致错误
+            //注意，当这个歌手的名字出现在别的歌手的歌曲名字里面的时候，点击歌手名字，而显示在右边列表的时候，可能显示的就是那位歌手的那首歌，由此导致错误。比如：想要查找周杰伦的歌，但是可能会停止在 二珂 - 告白气球（原唱：周杰伦）.mp3
             NSInteger foundIndex = NSNotFound;
             NSArray *tabledatas = [self.treeModel.childNodes[model.sectionIndex] childNodes];
             for(int i = 0 ; i < tabledatas.count; i++){
@@ -1518,7 +1643,8 @@
 -(NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row{
     
     ZBTableRowView *rowView = [[ZBTableRowView alloc]initWithRow:row];
-    [rowView setBackgroundColor:[NSColor whiteColor]];
+//    [rowView setBackgroundColor:[NSColor whiteColor]];
+//    [rowView setBackgroundColor:self.themeObject.tableViewColor];
     NSString *idet = [NSString stringWithFormat:@"childNode222_ss"];
     
     TreeNodeModel *nodeModel = self.tableViewDatas[row];
@@ -1615,33 +1741,7 @@
     }];
 }
 
-#pragma mark - 数据源
--(void)initData{
-    
-    //获取app的界面版本
-    NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-    self.appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
-    if(!self.appVersionType || [self.appVersionType isEqualToString:@""]){
-        [user setValue:@"2" forKey:kDefaultAppViewVersionKey];
-    }
-    
-    
-    self.musicStatusCtrl.currentRow = 0;
-    //从历史记录中读取播放列表
-    NSMutableArray *musicList = [ZBAudioObject getMusicList];
-    if (musicList.count > 0) {
-        self.treeModel = [[TreeNodeModel alloc]init];
-        self.treeModel.childNodes = [NSMutableArray arrayWithArray:musicList];
-        [self.audioListScrollOutlineView.outlineView reloadData];
-    }else{
-        self.treeModel = [[TreeNodeModel alloc]init];
-        //根节点
-        TreeNodeModel *rootNode1 = [ZBAudioObject node:@"默认列表" level:0 superLevel:-1];
-        TreeNodeModel *history   = [ZBAudioObject node:@"播放历史" level:0 superLevel:-1];
-        [self.treeModel.childNodes addObjectsFromArray:@[rootNode1,history]];
-    }
-    
-}
+
 
 #pragma mark - 音乐
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{

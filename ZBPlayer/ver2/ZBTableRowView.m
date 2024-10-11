@@ -9,7 +9,7 @@
 #import "ZBTableRowView.h"
 #import "Masonry.h"
 #import "TreeNodeModel.h"
-
+#import "ZBThemeObject.h"
 
 @implementation ZBTableRowView
 
@@ -38,6 +38,10 @@
 //    [rowView setBackgroundColor:[NSColor whiteColor]];
 //    NSString *idet = [NSString stringWithFormat:@"childNode222_ss"];
 
+    
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
+    
     
     self.textField = [NSTextField wrappingLabelWithString:@""];//[[NSTextField alloc]initWithFrame:NSZeroRect];
     self.textField.textColor = [NSColor whiteColor];

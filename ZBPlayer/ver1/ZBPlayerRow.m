@@ -8,6 +8,7 @@
 
 #import "ZBPlayerRow.h"
 #import "Masonry.h"
+#import "ZBThemeObject.h"
 
 @interface ZBPlayerRow(){
     NSString *appVersionType;
@@ -31,9 +32,9 @@
 
 }
 -(void)drawSelectionInRect:(NSRect)dirtyRect{
-    NSLog(@"点击列表时重绘当前row的样式_%d,%d",self.model.sectionIndex,self.model.rowIndex);
+//    NSLog(@"点击列表时重绘当前row的样式_%d,%d",self.model.sectionIndex,self.model.rowIndex);
 
-//    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
+    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
 
         NSRect selectionRect = NSInsetRect(self.bounds, 1, 1);//重绘的范围
         [[NSColor colorWithWhite:0.9 alpha:1] setStroke];//绘制边框
@@ -44,7 +45,7 @@
         //NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRect:selectionRect];
         [selectionPath fill];
         [selectionPath stroke];
-//    }
+    }
 }
 
 //-(void)setIsSelectedMe:(BOOL)isSelectedMe{
@@ -72,16 +73,17 @@
     NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
     appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
   
-    
-    
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
+
     //0：不向右缩进。1、2等其他数字，像右缩进倍数
     level = 0;
     NSInteger leftgap = 10;
     NSInteger topGap = 5;
     NSInteger rowHeight = ZBPlayerRowHeight - topGap * 2;
-    NSColor *color = [NSColor colorWithRed:1 green:1 blue:1 alpha:0];
- 
- 
+    NSColor *color = theme.outlineRowColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.5];//[NSColor colorWithRed:1 green:1 blue:1 alpha:0];
+    self.wantsLayer = YES;
+    self.layer.backgroundColor = color.CGColor;
     //ZBTextFieldCell
 //    self.textField = [[ZBTextFieldCell alloc]init];
 //    self.textField.textColor = [NSColor whiteColor];
@@ -101,12 +103,11 @@
     [[self.textField cell] setTruncatesLastVisibleLine:YES];//过长字符，显示省略号...
 //    self.textField.wantsLayer = YES;
 //    self.textField.layer.backgroundColor = [NSColor orangeColor].CGColor;
-//    self.textField.stringValue = @"";
-//    self.textField.backgroundColor = [NSColor cyanColor];
+    self.textField.stringValue = @"";
+    self.textField.backgroundColor = [NSColor cyanColor];
     
     if([appVersionType isEqualToString:@"1"]){
-        self.wantsLayer = YES;
-        self.layer.backgroundColor = color.CGColor;
+
         self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];
         self.imageView.wantsLayer = YES;
         self.imageView.layer.backgroundColor = color.CGColor;
@@ -221,7 +222,7 @@
     NSLog(@"按下了鼠标左键");
     if(self.delegate){
         //ZBTextFieldCell
-        //[self.delegate playerRow:self didSelectRowForModel:self.model];
+        [self.delegate playerRow:self didSelectRowForModel:self.model];
     }
 }
 

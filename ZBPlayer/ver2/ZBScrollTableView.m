@@ -7,6 +7,7 @@
 //
 
 #import "ZBScrollTableView.h"
+#import "ZBThemeObject.h"
 
 @implementation ZBScrollTableView
 
@@ -40,9 +41,12 @@
         Class viewClass = NSClassFromString(className);
         self.tableView = [[viewClass alloc]init];
     }
-    self.tableView.wantsLayer = YES;
-    self.tableView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
     
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
+    self.tableView.wantsLayer = YES;
+    self.tableView.backgroundColor =  theme.tableViewColor;//[NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
+    self.backgroundColor = theme.scrollViewColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.8];
 
 //    self.outlineView.delegate = self;
 //    self.outlineView.dataSource = self;
@@ -87,6 +91,11 @@
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 //    scrollViewOnSplitLeft.backgroundColor = [NSColor lightGrayColor];
     [self setDocumentView:self.tableView];
+    /**
+     重要：******禁止绘制ScrollView的背景，解决ScrollView无法设置透明背景问题***
+     但是，此后所有【绘制背景的方法都失效】
+     */
+    [self setDrawsBackground:NO];
     //添加到父视图
 //    [self.playerSplitView addSubview:scrollViewOnSplitLeft];
 
