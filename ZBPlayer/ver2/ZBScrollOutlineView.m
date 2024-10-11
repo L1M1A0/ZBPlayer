@@ -7,6 +7,7 @@
 //
 
 #import "ZBScrollOutlineView.h"
+#import "ZBThemeObject.h"
 
 @implementation ZBScrollOutlineView
 
@@ -30,6 +31,9 @@
     return self;
 }
 
+/// <#Description#>
+/// @param identifiers <#identifiers description#>
+/// @param className <#className description#>
 -(void)creatViewWithColumnIdentifiers:(NSArray *)identifiers className:(NSString *)className{
     
     
@@ -41,9 +45,14 @@
         Class viewClass = NSClassFromString(className);
         self.outlineView = [[viewClass alloc]init];
     }
-    self.outlineView.wantsLayer = YES;
-    self.outlineView.backgroundColor = [NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
+//
+
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
     
+    self.outlineView.wantsLayer = YES;
+    self.outlineView.backgroundColor = theme.outlineViewColor;//[NSColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.1];
+    self.backgroundColor = theme.scrollViewColor;
 
 //    self.outlineView.delegate = self;
 //    self.outlineView.dataSource = self;
@@ -61,6 +70,7 @@
         NSTableColumn *column1 = [[NSTableColumn alloc]initWithIdentifier:identifiers[i]];
         column1.title = [NSString stringWithFormat:@"第%d列",i];//@"可创建一个空的，不创建的话，内容会跑到bar底下";
         column1.headerToolTip = @"列头提示";
+        
         //注意，要先添加column才能设置conerview，不然显示不出来
         [self.outlineView addTableColumn:column1];
         //注意：先将column1添加到addTableColumn:之后才能设置背景颜色，不然不显示
@@ -86,8 +96,17 @@
     [self setAutohidesScrollers:YES];
     [self setBorderType:NSBezelBorder];
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-//    scrollViewOnSplitLeft.backgroundColor = [NSColor lightGrayColor];
     [self setDocumentView:self.outlineView];
+    /**
+     重要：******禁止绘制ScrollView的背景，【解决ScrollView无法设置透明背景问题】***
+     但是，此后所有【绘制背景的方法都失效】
+     */
+    [self setDrawsBackground:NO];
+//    self.contentView.backgroundColor  = [[NSColor clearColor] colorWithAlphaComponent:0.1];
+//    self.documentView.wantsLayer = YES;
+//    self.documentView.layer.backgroundColor = [NSColor greenColor].CGColor;
+//    self.backgroundColor = [NSColor blueColor];
+
     //添加到父视图
 //    [self.playerSplitView addSubview:scrollViewOnSplitLeft];
 

@@ -7,12 +7,14 @@
 //
 
 #import "ZBAudioOutlineView.h"
+#import "ZBThemeObject.h"
 
 @implementation ZBAudioOutlineView
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    
+
+        
     // Drawing code here.
 }
 
@@ -58,6 +60,11 @@
         return view;
 
     }
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
+    
+    self.backgroundColor = theme.outlineViewColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.9];
+    
     return view;
     
 }

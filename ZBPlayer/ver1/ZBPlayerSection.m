@@ -8,7 +8,7 @@
 
 #import "ZBPlayerSection.h"
 #import "Masonry.h"
-
+#import "ZBThemeObject.h"
 
 @interface ZBPlayerSection()<NSTextFieldDelegate>{
     NSString *appVersionType;
@@ -44,16 +44,19 @@
     NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
     appVersionType = [user stringForKey:kDefaultAppViewVersionKey];
   
+    ZBThemeObject *theme = [[ZBThemeObject alloc]init];
+    [theme colorModelWithType:0];
     
     
     NSInteger leftgap = 15;
     NSInteger topGap = 5;
     NSInteger rowHeight = ZBPlayerSectionHeight - 5 * 2;
-    NSColor *color = [NSColor colorWithRed:100 green:100 blue:1 alpha:0];
+    NSColor *color = theme.outlineSectionColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.5];//[NSColor colorWithRed:100 green:100 blue:1 alpha:0];
     
     
     self.wantsLayer = YES;
     self.layer.backgroundColor = color.CGColor;
+//    self.backgroundColor = color;
     
 
     
@@ -61,7 +64,7 @@
     //用于展示选中或者取消选择的状态，而不再是指示列表的折叠与展开（系统控制）
     self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];
     self.imageView.wantsLayer = YES;
-    self.imageView.layer.backgroundColor = [NSColor redColor].CGColor;//color.CGColor;
+//    self.imageView.layer.backgroundColor = theme.outlineSectionImageViewColor.CGColor;//color.CGColor;
     self.imageView.image = [NSImage imageNamed:@"list_hide"];
     [self addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -86,7 +89,7 @@
     [[self.textField cell] setTruncatesLastVisibleLine:YES];//过长字符，显示省略号...
 
         self.textField.wantsLayer = YES;
-        self.textField.layer.backgroundColor = [NSColor orangeColor].CGColor;
+//        self.textField.layer.backgroundColor = theme.outlineSectionTextFieldColor.CGColor;
     //    self.textField.stringValue = @"";
     [self addSubview:self.textField];
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -107,7 +110,7 @@
     self.moreBtn.hidden = YES;
     self.moreBtn.bordered = NO;//是否带边框
     self.moreBtn.wantsLayer = YES;
-    self.moreBtn.layer.backgroundColor = color.CGColor;
+//    self.moreBtn.layer.backgroundColor = color.CGColor;
     self.moreBtn.target = self;
     self.moreBtn.action = @selector(btnAction:);
     [self addSubview:self.moreBtn];
@@ -125,17 +128,17 @@
 
 -(void)drawSelectionInRect:(NSRect)dirtyRect{
 //    NSLog(@"selectionHighlightStyle_%ld",self.selectionHighlightStyle);
-    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
-        NSRect selectionRect = NSInsetRect(self.bounds, 1, 1);//重绘的范围
-        [[NSColor colorWithWhite:0.9 alpha:1] setStroke];//绘制边框
-        [[NSColor colorWithWhite:0.8 alpha:1] setFill];//绘制背景色
-        
-        //重绘
-//        NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:10 yRadius:20];
-        NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRect:selectionRect];
-        [selectionPath fill];
-        [selectionPath stroke];
-    }
+//    if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone ){
+//        NSRect selectionRect = NSInsetRect(self.bounds, 1, 1);//重绘的范围
+//        [[NSColor colorWithWhite:0.9 alpha:1] setStroke];//绘制边框
+//        [[NSColor colorWithWhite:0.8 alpha:1] setFill];//绘制背景色
+//        
+//        //重绘
+////        NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:10 yRadius:20];
+//        NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRect:selectionRect];
+//        [selectionPath fill];
+//        [selectionPath stroke];
+//    }
     
 }
 
