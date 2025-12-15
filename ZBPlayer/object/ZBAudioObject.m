@@ -23,7 +23,7 @@
 #define kAudioFileDataList      @"ZBAudioFileDataList"
 #define kAudioFileDataListKEY   @"ZBAudioFileDataListKEY"
 //支持读取的音频格式
-#define kAudioExtensions @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac"]
+#define kAudioExtensions @[@"mp3",@"flac",@"wav",@"aac",@"m4a",@"wma",@"ape",@"ogg",@"alac",@"mp4"]
 
 @interface ZBAudioObject ()
 /**
@@ -352,27 +352,62 @@
     //通过路径列表，遍历出符合要求的音频初始数据（非正式的数据源，需要二次加工成符合需要的结构）
     NSMutableArray *localMusics = [NSMutableArray array];
     NSMutableArray *artists= [NSMutableArray array];
-    for (int i = 0; i < sectionTitles.count; i++) {
-        NSMutableArray *arr = [NSMutableArray array];
-        NSMutableArray *arr2 = [NSMutableArray array];
-        [localMusics addObject:arr];
-        [artists addObject:arr2];
-        //查询文件夹下方的歌曲文件，更新列表
-        ZBAudioObject *ado = [[ZBAudioObject alloc]init];
-        if([kDefaultAPPViewVersion isEqualToString:@"1"]){
-            //数据源获取方式1：block回调方式：手动回调（递归的思路，但不完全是递归，比较被动）
-            [ado blockSearchInPath:baseUrls[i]];
-            [localMusics[i] addObjectsFromArray:ado.audios];
-        }else{
-            //数据获取方式2：
-            [ado findAudiosInPath: baseUrls[i] sectionTitle:sectionTitles[i] countIndex:i];
-            [localMusics[i] addObjectsFromArray:ado.audios];
-            [artists[i] addObjectsFromArray:ado.artistsInList[0]];
-//            [localMusics addObject:treeModel];
+    BOOL isDispathAsyns = YES;
+    if(isDispathAsyns == NO){
+        //按顺序读取
+        for (int i = 0; i < sectionTitles.count; i++) {
+            NSMutableArray *arr = [NSMutableArray array];
+            NSMutableArray *arr2 = [NSMutableArray array];
+            [localMusics addObject:arr];
+            [artists addObject:arr2];
+            //查询文件夹下方的歌曲文件，更新列表
+            ZBAudioObject *ado = [[ZBAudioObject alloc]init];
+            if([kDefaultAPPViewVersion isEqualToString:@"1"]){
+                //数据源获取方式1：block回调方式：手动回调（递归的思路，但不完全是递归，比较被动）
+                [ado blockSearchInPath:baseUrls[i]];
+                [localMusics[i] addObjectsFromArray:ado.audios];
+            }else{
+                //数据获取方式2：
+                [ado findAudiosInPath: baseUrls[i]];
+                [localMusics[i] addObjectsFromArray:ado.audios];
+                [artists[i] addObjectsFromArray:ado.artistsInList[0]];
+    //            [localMusics addObject:treeModel];
+            }
         }
-        
+    }else{
+        //多线程异步读取
+        dispatch_group_t group = dispatch_group_create();
+        __block NSMutableArray *allfiles = [NSMutableArray array];
+        for(NSString *folderStr in baseUrls){
+            dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSMutableArray *arr = [NSMutableArray array];
+                NSMutableArray *arr2 = [NSMutableArray array];
 
+                ZBAudioObject *ado = [[ZBAudioObject alloc]init];
+                if([kDefaultAPPViewVersion isEqualToString:@"1"]){
+                    //数据源获取方式1：block回调方式：手动回调（递归的思路，但不完全是递归，比较被动）
+                    [ado blockSearchInPath:folderStr];
+                    [arr addObjectsFromArray:ado.audios];
+                    [localMusics addObject:arr];
+
+                }else{
+                    [ado findAudiosInPath: folderStr];
+                    [arr addObjectsFromArray:ado.audios];
+                    [arr2 addObjectsFromArray:ado.artistsInList[0]];
+                    [localMusics addObject:arr];
+                    [artists addObject:arr2];
+                }
+                
+                if(localMusics.count == baseUrls.count){
+                    NSLog(@"localMusics.count_%d",localMusics.count);
+                }
+                
+            }) ;
+            dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        }
     }
+
+
     
   
     
@@ -614,7 +649,7 @@
  
  */
 /// @param basePath 被选中的文件夹的路径作为基础路径
--(void)findAudiosInPath:(NSString *)basePath sectionTitle:(NSString *)sectionTitle countIndex:(int)countIndex{
+-(void)findAudiosInPath:(NSString *)basePath{
 
 
     // 获取当前文件夹路径
@@ -634,7 +669,7 @@
     
     // 遍历文件夹及其子目录下的所有文件
     for (NSString *filePath in enumerator) {
-        NSLog(@"遍历：当前文件及其子文件路径下的所有文件的路径：%@",[filePath stringByRemovingPercentEncoding]);
+//        NSLog(@"遍历：当前文件及其子文件路径下的所有文件的路径：%@",[filePath stringByRemovingPercentEncoding]);
 
         
         NSString *fileExtension = [filePath pathExtension];
@@ -662,7 +697,10 @@
             //从文件名中提取歌手，一般以“-”作为歌手与歌曲信息的分隔符。格式如 “歌手 - 歌名”、 “歌手-歌名”,为了兼顾这两种情况，所以分开剪切。如果歌手名字中包含“-”，如：X-ray dog，这就麻烦了。无法兼顾
             NSArray *fileNameCuts = [fileName componentsSeparatedByString:@"-"];//
             //比如外国歌手的名字：shari kara tiaff - song name。其名字包含字符比较多，可能有较多间隔，所以移除空空格之后，还要将中间的重新拼接
-            NSString *artist = [self artistNameInString:fileNameCuts[0] separatedkey:@" "];
+            NSString *name0 = [fileNameCuts[0] isEqualToString:@""] == YES ? [fileNameCuts lastObject] : fileNameCuts[0];
+            NSString *artist = [self artistNameInString:name0 separatedkey:@" "];
+//            artist = [self artistNameInString:artist separatedkey:@"、"];
+
             
         
             // 将相同歌手的音频文件归类到一起，保存其文件路径，并添加到对应的键值对中
@@ -693,9 +731,9 @@
     for (NSString *key in artistMap) {
         NSLog(@"以 %@ 开头的文件：", key);
         [keys addObject:key];
-        for (ZBAudioModel *model in artistMap[key]) {
-            NSLog(@"%@", model.path);
-        }
+//        for (ZBAudioModel *model in artistMap[key]) {
+//            NSLog(@"%@", model.path);
+//        }
     }
     [self.artistsInList addObject:keys];
 

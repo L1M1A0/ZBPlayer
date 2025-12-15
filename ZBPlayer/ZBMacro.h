@@ -60,5 +60,7 @@
 
 
 
+#define kDefaultMainColorKey @"kDefaultMainColorKey"
+
 
 #endif /* ZBMacro_h */

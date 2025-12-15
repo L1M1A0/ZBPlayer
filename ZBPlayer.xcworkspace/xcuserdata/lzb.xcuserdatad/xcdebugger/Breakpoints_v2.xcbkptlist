@@ -32,32 +32,64 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "80B9596F-1E25-4254-B25E-ADA50BC2782B"
+            uuid = "6E606E2A-0791-4D4F-94C2-6CD3BDF7ABB3"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
+            filePath = "ZBPlayer/ver1/ZBPlayerSection.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "477"
-            endingLineNumber = "477"
-            landmarkName = "-colorAction:"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "-imageViewAction:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F04574DE-38CB-4B81-9958-59F7E46C56DB"
+            uuid = "B2FDB72D-71EF-418A-A67A-1C7854A474F5"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ZBPlayer/object/ZBThemeObject.m"
+            filePath = "ZBPlayer/ver1/ZBPlayerSection.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101"
-            landmarkName = "-changeColor:"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "-didSelected"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A5B702A6-0841-46CB-9395-42E42628197B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1493"
+            endingLineNumber = "1493"
+            landmarkName = "-playerSectionMoreBtn:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DCDE42AE-DF68-42C2-873C-55F244447DD9"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ZBPlayer/ver2/ZBPlayer_2.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1498"
+            endingLineNumber = "1498"
+            landmarkName = "-playerSectionDidSelect:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

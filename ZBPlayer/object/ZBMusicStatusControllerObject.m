@@ -29,6 +29,14 @@
     return _appVersionType;
 }
 
+-(BOOL)isPlayModelSwitchList{
+    if(!_isPlayModelSwitchList){
+        //初始化设置切换模式。YES：允许切换列表。NO：不允许切换列表
+        _isPlayModelSwitchList = YES;
+    }
+    return _isPlayModelSwitchList;
+}
+
 /** 切歌  isNext：是否是下一首歌
  isStartPlay == YES，执行处理完逻辑之后，返回YES，开始播放
  */
