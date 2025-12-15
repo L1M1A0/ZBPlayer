@@ -16,7 +16,7 @@
         self.childNodes = [NSMutableArray array];
         self.artists = [NSMutableArray array];
         self.isExpand = NO;
-        self.isSelected = YES;
+        self.isSelected = YES;//默认所有列表都可以播放
     }
     return self;
 }

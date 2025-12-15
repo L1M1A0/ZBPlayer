@@ -34,6 +34,8 @@
 		2CA121DE2CAC42CF00646E0E /* ZBScrollOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA121DD2CAC42CF00646E0E /* ZBScrollOutlineView.m */; };
 		2CA121E12CAC608B00646E0E /* ZBScrollTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA121E02CAC608B00646E0E /* ZBScrollTableView.m */; };
 		2CA4E25F2CB120EB00C6242E /* 英文规范 笔记.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2CA4E25E2CB120EB00C6242E /* 英文规范 笔记.rtf */; };
+		2CAE503D2CBC4ACF00703D0E /* ZBScrollOutlineTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE503C2CBC4ACF00703D0E /* ZBScrollOutlineTableView.m */; };
+		2CAE50402CBC4BA400703D0E /* ZBOutlineTableRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAE503F2CBC4BA400703D0E /* ZBOutlineTableRowView.m */; };
 		2CC1F8902CA9852200403D97 /* ZBMusicStatusControllerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */; };
 		2CC8FB162CA93D590032FF28 /* ZBPlayerWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */; };
 		2CC8FB172CA93D590032FF28 /* ZBPlayerWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC8FB0B2CA93D580032FF28 /* ZBPlayerWC.m */; };
@@ -124,6 +126,10 @@
 		2CA121DF2CAC608B00646E0E /* ZBScrollTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBScrollTableView.h; sourceTree = "<group>"; };
 		2CA121E02CAC608B00646E0E /* ZBScrollTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBScrollTableView.m; sourceTree = "<group>"; };
 		2CA4E25E2CB120EB00C6242E /* 英文规范 笔记.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "英文规范 笔记.rtf"; sourceTree = "<group>"; };
+		2CAE503B2CBC4ACF00703D0E /* ZBScrollOutlineTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBScrollOutlineTableView.h; sourceTree = "<group>"; };
+		2CAE503C2CBC4ACF00703D0E /* ZBScrollOutlineTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBScrollOutlineTableView.m; sourceTree = "<group>"; };
+		2CAE503E2CBC4BA400703D0E /* ZBOutlineTableRowView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBOutlineTableRowView.h; sourceTree = "<group>"; };
+		2CAE503F2CBC4BA400703D0E /* ZBOutlineTableRowView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBOutlineTableRowView.m; sourceTree = "<group>"; };
 		2CC1F88E2CA9852200403D97 /* ZBMusicStatusControllerObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZBMusicStatusControllerObject.h; sourceTree = "<group>"; };
 		2CC1F88F2CA9852200403D97 /* ZBMusicStatusControllerObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZBMusicStatusControllerObject.m; sourceTree = "<group>"; };
 		2CC8FB092CA93D580032FF28 /* ZBPlayerWC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ZBPlayerWC.xib; sourceTree = "<group>"; };
@@ -345,6 +351,10 @@
 				2CA121DD2CAC42CF00646E0E /* ZBScrollOutlineView.m */,
 				2C9F2CD22CB26F1900952C50 /* ZBTableRowView.h */,
 				2C9F2CD32CB26F1900952C50 /* ZBTableRowView.m */,
+				2CAE503B2CBC4ACF00703D0E /* ZBScrollOutlineTableView.h */,
+				2CAE503C2CBC4ACF00703D0E /* ZBScrollOutlineTableView.m */,
+				2CAE503E2CBC4BA400703D0E /* ZBOutlineTableRowView.h */,
+				2CAE503F2CBC4BA400703D0E /* ZBOutlineTableRowView.m */,
 			);
 			path = ver2;
 			sourceTree = "<group>";
@@ -511,6 +521,7 @@
 				0521C2E322D87F5900C7201E /* KRCOperate.m in Sources */,
 				2CE5AAE42CAD23FA00C28892 /* ZBScrollTextView.m in Sources */,
 				05C716D8228EE11C0054DF0F /* ZBPlaybackModelViewController.m in Sources */,
+				2CAE503D2CBC4ACF00703D0E /* ZBScrollOutlineTableView.m in Sources */,
 				05C716BB228EDEC90054DF0F /* ISSoundAdditions.m in Sources */,
 				05C71652228EDE1F0054DF0F /* main.m in Sources */,
 				2C43E95B2CB69C4600C45E96 /* ZBThemeObject.m in Sources */,
@@ -522,6 +533,7 @@
 				2CA121E12CAC608B00646E0E /* ZBScrollTableView.m in Sources */,
 				05C716E6228EE2B20054DF0F /* ZBTextFieldCell.m in Sources */,
 				05C7164A228EDE180054DF0F /* AppDelegate.m in Sources */,
+				2CAE50402CBC4BA400703D0E /* ZBOutlineTableRowView.m in Sources */,
 				05C716C9228EE0F50054DF0F /* ZBAudioObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

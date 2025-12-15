@@ -292,10 +292,12 @@
     self.playerSplitView.layer.backgroundColor = self.themeObject.splitViewColor.CGColor; //[NSColor blueColor].CGColor;
     self.audioListScrollOutlineView.backgroundColor = self.themeObject.scrollViewColor;
     self.audioListScrollOutlineView.outlineView.backgroundColor = self.themeObject.outlineViewColor;
+    self.audioListScrollOutlineView.outlineView.layer.backgroundColor = self.themeObject.outlineViewColor.CGColor;
+
     self.audioListScrollTableView.backgroundColor = self.themeObject.scrollViewColor;
     self.audioListScrollTableView.tableView.backgroundColor = self.themeObject.tableViewColor;
-    self.audioListScrollOutlineView.wantsLayer = YES;
-    self.audioListScrollOutlineView.layer.backgroundColor = [[NSColor clearColor] colorWithAlphaComponent:0].CGColor;
+//    self.audioListScrollOutlineView.wantsLayer = YES;
+//    self.audioListScrollOutlineView.layer.backgroundColor = [[NSColor clearColor] colorWithAlphaComponent:0].CGColor;
     self.splitRightView.layer.backgroundColor = self.themeObject.splitViewColor.CGColor;
     self.splitRightTopView.layer.backgroundColor = self.themeObject.splitRightTopViewColor.CGColor;
     
@@ -323,18 +325,32 @@
     self.searchScrollTextView.textView.drawsBackground = NO;
     self.progressSlider.trackFillColor = self.themeObject.btnColor;
     
+    //section 不会改变颜色，启动时是什么颜色，后面就是什么颜色
+//    for (id view in self.audioListScrollOutlineView.subviews) {
+//        if([view isKindOfClass:[ZBPlayerSection class]]){
+//            ZBPlayerSection *sec = (ZBPlayerSection *)view;
+//            sec.layer.backgroundColor = [NSColor clearColor].CGColor;//self.themeObject.outlineSectionColor.CGColor;
+//            sec.backgroundColor = self.themeObject.outlineSectionColor;
+//        }
+//        //每次打开就会重新加载，所以会变色
+//        else if([view isKindOfClass:[ZBPlayerRow class]]){
+//            ZBPlayerRow *ro = (ZBPlayerRow *)view;
+//            ro.layer.backgroundColor = [NSColor clearColor].CGColor;//self.themeObject.outlineRowColor.CGColor;
+//            ro.backgroundColor = self.themeObject.outlineRowColor;
+//        }
+//        else if([view isKindOfClass:[ZBAudioOutlineView class]]){
+//            ZBAudioOutlineView *ot = (ZBAudioOutlineView *)view;
+//            ot.layer.backgroundColor = self.themeObject.outlineViewColor.CGColor;
+//            ot.backgroundColor = self.themeObject.outlineViewColor;
+//        }
+
+//    }
     
-    for (id view in self.audioListScrollOutlineView.outlineView.subviews) {
-        if([view isKindOfClass:[ZBPlayerSection class]]){
-            ZBPlayerSection *sec = (ZBPlayerSection *)view;
-            sec.layer.backgroundColor = self.themeObject.outlineSectionColor.CGColor;
-        //    self.backgroundColor = color;
-        }else if([view isKindOfClass:[ZBPlayerRow class]]){
-            ZBPlayerRow *ro = (ZBPlayerRow *)view;
-            ro.layer.backgroundColor = self.themeObject.outlineRowColor.CGColor;
-        }
-    }
     
+//    [self.audioListScrollOutlineView.outlineView reloadData];
+    
+//    [self.audioListScrollOutlineView.outlineView reloadItem:self.treeModel.childNodes[0]];
+
 }
 
 
@@ -475,9 +491,10 @@
     NSColorPanel *colorpanel = sender;
     NSColor *color = colorpanel.color;
     [self.themeObject changeColor:color];
-    [self mainTheme];
     [self.audioListScrollOutlineView.outlineView reloadData];
     [self.audioListScrollTableView.tableView reloadData];
+    [self mainTheme];
+
 }
 
 -(void)progressAction:(NSSlider *)slider{
@@ -824,6 +841,7 @@
     self.audioListScrollOutlineView.frame = NSMakeRect(0, 0, tempWidth, tempHeight);
     self.audioListScrollOutlineView.outlineView.delegate = self;
     self.audioListScrollOutlineView.outlineView.dataSource = self;
+    self.audioListScrollOutlineView.outlineView.headerView = nil;//隐藏表头
     [self.playerSplitView addSubview:self.audioListScrollOutlineView];//如果后续不继续添加分屏界面，那么就不会分屏，占满窗口
 
     //*****右侧视图
@@ -1054,6 +1072,7 @@
         if(!item){
             return [self.treeModel.childNodes count];
         } else{
+            //每次展开section都会执行一次，展开当前项
             if([item isKindOfClass:[TreeNodeModel class]]){
                 TreeNodeModel *nodeModel = item;
                 return [nodeModel.artists count];
@@ -1085,8 +1104,6 @@
             //item为根节点，找到根节点的数据，给子节点创建row
             TreeNodeModel *nodeModel = item;
             return nodeModel.artists[index];
-            
-            
         }
     }
 }
@@ -1446,10 +1463,6 @@
 
 
 
-
-
-
-
 #pragma mark - ZBPlayerRowDelegate
 -(void)playerRow:(ZBPlayerRow *)playerRow didSelectRowForModel:(TreeNodeModel *)model{
     
@@ -1701,6 +1714,7 @@
     
 }
 
+
 #pragma mark - 面板：NSOpenPanel 读取电脑文件 获取文件名，路径
 - (void)openPanel{
     NSOpenPanel *openDlg = [NSOpenPanel openPanel];
@@ -1720,6 +1734,10 @@
         if(result == NSModalResponseOK){
             NSArray *fileURLs = [openDlg URLs];//“保存用户选择的文件/文件夹路径path”
             NSLog(@"获取本地文件的路径：%@",fileURLs);
+
+            
+        
+            
             
             if([self.appVersionType isEqualToString:@"1"]){
                 //根据路径数组，分别读取本地路径下的文件（版本1，回调方法找寻文件）
@@ -1741,7 +1759,11 @@
     }];
 }
 
+-(BOOL)tableView:(NSTableView *)tableView shouldTrackCell:(NSCell *)cell forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
+    NSLog(@"没有fafafa_%d",row);
 
+    return YES;
+}
 
 #pragma mark - 音乐
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -1853,6 +1875,8 @@
  调整列表的收起与展开，并定位到当前为止
  */
 -(void)reloadSectionStaus{
+    
+//    可以直接折叠全部，然后再更具index展开指定的section
     
     if([self.appVersionType isEqualToString:@"1"]){
         //如果切换了列表，收起旧列表，展开当前歌曲所在列表
@@ -1978,3 +2002,4 @@
 
 
 @end
+

@@ -83,7 +83,9 @@
     NSInteger rowHeight = ZBPlayerRowHeight - topGap * 2;
     NSColor *color = theme.outlineRowColor;//[NSColor colorWithCalibratedWhite:0 alpha:0.5];//[NSColor colorWithRed:1 green:1 blue:1 alpha:0];
     self.wantsLayer = YES;
-    self.layer.backgroundColor = color.CGColor;
+//    self.layer.backgroundColor = color.CGColor;
+//    self.backgroundColor = color;
+    
     //ZBTextFieldCell
 //    self.textField = [[ZBTextFieldCell alloc]init];
 //    self.textField.textColor = [NSColor whiteColor];

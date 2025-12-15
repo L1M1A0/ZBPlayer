@@ -55,11 +55,10 @@
     
     
     self.wantsLayer = YES;
-    self.layer.backgroundColor = color.CGColor;
+//    self.layer.backgroundColor = color.CGColor;
 //    self.backgroundColor = color;
     
 
-    
     
     //用于展示选中或者取消选择的状态，而不再是指示列表的折叠与展开（系统控制）
     self.imageView = [[NSImageView alloc]initWithFrame:NSZeroRect];

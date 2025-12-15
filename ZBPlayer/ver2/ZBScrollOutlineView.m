@@ -93,9 +93,10 @@
     [self setHasVerticalScroller:YES];
     [self setHasHorizontalScroller:NO];
     [self setFocusRingType:NSFocusRingTypeNone];
-    [self setAutohidesScrollers:YES];
+    [self setAutohidesScrollers:NO];
     [self setBorderType:NSBezelBorder];
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self setAutoresizingMask:NSViewHeightSizable];
     [self setDocumentView:self.outlineView];
     /**
      重要：******禁止绘制ScrollView的背景，【解决ScrollView无法设置透明背景问题】***
